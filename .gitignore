@@ -4,3 +4,5 @@ __pycache__/
 data/olist/
 data/cosmetics/
 data/*.zip
+*.duckdb
+*.duckdb.wal
