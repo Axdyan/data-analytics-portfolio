@@ -1,8 +1,6 @@
 .venv/
 __pycache__/
 *.pyc
-data/olist/
-data/cosmetics/
-data/*.zip
+data/
 *.duckdb
 *.duckdb.wal
