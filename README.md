@@ -15,6 +15,15 @@ cart-to-purchase conversion is a comparatively gentle 1 in 6. $23.99M of $29.86M
 80.3%, is never converted, and month-1 retention falls off a cliff for every cohort but one
 unexplained outlier. Full writeup in [`02-funnel-retention/memo/findings.md`](02-funnel-retention/memo/findings.md).
 
+**Defence procurement** (CanadaBuys contract awards): the field that would measure Canadian
+content is empty on every one of 21,890 rows, so the 70% Canadian-firm target can only be read
+by supplier address or by ownership. Two defects in the file move the headline before any
+definition does, a value column that double-counts every amended contract and a country field
+coded two ways. Fixed, the defence subset reads 78.2% Canadian by registered address and 24.2%
+to 41.0% Canadian-controlled, on the same $19.9B across 2,756 contracts. The target is met or
+missed depending on the definition, and the Strategy does not publish one. Full writeup in
+[`03-defence-procurement/memo/findings.md`](03-defence-procurement/memo/findings.md).
+
 **Wind repowering uplift** (US Wind Turbine Database and EIA-923 generation): from the first full
 year after repowering, a repowered plant generates 48% more than it did the year before the
 work, relative to 498 never-repowered plants of the same vintage, with a 95% interval of 37% to
@@ -29,6 +38,7 @@ the answer. Full writeup in [`04-wind-repowering/memo/findings.md`](04-wind-repo
 |---|---|
 | [01: Seller Risk](01-seller-risk/) | Olist Brazilian E-Commerce |
 | [02: Funnel & Retention](02-funnel-retention/) | Cosmetics Shop Clickstream |
+| [03: Defence Procurement](03-defence-procurement/) | CanadaBuys Contract Award History |
 | [04: Wind Repowering Uplift](04-wind-repowering/) | US Wind Turbine Database, EIA-923 |
 
 ## Repo layout
@@ -38,6 +48,7 @@ data_analytics_portfolio/
 ├── data/                    # raw data, gitignored, see each project's README for how to fetch it
 ├── 01-seller-risk/
 ├── 02-funnel-retention/
+├── 03-defence-procurement/
 ├── 04-wind-repowering/
 ├── requirements.txt
 └── README.md

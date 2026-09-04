@@ -1,0 +1,50 @@
+raw_value,rows,iso2,rule,country_name,confidence,note
+CA,18315,CA,iso2_passthrough,Canada,high,""
+Canada,1488,CA,long_name,Canada,high,long name mapped to ISO 3166-1 alpha-2
+US,1357,US,iso2_passthrough,United States,high,""
+United States,217,US,long_name,United States,high,long name mapped to ISO 3166-1 alpha-2
+GB,133,GB,iso2_passthrough,United Kingdom,high,""
+NL,56,NL,iso2_passthrough,Netherlands,high,""
+AU,55,AU,iso2_passthrough,Australia,high,""
+DE,51,DE,iso2_passthrough,Germany,high,""
+FR,29,FR,iso2_passthrough,France,high,""
+NO,23,NO,iso2_passthrough,Norway,high,""
+United Kingdom,17,GB,long_name,United Kingdom,high,long name mapped to ISO 3166-1 alpha-2
+CH,12,CH,iso2_passthrough,Switzerland,high,""
+DK,12,DK,iso2_passthrough,Denmark,high,""
+BE,11,BE,iso2_passthrough,Belgium,high,""
+SG,9,SG,iso2_passthrough,Singapore,high,""
+SE,8,SE,iso2_passthrough,Sweden,high,""
+IT,8,IT,iso2_passthrough,Italy,high,""
+Norway,8,NO,long_name,Norway,high,long name mapped to ISO 3166-1 alpha-2
+ES,7,ES,iso2_passthrough,Spain,high,""
+ZA,7,ZA,iso2_passthrough,South Africa,high,""
+Australia,7,AU,long_name,Australia,high,long name mapped to ISO 3166-1 alpha-2
+JP,6,JP,iso2_passthrough,Japan,high,""
+Spain,5,ES,long_name,Spain,high,long name mapped to ISO 3166-1 alpha-2
+IL,5,IL,iso2_passthrough,Israel,high,""
+Denmark,4,DK,long_name,Denmark,high,long name mapped to ISO 3166-1 alpha-2
+Germany,4,DE,long_name,Germany,high,long name mapped to ISO 3166-1 alpha-2
+(blank),3,"",blank,"",n/a,no country supplied on the row
+Finland,3,FI,long_name,Finland,high,long name mapped to ISO 3166-1 alpha-2
+AE,3,AE,iso2_passthrough,United Arab Emirates,high,""
+IE,3,IE,iso2_passthrough,Ireland,high,""
+IN,3,IN,iso2_passthrough,India,high,""
+FI,2,FI,iso2_passthrough,Finland,high,""
+IS,2,IS,iso2_passthrough,Iceland,high,""
+France,2,FR,long_name,France,high,long name mapped to ISO 3166-1 alpha-2
+BG,1,BG,iso2_passthrough,Bulgaria,high,""
+TR,1,TR,iso2_passthrough,Turkey,high,""
+Israel,1,IL,long_name,Israel,high,long name mapped to ISO 3166-1 alpha-2
+NZ,1,NZ,iso2_passthrough,New Zealand,high,""
+TT,1,TT,iso2_passthrough,Trinidad and Tobago,high,""
+N/A,1,"",na,"",n/a,"literal string N/A, resolved by same-name rule (D-05)"
+Italy,1,IT,long_name,Italy,high,long name mapped to ISO 3166-1 alpha-2
+TM,1,TM,iso2_passthrough,Turkmenistan,high,""
+AT,1,AT,iso2_passthrough,Austria,high,""
+Turkey,1,TR,long_name,Turkey,high,long name mapped to ISO 3166-1 alpha-2
+RO,1,RO,iso2_passthrough,Romania,high,""
+CZ,1,CZ,iso2_passthrough,Czechia,high,""
+AR,1,AR,iso2_passthrough,Argentina,high,""
+Belgium,1,BE,long_name,Belgium,high,long name mapped to ISO 3166-1 alpha-2
+Cayman Islands,1,KY,long_name,Cayman Islands,high,long name mapped to ISO 3166-1 alpha-2
