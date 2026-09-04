@@ -1,0 +1,8 @@
+{
+  "url": "https://energy.usgs.gov/api/uswtdb/v1/turbines",
+  "pulled_at_utc": "2026-09-03T11:47:06.771384+00:00",
+  "last_modified": null,
+  "content_type": "text/csv; charset=utf-8",
+  "bytes": 14851493,
+  "sha256": "ee1e259fd94489cd1fe3df36fffaa533afacf1d05e804eff68fcbed33540bd8e"
+}
