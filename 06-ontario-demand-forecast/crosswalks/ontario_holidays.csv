@@ -1,0 +1,255 @@
+holiday_name,actual_date,observed_date,statutory
+New Year's Day,2002-01-01,2002-01-01,True
+Good Friday,2002-03-29,2002-03-29,True
+Victoria Day,2002-05-20,2002-05-20,True
+Canada Day,2002-07-01,2002-07-01,True
+Civic Holiday,2002-08-05,2002-08-05,False
+Labour Day,2002-09-02,2002-09-02,True
+Thanksgiving,2002-10-14,2002-10-14,True
+Christmas Day,2002-12-25,2002-12-25,True
+Boxing Day,2002-12-26,2002-12-26,True
+New Year's Day,2003-01-01,2003-01-01,True
+Good Friday,2003-04-18,2003-04-18,True
+Victoria Day,2003-05-19,2003-05-19,True
+Canada Day,2003-07-01,2003-07-01,True
+Civic Holiday,2003-08-04,2003-08-04,False
+Labour Day,2003-09-01,2003-09-01,True
+Thanksgiving,2003-10-13,2003-10-13,True
+Christmas Day,2003-12-25,2003-12-25,True
+Boxing Day,2003-12-26,2003-12-26,True
+New Year's Day,2004-01-01,2004-01-01,True
+Good Friday,2004-04-09,2004-04-09,True
+Victoria Day,2004-05-24,2004-05-24,True
+Canada Day,2004-07-01,2004-07-01,True
+Civic Holiday,2004-08-02,2004-08-02,False
+Labour Day,2004-09-06,2004-09-06,True
+Thanksgiving,2004-10-11,2004-10-11,True
+Christmas Day,2004-12-25,2004-12-27,True
+Boxing Day,2004-12-26,2004-12-28,True
+New Year's Day,2005-01-01,2005-01-03,True
+Good Friday,2005-03-25,2005-03-25,True
+Victoria Day,2005-05-23,2005-05-23,True
+Canada Day,2005-07-01,2005-07-01,True
+Civic Holiday,2005-08-01,2005-08-01,False
+Labour Day,2005-09-05,2005-09-05,True
+Thanksgiving,2005-10-10,2005-10-10,True
+Christmas Day,2005-12-25,2005-12-26,True
+Boxing Day,2005-12-26,2005-12-27,True
+New Year's Day,2006-01-01,2006-01-02,True
+Good Friday,2006-04-14,2006-04-14,True
+Victoria Day,2006-05-22,2006-05-22,True
+Canada Day,2006-07-01,2006-07-03,True
+Civic Holiday,2006-08-07,2006-08-07,False
+Labour Day,2006-09-04,2006-09-04,True
+Thanksgiving,2006-10-09,2006-10-09,True
+Christmas Day,2006-12-25,2006-12-25,True
+Boxing Day,2006-12-26,2006-12-26,True
+New Year's Day,2007-01-01,2007-01-01,True
+Good Friday,2007-04-06,2007-04-06,True
+Victoria Day,2007-05-21,2007-05-21,True
+Canada Day,2007-07-01,2007-07-02,True
+Civic Holiday,2007-08-06,2007-08-06,False
+Labour Day,2007-09-03,2007-09-03,True
+Thanksgiving,2007-10-08,2007-10-08,True
+Christmas Day,2007-12-25,2007-12-25,True
+Boxing Day,2007-12-26,2007-12-26,True
+New Year's Day,2008-01-01,2008-01-01,True
+Family Day,2008-02-18,2008-02-18,True
+Good Friday,2008-03-21,2008-03-21,True
+Victoria Day,2008-05-19,2008-05-19,True
+Canada Day,2008-07-01,2008-07-01,True
+Civic Holiday,2008-08-04,2008-08-04,False
+Labour Day,2008-09-01,2008-09-01,True
+Thanksgiving,2008-10-13,2008-10-13,True
+Christmas Day,2008-12-25,2008-12-25,True
+Boxing Day,2008-12-26,2008-12-26,True
+New Year's Day,2009-01-01,2009-01-01,True
+Family Day,2009-02-16,2009-02-16,True
+Good Friday,2009-04-10,2009-04-10,True
+Victoria Day,2009-05-18,2009-05-18,True
+Canada Day,2009-07-01,2009-07-01,True
+Civic Holiday,2009-08-03,2009-08-03,False
+Labour Day,2009-09-07,2009-09-07,True
+Thanksgiving,2009-10-12,2009-10-12,True
+Christmas Day,2009-12-25,2009-12-25,True
+Boxing Day,2009-12-26,2009-12-28,True
+New Year's Day,2010-01-01,2010-01-01,True
+Family Day,2010-02-15,2010-02-15,True
+Good Friday,2010-04-02,2010-04-02,True
+Victoria Day,2010-05-24,2010-05-24,True
+Canada Day,2010-07-01,2010-07-01,True
+Civic Holiday,2010-08-02,2010-08-02,False
+Labour Day,2010-09-06,2010-09-06,True
+Thanksgiving,2010-10-11,2010-10-11,True
+Christmas Day,2010-12-25,2010-12-27,True
+Boxing Day,2010-12-26,2010-12-28,True
+New Year's Day,2011-01-01,2011-01-03,True
+Family Day,2011-02-21,2011-02-21,True
+Good Friday,2011-04-22,2011-04-22,True
+Victoria Day,2011-05-23,2011-05-23,True
+Canada Day,2011-07-01,2011-07-01,True
+Civic Holiday,2011-08-01,2011-08-01,False
+Labour Day,2011-09-05,2011-09-05,True
+Thanksgiving,2011-10-10,2011-10-10,True
+Christmas Day,2011-12-25,2011-12-26,True
+Boxing Day,2011-12-26,2011-12-27,True
+New Year's Day,2012-01-01,2012-01-02,True
+Family Day,2012-02-20,2012-02-20,True
+Good Friday,2012-04-06,2012-04-06,True
+Victoria Day,2012-05-21,2012-05-21,True
+Canada Day,2012-07-01,2012-07-02,True
+Civic Holiday,2012-08-06,2012-08-06,False
+Labour Day,2012-09-03,2012-09-03,True
+Thanksgiving,2012-10-08,2012-10-08,True
+Christmas Day,2012-12-25,2012-12-25,True
+Boxing Day,2012-12-26,2012-12-26,True
+New Year's Day,2013-01-01,2013-01-01,True
+Family Day,2013-02-18,2013-02-18,True
+Good Friday,2013-03-29,2013-03-29,True
+Victoria Day,2013-05-20,2013-05-20,True
+Canada Day,2013-07-01,2013-07-01,True
+Civic Holiday,2013-08-05,2013-08-05,False
+Labour Day,2013-09-02,2013-09-02,True
+Thanksgiving,2013-10-14,2013-10-14,True
+Christmas Day,2013-12-25,2013-12-25,True
+Boxing Day,2013-12-26,2013-12-26,True
+New Year's Day,2014-01-01,2014-01-01,True
+Family Day,2014-02-17,2014-02-17,True
+Good Friday,2014-04-18,2014-04-18,True
+Victoria Day,2014-05-19,2014-05-19,True
+Canada Day,2014-07-01,2014-07-01,True
+Civic Holiday,2014-08-04,2014-08-04,False
+Labour Day,2014-09-01,2014-09-01,True
+Thanksgiving,2014-10-13,2014-10-13,True
+Christmas Day,2014-12-25,2014-12-25,True
+Boxing Day,2014-12-26,2014-12-26,True
+New Year's Day,2015-01-01,2015-01-01,True
+Family Day,2015-02-16,2015-02-16,True
+Good Friday,2015-04-03,2015-04-03,True
+Victoria Day,2015-05-18,2015-05-18,True
+Canada Day,2015-07-01,2015-07-01,True
+Civic Holiday,2015-08-03,2015-08-03,False
+Labour Day,2015-09-07,2015-09-07,True
+Thanksgiving,2015-10-12,2015-10-12,True
+Christmas Day,2015-12-25,2015-12-25,True
+Boxing Day,2015-12-26,2015-12-28,True
+New Year's Day,2016-01-01,2016-01-01,True
+Family Day,2016-02-15,2016-02-15,True
+Good Friday,2016-03-25,2016-03-25,True
+Victoria Day,2016-05-23,2016-05-23,True
+Canada Day,2016-07-01,2016-07-01,True
+Civic Holiday,2016-08-01,2016-08-01,False
+Labour Day,2016-09-05,2016-09-05,True
+Thanksgiving,2016-10-10,2016-10-10,True
+Christmas Day,2016-12-25,2016-12-26,True
+Boxing Day,2016-12-26,2016-12-27,True
+New Year's Day,2017-01-01,2017-01-02,True
+Family Day,2017-02-20,2017-02-20,True
+Good Friday,2017-04-14,2017-04-14,True
+Victoria Day,2017-05-22,2017-05-22,True
+Canada Day,2017-07-01,2017-07-03,True
+Civic Holiday,2017-08-07,2017-08-07,False
+Labour Day,2017-09-04,2017-09-04,True
+Thanksgiving,2017-10-09,2017-10-09,True
+Christmas Day,2017-12-25,2017-12-25,True
+Boxing Day,2017-12-26,2017-12-26,True
+New Year's Day,2018-01-01,2018-01-01,True
+Family Day,2018-02-19,2018-02-19,True
+Good Friday,2018-03-30,2018-03-30,True
+Victoria Day,2018-05-21,2018-05-21,True
+Canada Day,2018-07-01,2018-07-02,True
+Civic Holiday,2018-08-06,2018-08-06,False
+Labour Day,2018-09-03,2018-09-03,True
+Thanksgiving,2018-10-08,2018-10-08,True
+Christmas Day,2018-12-25,2018-12-25,True
+Boxing Day,2018-12-26,2018-12-26,True
+New Year's Day,2019-01-01,2019-01-01,True
+Family Day,2019-02-18,2019-02-18,True
+Good Friday,2019-04-19,2019-04-19,True
+Victoria Day,2019-05-20,2019-05-20,True
+Canada Day,2019-07-01,2019-07-01,True
+Civic Holiday,2019-08-05,2019-08-05,False
+Labour Day,2019-09-02,2019-09-02,True
+Thanksgiving,2019-10-14,2019-10-14,True
+Christmas Day,2019-12-25,2019-12-25,True
+Boxing Day,2019-12-26,2019-12-26,True
+New Year's Day,2020-01-01,2020-01-01,True
+Family Day,2020-02-17,2020-02-17,True
+Good Friday,2020-04-10,2020-04-10,True
+Victoria Day,2020-05-18,2020-05-18,True
+Canada Day,2020-07-01,2020-07-01,True
+Civic Holiday,2020-08-03,2020-08-03,False
+Labour Day,2020-09-07,2020-09-07,True
+Thanksgiving,2020-10-12,2020-10-12,True
+Christmas Day,2020-12-25,2020-12-25,True
+Boxing Day,2020-12-26,2020-12-28,True
+New Year's Day,2021-01-01,2021-01-01,True
+Family Day,2021-02-15,2021-02-15,True
+Good Friday,2021-04-02,2021-04-02,True
+Victoria Day,2021-05-24,2021-05-24,True
+Canada Day,2021-07-01,2021-07-01,True
+Civic Holiday,2021-08-02,2021-08-02,False
+Labour Day,2021-09-06,2021-09-06,True
+Thanksgiving,2021-10-11,2021-10-11,True
+Christmas Day,2021-12-25,2021-12-27,True
+Boxing Day,2021-12-26,2021-12-28,True
+New Year's Day,2022-01-01,2022-01-03,True
+Family Day,2022-02-21,2022-02-21,True
+Good Friday,2022-04-15,2022-04-15,True
+Victoria Day,2022-05-23,2022-05-23,True
+Canada Day,2022-07-01,2022-07-01,True
+Civic Holiday,2022-08-01,2022-08-01,False
+Labour Day,2022-09-05,2022-09-05,True
+Thanksgiving,2022-10-10,2022-10-10,True
+Christmas Day,2022-12-25,2022-12-26,True
+Boxing Day,2022-12-26,2022-12-27,True
+New Year's Day,2023-01-01,2023-01-02,True
+Family Day,2023-02-20,2023-02-20,True
+Good Friday,2023-04-07,2023-04-07,True
+Victoria Day,2023-05-22,2023-05-22,True
+Canada Day,2023-07-01,2023-07-03,True
+Civic Holiday,2023-08-07,2023-08-07,False
+Labour Day,2023-09-04,2023-09-04,True
+Thanksgiving,2023-10-09,2023-10-09,True
+Christmas Day,2023-12-25,2023-12-25,True
+Boxing Day,2023-12-26,2023-12-26,True
+New Year's Day,2024-01-01,2024-01-01,True
+Family Day,2024-02-19,2024-02-19,True
+Good Friday,2024-03-29,2024-03-29,True
+Victoria Day,2024-05-20,2024-05-20,True
+Canada Day,2024-07-01,2024-07-01,True
+Civic Holiday,2024-08-05,2024-08-05,False
+Labour Day,2024-09-02,2024-09-02,True
+Thanksgiving,2024-10-14,2024-10-14,True
+Christmas Day,2024-12-25,2024-12-25,True
+Boxing Day,2024-12-26,2024-12-26,True
+New Year's Day,2025-01-01,2025-01-01,True
+Family Day,2025-02-17,2025-02-17,True
+Good Friday,2025-04-18,2025-04-18,True
+Victoria Day,2025-05-19,2025-05-19,True
+Canada Day,2025-07-01,2025-07-01,True
+Civic Holiday,2025-08-04,2025-08-04,False
+Labour Day,2025-09-01,2025-09-01,True
+Thanksgiving,2025-10-13,2025-10-13,True
+Christmas Day,2025-12-25,2025-12-25,True
+Boxing Day,2025-12-26,2025-12-26,True
+New Year's Day,2026-01-01,2026-01-01,True
+Family Day,2026-02-16,2026-02-16,True
+Good Friday,2026-04-03,2026-04-03,True
+Victoria Day,2026-05-18,2026-05-18,True
+Canada Day,2026-07-01,2026-07-01,True
+Civic Holiday,2026-08-03,2026-08-03,False
+Labour Day,2026-09-07,2026-09-07,True
+Thanksgiving,2026-10-12,2026-10-12,True
+Christmas Day,2026-12-25,2026-12-25,True
+Boxing Day,2026-12-26,2026-12-28,True
+New Year's Day,2027-01-01,2027-01-01,True
+Family Day,2027-02-15,2027-02-15,True
+Good Friday,2027-03-26,2027-03-26,True
+Victoria Day,2027-05-24,2027-05-24,True
+Canada Day,2027-07-01,2027-07-01,True
+Civic Holiday,2027-08-02,2027-08-02,False
+Labour Day,2027-09-06,2027-09-06,True
+Thanksgiving,2027-10-11,2027-10-11,True
+Christmas Day,2027-12-25,2027-12-27,True
+Boxing Day,2027-12-26,2027-12-28,True

@@ -32,6 +32,16 @@ estimate is an upper bound, and whether the rotor grew (44% against 34%) is insi
 uncertainty. The obvious fixed-effects regression says 30% and the memo shows why that is not
 the answer. Full writeup in [`04-wind-repowering/memo/findings.md`](04-wind-repowering/memo/findings.md).
 
+**Ontario demand forecast** (IESO hourly demand, 2002 to 2026): a day ahead, a transparent
+linear model with no weather input misses hourly demand by 523 MW, 3.0% of demand, against
+1,221 MW for the same-hour-last-week baseline, removing 57% of its error; a week ahead it
+removes 15%, and at the last lead of the week the two cannot be told apart. Its 80% interval
+covers 77.5% of hours at 1,563 MW wide against the baseline's 79.0% at 3,824 MW, and both fail
+in summer. The day-ahead peak error of 646 MW is five times the 128 MW median gap between the
+fifth and sixth highest daily peaks of a base period, so the forecast cannot tell a top-five
+peak day from the day that just misses. Full writeup in
+[`06-ontario-demand-forecast/memo/findings.md`](06-ontario-demand-forecast/memo/findings.md).
+
 ## Projects
 
 | Project | Dataset |
@@ -40,6 +50,7 @@ the answer. Full writeup in [`04-wind-repowering/memo/findings.md`](04-wind-repo
 | [02: Funnel & Retention](02-funnel-retention/) | Cosmetics Shop Clickstream |
 | [03: Defence Procurement](03-defence-procurement/) | CanadaBuys Contract Award History |
 | [04: Wind Repowering Uplift](04-wind-repowering/) | US Wind Turbine Database, EIA-923 |
+| [06: Ontario Demand Forecast](06-ontario-demand-forecast/) | IESO hourly Ontario demand |
 
 ## Repo layout
 
@@ -50,6 +61,7 @@ data_analytics_portfolio/
 ├── 02-funnel-retention/
 ├── 03-defence-procurement/
 ├── 04-wind-repowering/
+├── 06-ontario-demand-forecast/
 ├── requirements.txt
 └── README.md
 ```
