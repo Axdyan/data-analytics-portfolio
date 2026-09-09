@@ -1,0 +1,4317 @@
+{
+  "project": "06-ontario-demand-forecast",
+  "label": "06: Ontario Demand Forecast",
+  "notebook_name": "06_load_explore.ipynb",
+  "measured_on": "2026-09-06",
+  "run_date": "2026-09-07",
+  "run_at_utc": "2026-09-07 14:48:34",
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.14.5",
+    "duckdb": "1.5.5",
+    "git_sha": null,
+    "github_run_id": null
+  },
+  "sources": [
+    {
+      "id": "ieso_demand_closed",
+      "refresh": "closed years stamped once, reissued rarely",
+      "policy": "ieso_closed_years",
+      "observed": {
+        "PUB_Demand_2002.csv": "b93a359d126aba55ed67ce621bb15c700f24b779d63319b2e0709574cb64608d",
+        "PUB_Demand_2003.csv": "fbb35304a718b011d79a435483606d187fde73b3cf6939de5dff0f1e8cf7e39b",
+        "PUB_Demand_2004.csv": "a584cc480c822e55d287b9facf97cdf8be3e929cdb70c3a3402e5b3544e1eca5",
+        "PUB_Demand_2005.csv": "deb9825e9991b3f1bcde2a513e11ca2d749c33018abc5393d5458fe617037547",
+        "PUB_Demand_2006.csv": "fe999f9520a8fd84f9017aa0d9955eb3a6a43c482521f9ad33a458b3bd544aa4",
+        "PUB_Demand_2007.csv": "dce51afc6c28a89a448dfba72f4f24802ce843196cb6700213cd5882ac7331d5",
+        "PUB_Demand_2008.csv": "59c24ab48c072a39a4359213f4360da081890e8f1bf7f4e7ea4f42124295baa1",
+        "PUB_Demand_2009.csv": "ebba6f3e41c6d086d0f24538b73827b719fe713ae0b6cd4b2432f990162a7c4e",
+        "PUB_Demand_2010.csv": "d2beffeb1d9ee291727c0075ea891e98abeaf07904c7431e4f046932627e1e33",
+        "PUB_Demand_2011.csv": "20fd0a3a5ed894b93ba4b87e82e72051303b88392eab3431f5a6adbbc48beaa2",
+        "PUB_Demand_2012.csv": "660306df43b4b642a33fad3b1e58a50200bf45cc06d071205148f6f138ec9b1b",
+        "PUB_Demand_2013.csv": "b5601007ffffbc39304717cbfa88b0ed31cc9c2ffcf4d18f659449b41f5d87b3",
+        "PUB_Demand_2014.csv": "9dbfc51ed030a50d1fb8b5b4d5b795c1bc04bd9eb7836250740bdd6b2eab0626",
+        "PUB_Demand_2015.csv": "851a950d14a3c02e160f5872885336a75d838159d51b72c26b4656c2895c5aff",
+        "PUB_Demand_2016.csv": "7ea0bed3186b2408b949ed31706dd2b0e2e4d328df73ce2d4a0c6cb8dc9888e9",
+        "PUB_Demand_2017.csv": "94d506fb7cb0d35564a3a79de86b526292e2447b2f283906feb5085cb6ccea2a",
+        "PUB_Demand_2018.csv": "0908441efe22aee0543e61d84507bff7ed53ec68033f26bd7b94cd7e856cb328",
+        "PUB_Demand_2019.csv": "11d78499244b40dff640c926c49d382573d193f34165747bd1c8707c09135929",
+        "PUB_Demand_2020.csv": "bd85130d5db06d4d226c35543d81c9fdc2b261411de04e58b2f2711415c9495a",
+        "PUB_Demand_2021.csv": "bd76c7b0ed40b7092c29b9cfc5855fcdfd9a8fbd2c1966da2a155db10772dd99",
+        "PUB_Demand_2022.csv": "f9b418bfa2f2ba927824c0f386d7d3de7c0cac0092be2c6faf4f0b74ef58c87a",
+        "PUB_Demand_2023.csv": "bd7492cd1a14329b45fbf2b7d00cb7e70802d30c158458ec08dbe29b76702310",
+        "PUB_Demand_2024.csv": "aae5bcedb4c666caf5b98d0ef6603b1b9e355f8407e241d796f6763afce7dee1",
+        "PUB_Demand_2025.csv": "24d5dfabd8854b35acee4af186143d1835d7516c6e82f7ab8ae2797453d4d488"
+      },
+      "status": "unchanged",
+      "detail": "identical to the committed fingerprint (24 entries)"
+    },
+    {
+      "id": "ieso_demand_current",
+      "refresh": "rewritten every morning",
+      "policy": "ieso_current_year",
+      "observed": {
+        "PUB_Demand_2026.csv": "267b885a55cde5746237f463e2a42ace3a468033c1757426ad24f1ca3df52d19"
+      },
+      "status": "changed",
+      "detail": "1 of 1 entries differ: PUB_Demand_2026.csv"
+    },
+    {
+      "id": "ieso_zonal_closed",
+      "refresh": "closed years stamped once, reissued rarely",
+      "policy": "ieso_closed_years",
+      "observed": {
+        "PUB_DemandZonal_2003.csv": "64c69c07eb9cd537ca1d3d76b28f936374d1e2949ca419547e98101764042bd1",
+        "PUB_DemandZonal_2004.csv": "9ed69ee2ca2e4f71586a688d6294f7de97e9b74cee84ad1c2e809baa08a69b2d",
+        "PUB_DemandZonal_2005.csv": "4c8aec55e43237f8326687cdf42364d0c39757e8e6fcef8258c49757c0ee4066",
+        "PUB_DemandZonal_2006.csv": "71afa096cb7e5c09b2cc92597348f66e0b6a781c02495cec1c750dbbb5c5470b",
+        "PUB_DemandZonal_2007.csv": "01a8584785e7e6e77ba0d30c24f98d83b4becc77e36d008faa782602a767d8d2",
+        "PUB_DemandZonal_2008.csv": "f330b1c22fc7ddc84eaa2e1efd2424abaff794a899e8de017f4bb795b5cf8007",
+        "PUB_DemandZonal_2009.csv": "8e4ea0ce3792561c0f36201f947d251a7f6e84e80c622544cc91dcb89139781b",
+        "PUB_DemandZonal_2010.csv": "1db9b5cb41c3a963433b4c6f27a31f4907c0714034ae63c5f64b596a02b17b3a",
+        "PUB_DemandZonal_2011.csv": "ef42ccafee4fe92af87ddc7a286a40b61c5df67cd41b88b9df35bec33bdd38ce",
+        "PUB_DemandZonal_2012.csv": "b99e51188dd032c787fc99f7f64730f78c8895f966c8bc6dadaab46571400afc",
+        "PUB_DemandZonal_2013.csv": "71e34b05e0dca64d1fd9cd1d744c3a7e187f1e95234074f6e99a93c544fccfaa",
+        "PUB_DemandZonal_2014.csv": "b672cfbe9230ff74b30df25e44c0781f243668036b767a4d1c8b53b2f74fe5f2",
+        "PUB_DemandZonal_2015.csv": "8cb96731ebffb30a2d762563fe8b496673b0e7182f24547723614062be5db80d",
+        "PUB_DemandZonal_2016.csv": "c5004baf6c0afb77cb1f3651944b1f16a6350db6f04a74a2db6a9b79ab80c74a",
+        "PUB_DemandZonal_2017.csv": "0fc52fda7db91030fbdc202487b67664e46db51146e720a76943ddf047d1eafd",
+        "PUB_DemandZonal_2018.csv": "b67decf938310cf8eb9520b78b52de9be3f944ac6a4af736b6faa9fdf76a806c",
+        "PUB_DemandZonal_2019.csv": "7e53f2020e51dd562933dd62461b8ba2eff1721baab27e0e5baeb734e9f44c51",
+        "PUB_DemandZonal_2020.csv": "f6a48f3060b1e76886939c71f894ccc428b18e5f04074af2a4574a8a846f47f9",
+        "PUB_DemandZonal_2021.csv": "4170b718f136634cc79eb5e09fb0755e69b8b8159b31b91348555bc247000f3c",
+        "PUB_DemandZonal_2022.csv": "60830b1b2f409f1832404e604b58ef332eaffb3a5f0050533a81f69b53d5ccd5",
+        "PUB_DemandZonal_2023.csv": "cbb8c08a0b55172def88d182b71bf5d51035dbb5f4f2d41285b240f68dad99eb",
+        "PUB_DemandZonal_2024.csv": "40729d5d01aad16bae0abbdfe408041e77d101eca0d4904df5a46234b9dbda48",
+        "PUB_DemandZonal_2025.csv": "0b25fd75896f58e50cb6d3628f0e07fadf643324e10d2c1bec0502cbd7af753c"
+      },
+      "status": "unchanged",
+      "detail": "identical to the committed fingerprint (23 entries)"
+    },
+    {
+      "id": "ieso_zonal_current",
+      "refresh": "rewritten every morning",
+      "policy": "ieso_current_year",
+      "observed": {
+        "PUB_DemandZonal_2026.csv": "967c43982e378f884065a83bbce012da534b463286fb6995f887135b6c7358b4"
+      },
+      "status": "changed",
+      "detail": "1 of 1 entries differ: PUB_DemandZonal_2026.csv"
+    }
+  ],
+  "notebook": {
+    "cells": 40,
+    "code_cells": 40,
+    "executed": 40,
+    "elapsed_s": 83.6,
+    "error": null,
+    "cell_times": [
+      {
+        "position": 1,
+        "seconds": 0.1,
+        "opening": "Nothing here needs a database yet. The IESO publishes Ontario's hourly demand as one CSV"
+      },
+      {
+        "position": 2,
+        "seconds": 0.7,
+        "opening": "The report folder is a plain directory listing, so the file names come out of the anchor"
+      },
+      {
+        "position": 3,
+        "seconds": 0.9,
+        "opening": "The first lines of one file, printed as the bytes they are. Every one of these reports"
+      },
+      {
+        "position": 4,
+        "seconds": 16.1,
+        "opening": "The pull, one file per year, with a record of what came back. The current year's file is"
+      },
+      {
+        "position": 5,
+        "seconds": 25.7,
+        "opening": "The zonal report, same pull, same checks. Ten zones plus a total and a difference column,"
+      },
+      {
+        "position": 6,
+        "seconds": 0.0,
+        "opening": "Write the manifest beside the memos so the pull travels with the repo. It records the"
+      },
+      {
+        "position": 7,
+        "seconds": 15.4,
+        "opening": "Which copy is canonical. Each year sits on the server twice, as the plain yearly file and"
+      },
+      {
+        "position": 8,
+        "seconds": 0.0,
+        "opening": "Opens (or creates) the local database file that holds this project's tables."
+      },
+      {
+        "position": 9,
+        "seconds": 1.4,
+        "opening": "Load every yearly file as text. The metadata lines and the header are skipped by count,"
+      },
+      {
+        "position": 10,
+        "seconds": 0.0,
+        "opening": "Rows per file against the rows a full year should hold. Twenty-four hours a day for every"
+      },
+      {
+        "position": 11,
+        "seconds": 0.1,
+        "opening": "Typed staging. Hour is published as 1 to 24 and means the hour ending, so hour 1 is the"
+      },
+      {
+        "position": 12,
+        "seconds": 0.0,
+        "opening": "Is the key a key. One row per date and hour is what everything downstream assumes, so I"
+      },
+      {
+        "position": 13,
+        "seconds": 0.0,
+        "opening": "Every hour that should exist between the first and the last, and does not. A day with"
+      },
+      {
+        "position": 14,
+        "seconds": 0.0,
+        "opening": "Plausibility. The range of the series, the hours where market demand sits below Ontario"
+      },
+      {
+        "position": 15,
+        "seconds": 0.0,
+        "opening": "A holiday calendar, because a statutory holiday on a Tuesday looks like a Sunday to the"
+      },
+      {
+        "position": 16,
+        "seconds": 0.0,
+        "opening": "One row per calendar date with everything the model and the memo need to know about it:"
+      },
+      {
+        "position": 17,
+        "seconds": 0.2,
+        "opening": "The hourly fact table on a complete spine. Where an hour is missing from the source it is"
+      },
+      {
+        "position": 18,
+        "seconds": 0.0,
+        "opening": "The series year by year: mean load, the annual peak and when it happened, and energy. This"
+      },
+      {
+        "position": 19,
+        "seconds": 0.0,
+        "opening": "The daily shape by day type in the most recent complete year, at a few hours across the"
+      },
+      {
+        "position": 20,
+        "seconds": 0.0,
+        "opening": "The design, fixed before any forecast is scored. Forecasts are issued once a day at"
+      },
+      {
+        "position": 21,
+        "seconds": 0.1,
+        "opening": "The whole hourly series as a matrix with one row per day and one column per hour. Every"
+      },
+      {
+        "position": 22,
+        "seconds": 0.0,
+        "opening": "Origins and actuals. An origin is the end of a day; its targets are the 168 hours of the"
+      },
+      {
+        "position": 23,
+        "seconds": 0.1,
+        "opening": "The one model, and what it is allowed to see. For each lead time separately, a linear"
+      },
+      {
+        "position": 24,
+        "seconds": 1.9,
+        "opening": "Fit and forecast, walking forward. Every four weeks the model is refit on the five years o"
+      },
+      {
+        "position": 25,
+        "seconds": 0.0,
+        "opening": "The score. Mean absolute error in megawatts, root mean squared error, and the absolute"
+      },
+      {
+        "position": 26,
+        "seconds": 14.7,
+        "opening": "Is the gap between the model and the baseline real or a run of luck? A Diebold-Mariano"
+      },
+      {
+        "position": 27,
+        "seconds": 0.0,
+        "opening": "Where the model is weak. Day-ahead error by the type of day being forecast and by month,"
+      },
+      {
+        "position": 28,
+        "seconds": 1.3,
+        "opening": "Prediction intervals that are honest about where they come from. For each origin and each"
+      },
+      {
+        "position": 29,
+        "seconds": 0.0,
+        "opening": "The calibration check. An 80% interval should contain the outcome 80% of the time; the"
+      },
+      {
+        "position": 30,
+        "seconds": 0.0,
+        "opening": "Coverage month by month at day-ahead, because a single coverage number can hide a band"
+      },
+      {
+        "position": 31,
+        "seconds": 0.1,
+        "opening": "A shorter memory for the intervals, as a sensitivity. The trailing-year window carries"
+      },
+      {
+        "position": 32,
+        "seconds": 0.0,
+        "opening": "The daily peak, which is what most users of a demand forecast actually care about. For"
+      },
+      {
+        "position": 33,
+        "seconds": 0.0,
+        "opening": "Who acts on this, and what the error costs them in their own units. Ontario's largest"
+      },
+      {
+        "position": 34,
+        "seconds": 0.0,
+        "opening": "One day, read row by row: the highest-demand day of the test window, from the forecast"
+      },
+      {
+        "position": 35,
+        "seconds": 0.2,
+        "opening": "Every reported number written back to the database as tables, so the memo and the"
+      },
+      {
+        "position": 36,
+        "seconds": 0.4,
+        "opening": "The first chart: error by lead time for the baseline and the model, over the test window."
+      },
+      {
+        "position": 37,
+        "seconds": 0.1,
+        "opening": "The second chart: are the intervals calibrated. Nominal coverage across, empirical coverag"
+      },
+      {
+        "position": 38,
+        "seconds": 1.5,
+        "opening": "The zonal report, loaded the same way as the provincial one and checked against it. Ten"
+      },
+      {
+        "position": 39,
+        "seconds": 0.4,
+        "opening": "The star schema for the dashboard, written out as CSVs and reconciled against the tables"
+      },
+      {
+        "position": 40,
+        "seconds": 0.0,
+        "opening": "The checks this notebook made along the way, gathered into one table so a reader can see"
+      }
+    ],
+    "retried_after": {
+      "position": 7,
+      "opening": "Which copy is canonical. Each year sits on the server twice, as the plain yearly file and",
+      "ename": "ConnectionError",
+      "evalue": "('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",
+      "elapsed_s": 21.1
+    }
+  },
+  "numbers": [
+    {
+      "id": "demand_files",
+      "quote": "25 yearly files 2002 to 2026",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 25,
+      "measured": 25,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "demand_hours",
+      "quote": "213,456 hours",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 213456,
+      "measured": 213480,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "years_span",
+      "quote": "2002 to 2026",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "2002 to 2026",
+      "measured": "2002 to 2026",
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "series_start",
+      "quote": "runs from 2002-05-01, the day Ontario's wholesale market opened",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "2002-05-01",
+      "measured": "2002-05-01",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "matrix_days",
+      "quote": "the analysis matrix holds 8,889 days to 2026-08-31",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8889,
+      "measured": 8889,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "zonal_files",
+      "quote": "24 zonal files 2003 to 2026",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 24,
+      "measured": 24,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "zonal_hours",
+      "quote": "204,695 rows",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 204695,
+      "measured": 204719,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "holiday_rows",
+      "quote": "254 rows 2002 to 2027 in the holiday crosswalk",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 254,
+      "measured": 254,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "file_2025_rows",
+      "quote": "the 2025 file carries 8,759 rows",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8759,
+      "measured": 8759,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "missing_hour_date",
+      "quote": "the day with 23 rows is 2025-05-01",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "2025-05-01",
+      "measured": "2025-05-01",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "missing_hour_ending",
+      "quote": "the absent hour is hour 1",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "missing_hour_before",
+      "quote": "hour 24 of April 30 reads 13,795 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 13795,
+      "measured": 13795,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "missing_hour_after",
+      "quote": "hour 2 of May 1 reads 12,352",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 12352,
+      "measured": 12352,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "missing_hour_fill",
+      "quote": "filled with the mean of its neighbours, 13,074 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 13074,
+      "measured": 13074,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "gaps_total",
+      "quote": "the only gap in 213,456 hours",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "separator_rows",
+      "quote": "129 of 204,695 rows carry a quoted thousands separator",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 129,
+      "measured": 129,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "zero_zone_hours",
+      "quote": "three hours on 2016-05-29 where every zone reads zero",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": 3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "the three are the largest published differences the notebook prints, all on that date with every zone zero. The table holds 11 such hours on 2016-05-29 and 24 on 2016-10-31, so the memo's count is the display, not the table",
+      "round": 0
+    },
+    {
+      "id": "zero_zone_date",
+      "quote": "2016-05-29",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "2016-05-29",
+      "measured": "2016-05-29",
+      "status": "reproduced",
+      "reason": "",
+      "note": "the date of the three largest published differences",
+      "round": 0
+    },
+    {
+      "id": "zone_sum_mismatch",
+      "quote": "72,152 rows where the ten zones do not sum to the published total",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 72152,
+      "measured": 72169,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "zone_sum_over_5mw",
+      "quote": "all but four of them by 5 MW or less",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "zone_diff_mismatch",
+      "quote": "29,814 rows where the published difference is not zone total minus Ontario demand",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 29814,
+      "measured": 29815,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "blackout_hours",
+      "quote": "There are 12 of them, from 15:00 on 14 August 2003",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 12,
+      "measured": 12,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "blackout_low",
+      "quote": "2,270 MW at hour 17",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2270,
+      "measured": 2270,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "blackout_week_before",
+      "quote": "against 21,894 a week before",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 21894,
+      "measured": 21894,
+      "status": "reproduced",
+      "reason": "",
+      "note": "21,894 is hour ending 18 a week before, the row under 2,366 in the notebook's print; hour ending 17 a week before reads 22,380. The memo pairs 2,270 (hour 17) with the hour 18 figure",
+      "round": 0
+    },
+    {
+      "id": "rows_per_date_24",
+      "quote": "Every date in 24 years carries exactly 24 rows",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "versioned_identical",
+      "quote": "the two hash identical for all 25 years",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "test_origins",
+      "quote": "602 test origins",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 602,
+      "measured": 602,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "first_origin",
+      "quote": "Every day from 2024-12-31 to 2026-08-24 is a test origin",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "2024-12-31 to 2026-08-24",
+      "measured": "2024-12-31 to 2026-08-24",
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "target_window",
+      "quote": "scored on every day from 2025-01-01 to 2026-08-31",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "2025-01-01 to 2026-08-31",
+      "measured": "2025-01-01 to 2026-08-31",
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "leads",
+      "quote": "the next 168 hours",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "constant",
+      "expected": 168,
+      "measured": 168,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "leads_scored_equally",
+      "quote": "every lead is scored the same number of times",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "calibration_origins",
+      "quote": "The year before the test window, 372 origins, is scored and never reported",
+      "where": [
+        "findings"
+      ],
+      "kind": "constant",
+      "expected": 372,
+      "measured": 372.0,
+      "status": "reproduced",
+      "reason": "printed in cell 22",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "refit_train_origins",
+      "quote": "1,825 origins per fit",
+      "where": [
+        "findings"
+      ],
+      "kind": "constant",
+      "expected": 1825,
+      "measured": 1825.0,
+      "status": "reproduced",
+      "reason": "printed in cell 24",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "refit_count",
+      "quote": "35 refits",
+      "where": [
+        "findings"
+      ],
+      "kind": "constant",
+      "expected": 35,
+      "measured": 35.0,
+      "status": "reproduced",
+      "reason": "printed in cell 24",
+      "note": "the notebook prints the fits, 5,880, which is 168 leads times 35 refits; the scale divides by 168",
+      "round": 0
+    },
+    {
+      "id": "refit_fits",
+      "quote": "5,880 fits in all",
+      "where": [
+        "findings"
+      ],
+      "kind": "constant",
+      "expected": 5880,
+      "measured": 5880.0,
+      "status": "reproduced",
+      "reason": "printed in cell 24",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sixteen_inputs",
+      "quote": "sixteen things known at the origin",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "constant",
+      "expected": 16,
+      "measured": 16.0,
+      "status": "reproduced",
+      "reason": "printed in cell 23",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "mean_demand_window",
+      "quote": "Mean demand over the window is 16,800 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 16800,
+      "measured": 16800.0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "the mean of the actuals across every test origin's 168 target hours, as the notebook prints it",
+      "round": 0
+    },
+    {
+      "id": "hour_to_hour_change",
+      "quote": "the mean absolute change from one hour to the next is 444 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 444,
+      "measured": 444.0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "the mean absolute step between consecutive target hours inside each test origin's window, as the notebook computes it; over the plain hourly series it is 445",
+      "round": 0
+    },
+    {
+      "id": "mean_2005",
+      "quote": "Mean demand fell from 17,919 MW in 2005",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 17919,
+      "measured": 17919.13470319635,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "mean_2020",
+      "quote": "to 15,053 MW in 2020",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 15053,
+      "measured": 15052.985428051003,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "mean_2025",
+      "quote": "16,621 MW in 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 16621,
+      "measured": 16621.069634703195,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "mean_2026_to_aug",
+      "quote": "17,086 MW over the first eight months of 2026",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 17086,
+      "measured": 17080.0,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind mw",
+      "note": "the yearly table's 2026 row, which at the memo's pull held 5,953 hours to 6 September; January to August alone averages 17,067. The row grows with the year",
+      "round": 0
+    },
+    {
+      "id": "weekday_2025",
+      "quote": "in 2025 the average weekday ran 16,903 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 16903,
+      "measured": 16903.0453187251,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sunday_2025",
+      "quote": "against 16,006 on a Sunday",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 16006,
+      "measured": 16005.678685897436,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "holiday_2025",
+      "quote": "and 15,703 on a holiday",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 15703,
+      "measured": 15702.545833333334,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "hour8_gap_2025",
+      "quote": "at hour 8 the gap between a weekday and a Sunday is 2,144 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2144,
+      "measured": 2144.234906527736,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_day_naive",
+      "quote": "Day ahead, 1 to 24: seasonal naive 1,221",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1221,
+      "measured": 1221.0828488372092,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_day_lastday",
+      "quote": "Day ahead, 1 to 24: last-day naive 792",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 791.5,
+      "measured": 791.4943244739757,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "the memo prints 792, rounded from the table's 791.5; the table value is what is checked",
+      "round": 1
+    },
+    {
+      "id": "score_day_model",
+      "quote": "Day ahead, 1 to 24: model 523 MW",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 523,
+      "measured": 523.1955655734929,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_day_rmse",
+      "quote": "Day ahead, 1 to 24: model RMSE 737",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 737,
+      "measured": 736.5596855279917,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_day_mape",
+      "quote": "Day ahead, 1 to 24: MAPE 3.0%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 3.0,
+      "measured": 3.04743118371363,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "score_day_skill",
+      "quote": "Day ahead, 1 to 24: skill 57.2% (57% in the README)",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 57.2,
+      "measured": 57.153147628622236,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "score_11_naive",
+      "quote": "Day ahead as issued at 11:00, 13 to 36: seasonal naive 1,221",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1221,
+      "measured": 1221.0379291251384,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_11_lastday",
+      "quote": "13 to 36: last-day naive 958",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 958,
+      "measured": 957.7742940199336,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_11_model",
+      "quote": "13 to 36: model 669",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 669,
+      "measured": 669.1135369196953,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_11_rmse",
+      "quote": "13 to 36: RMSE 895",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 895,
+      "measured": 894.9008813490611,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_11_mape",
+      "quote": "13 to 36: MAPE 3.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 3.9,
+      "measured": 3.94534881978892,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "score_11_skill",
+      "quote": "13 to 36: skill 45.2%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 45.2,
+      "measured": 45.20124879338445,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "score_2d_naive",
+      "quote": "Two days ahead, 25 to 48: seasonal naive 1,221",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1221,
+      "measured": 1220.955011074197,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_2d_lastday",
+      "quote": "25 to 48: last-day naive 1,128",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1128,
+      "measured": 1128.4302325581396,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_2d_model",
+      "quote": "25 to 48: model 780",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 780,
+      "measured": 780.0898436018209,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_2d_rmse",
+      "quote": "25 to 48: RMSE 1,055",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1055,
+      "measured": 1055.3828026630338,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_2d_mape",
+      "quote": "25 to 48: MAPE 4.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 4.5,
+      "measured": 4.528648518179556,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "score_2d_skill",
+      "quote": "25 to 48: skill 36.1%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 36.1,
+      "measured": 36.10822376530505,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "score_36_naive",
+      "quote": "Days 3 to 6, 49 to 144: seasonal naive 1,219",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1219,
+      "measured": 1219.17049072536,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_36_lastday",
+      "quote": "49 to 144: last-day naive 1,266",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1266,
+      "measured": 1266.439766749723,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_36_model",
+      "quote": "49 to 144: model 954",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 954,
+      "measured": 953.6882513486614,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_36_rmse",
+      "quote": "49 to 144: RMSE 1,266",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1266,
+      "measured": 1265.8827927430448,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_36_mape",
+      "quote": "49 to 144: MAPE 5.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 5.5,
+      "measured": 5.4704991404572185,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "score_36_skill",
+      "quote": "49 to 144: skill 21.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 21.8,
+      "measured": 21.775645112501596,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "score_week_naive",
+      "quote": "Week ahead, 145 to 168: seasonal naive 1,214",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1214,
+      "measured": 1213.810631229236,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_week_lastday",
+      "quote": "145 to 168: last-day naive 1,214",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1214,
+      "measured": 1213.810631229236,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_week_model",
+      "quote": "Week ahead: model 1,029",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1029,
+      "measured": 1028.8479609034457,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_week_rmse",
+      "quote": "145 to 168: RMSE 1,350",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1350,
+      "measured": 1349.6821103295124,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_week_mape",
+      "quote": "145 to 168: MAPE 5.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 5.9,
+      "measured": 5.881550573239314,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "score_week_skill",
+      "quote": "Week ahead: skill 15.2% (15% in the README)",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 15.2,
+      "measured": 15.238181769628845,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "score_all_naive",
+      "quote": "All leads, 1 to 168: seasonal naive 1,219",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1219,
+      "measured": 1218.9329220060117,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_all_lastday",
+      "quote": "All leads: last-day naive 1,171",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1171,
+      "measured": 1171.3563221800348,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_all_model",
+      "quote": "All leads: model 878",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 878,
+      "measured": 878.1266250676294,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_all_rmse",
+      "quote": "All leads: RMSE 1,189",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1189,
+      "measured": 1188.5063741218112,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "score_all_mape",
+      "quote": "All leads: MAPE 5.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 5.0,
+      "measured": 5.048518119565911,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "score_all_skill",
+      "quote": "All leads: skill 28.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 28.0,
+      "measured": 27.959397173185994,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "mae_lead_1",
+      "quote": "At lead 1 the error is 130 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 130,
+      "measured": 130.104009343236,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": -1
+    },
+    {
+      "id": "mae_lead_12",
+      "quote": "by lead 12 it is 700",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 700,
+      "measured": 696.5664397883013,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": -1
+    },
+    {
+      "id": "mae_lead_24",
+      "quote": "by lead 24 it is 550 again",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 550,
+      "measured": 551.8037351858837,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": -1
+    },
+    {
+      "id": "dm_day_gain",
+      "quote": "Day ahead: mean gain 698 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 698,
+      "measured": 697.8872832637164,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dm_day_stat",
+      "quote": "Day ahead: DM 12.8",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 12.8,
+      "measured": 12.822056542058217,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "dm_day_p",
+      "quote": "Day ahead: p less than 0.0001",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.0001,
+      "measured": 0.0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 4
+    },
+    {
+      "id": "dm_11_gain",
+      "quote": "13 to 36: mean gain 552",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 552,
+      "measured": 551.9243922054429,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dm_11_stat",
+      "quote": "13 to 36: DM 10.1",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 10.1,
+      "measured": 10.109259961066476,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "dm_11_p",
+      "quote": "13 to 36: p less than 0.0001",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.0001,
+      "measured": 0.0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 4
+    },
+    {
+      "id": "dm_2d_gain",
+      "quote": "25 to 48: mean gain 441",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 441,
+      "measured": 440.8651674723762,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dm_2d_stat",
+      "quote": "25 to 48: DM 9.0",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 9.0,
+      "measured": 8.976553718966414,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "dm_2d_p",
+      "quote": "25 to 48: p less than 0.0001",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.0001,
+      "measured": 0.0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 4
+    },
+    {
+      "id": "dm_36_gain",
+      "quote": "49 to 144: mean gain 265",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 265,
+      "measured": 265.48223937669843,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dm_36_stat",
+      "quote": "49 to 144: DM 5.3",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 5.3,
+      "measured": 5.25766528472016,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "dm_36_p",
+      "quote": "49 to 144: p less than 0.0001",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.0001,
+      "measured": 1.458957499256286e-07,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 4
+    },
+    {
+      "id": "dm_week_gain",
+      "quote": "Week ahead: mean gain 185",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 185,
+      "measured": 184.96267032579004,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dm_week_stat",
+      "quote": "Week ahead: DM 3.1",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 3.1,
+      "measured": 3.1410512034808584,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "dm_week_p",
+      "quote": "Week ahead: p = 0.0017",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.0017,
+      "measured": 0.0016834259796043582,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 4
+    },
+    {
+      "id": "dm_lead24_naive",
+      "quote": "Single lead 24: naive 1,080",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1080,
+      "measured": 1079.8803986710964,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dm_lead24_model",
+      "quote": "Single lead 24: model 552",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 552,
+      "measured": 551.8037351858837,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dm_lead24_gain",
+      "quote": "Single lead 24: gain 528",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 528,
+      "measured": 528.0766634852125,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dm_lead24_stat",
+      "quote": "Single lead 24: DM 10.3",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 10.3,
+      "measured": 10.32730006205867,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "dm_lead168_naive",
+      "quote": "Single lead 168: naive 1,068",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1068,
+      "measured": 1068.4950166112956,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dm_lead168_model",
+      "quote": "Single lead 168: model 978",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 978,
+      "measured": 978.3436588821836,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dm_lead168_gain",
+      "quote": "Single lead 168: gain 90 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 90,
+      "measured": 90.15135772911196,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dm_lead168_stat",
+      "quote": "Single lead 168: DM 1.4",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 1.4,
+      "measured": 1.3646020230226392,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "dm_lead168_p",
+      "quote": "Single lead 168: p = 0.17",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.17,
+      "measured": 0.17237816859716126,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "daytype_holiday_days",
+      "quote": "Holiday: 16 days",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 16,
+      "measured": 16,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "daytype_holiday_naive",
+      "quote": "Holiday: naive 2,251",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2251,
+      "measured": 2250.546875,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "daytype_holiday_model",
+      "quote": "Holiday: model 561",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 561,
+      "measured": 560.9217482360478,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "daytype_holiday_skill",
+      "quote": "Holiday: skill 75.1%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 75.1,
+      "measured": 75.0762023903169,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "daytype_saturday_days",
+      "quote": "Saturday: 86 days",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 86,
+      "measured": 86,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "daytype_saturday_naive",
+      "quote": "Saturday: naive 1,052",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1051.5,
+      "measured": 1051.4578488372092,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "the memo prints 1,052, rounded from the table's 1051.5; the table value is what is checked",
+      "round": 1
+    },
+    {
+      "id": "daytype_saturday_model",
+      "quote": "Saturday: model 500",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 500,
+      "measured": 500.0267836404223,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "daytype_saturday_skill",
+      "quote": "Saturday: skill 52.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 52.4,
+      "measured": 52.44442901887183,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "daytype_sunday_days",
+      "quote": "Sunday: 86 days",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 86,
+      "measured": 86,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "daytype_sunday_naive",
+      "quote": "Sunday: naive 1,192",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1192,
+      "measured": 1191.8250968992247,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "daytype_sunday_model",
+      "quote": "Sunday: model 549",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 549,
+      "measured": 548.9896504831368,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "daytype_sunday_skill",
+      "quote": "Sunday: skill 53.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 53.9,
+      "measured": 53.937062417006906,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "daytype_weekday_days",
+      "quote": "Weekday: 414 days",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 414,
+      "measured": 414,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "daytype_weekday_naive",
+      "quote": "Weekday: naive 1,223",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1223,
+      "measured": 1222.6106078904993,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "daytype_weekday_model",
+      "quote": "Weekday: model 521",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 521,
+      "measured": 521.1921960599998,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "daytype_weekday_skill",
+      "quote": "Weekday: skill 57.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 57.4,
+      "measured": 57.37054850527852,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "month_model_2025_05",
+      "quote": "The model's error runs from 331 MW in May 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 331,
+      "measured": 331.36983571070135,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "month_model_2026_01",
+      "quote": "and 357 MW in January 2026",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 357,
+      "measured": 356.80032369229104,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "month_model_2025_06",
+      "quote": "to 722 MW in June 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 722,
+      "measured": 722.1060200650384,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "month_model_2025_07",
+      "quote": "and 771 MW in July 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 771,
+      "measured": 770.5279669903406,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "month_model_2026_07",
+      "quote": "with July 2026 at 692",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 692,
+      "measured": 691.6030136135857,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "month_mape_2026_01",
+      "quote": "1.9% in January 2026",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 1.9,
+      "measured": 1.9127364973824619,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "month_mape_2025_06",
+      "quote": "against 4.4% in June 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 4.4,
+      "measured": 4.407465705855435,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "month_naive_2025_07",
+      "quote": "baseline 2,383 MW in July 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2383,
+      "measured": 2382.5779569892475,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "month_naive_2025_08",
+      "quote": "and 2,494 MW in August 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2494,
+      "measured": 2494.4274193548385,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cov_model_day_80",
+      "quote": "Model, day ahead: 80% coverage 77.5%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 77.5,
+      "measured": 77.47785160575859,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cov_model_day_80w",
+      "quote": "Model, day ahead: 80% width 1,563 MW",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1563,
+      "measured": 1562.7451767066723,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cov_model_day_95",
+      "quote": "Model, day ahead: 95% coverage 93.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 93.8,
+      "measured": 93.84689922480621,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cov_model_day_95w",
+      "quote": "Model, day ahead: 95% width 2,573 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2573,
+      "measured": 2573.447021773401,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cov_model_week_80",
+      "quote": "Model, week ahead: 78.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 78.5,
+      "measured": 78.53682170542635,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cov_model_week_80w",
+      "quote": "Model, week ahead: 2,749 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2749,
+      "measured": 2748.927273502377,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cov_model_week_95",
+      "quote": "Model, week ahead: 93.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 93.8,
+      "measured": 93.81229235880399,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cov_model_week_95w",
+      "quote": "Model, week ahead: 4,688 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 4688,
+      "measured": 4688.116725410356,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cov_model_all_80",
+      "quote": "Model, all leads: 78.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 78.3,
+      "measured": 78.26688815060908,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cov_model_all_80w",
+      "quote": "Model, all leads: 2,446 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2446,
+      "measured": 2445.7689673282352,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cov_model_all_95",
+      "quote": "Model, all leads: 94.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 94.0,
+      "measured": 93.97741654801456,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cov_model_all_95w",
+      "quote": "Model, all leads: 4,218 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 4218,
+      "measured": 4217.817437721763,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cov_naive_day_80",
+      "quote": "Seasonal naive, day ahead: 79.0%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 79.0,
+      "measured": 79.02823920265782,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cov_naive_day_80w",
+      "quote": "Seasonal naive, day ahead: 3,824 MW",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 3824,
+      "measured": 3823.6342884828323,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cov_naive_day_95",
+      "quote": "Seasonal naive, day ahead: 94.7%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 94.7,
+      "measured": 94.6843853820598,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cov_naive_day_95w",
+      "quote": "Seasonal naive, day ahead: 7,257 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 7256.5,
+      "measured": 7256.461094961232,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "the memo prints 7,257, rounded from the table's 7256.5; the table value is what is checked",
+      "round": 1
+    },
+    {
+      "id": "cov_naive_week_80",
+      "quote": "Seasonal naive, week ahead: 79.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 79.3,
+      "measured": 79.34662236987819,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cov_naive_week_80w",
+      "quote": "Seasonal naive, week ahead: 3,820 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 3820,
+      "measured": 3820.014327242523,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cov_naive_week_95",
+      "quote": "Seasonal naive, week ahead: 94.7%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 94.7,
+      "measured": 94.73975636766335,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cov_naive_week_95w",
+      "quote": "Seasonal naive, week ahead: 7,246 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 7246,
+      "measured": 7245.631554540411,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "reliability_50",
+      "quote": "the model's day-ahead intervals cover 48.5% at 50 nominal",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 48.5,
+      "measured": 48.491140642303435,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "reliability_80",
+      "quote": "77.5% at 80 nominal",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 77.5,
+      "measured": 77.47785160575859,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "reliability_90",
+      "quote": "88.4% at 90 nominal",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 88.4,
+      "measured": 88.35825027685492,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "reliability_95",
+      "quote": "93.8% at 95 nominal",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 93.8,
+      "measured": 93.84689922480621,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "reliability_98",
+      "quote": "97.3% at 98 nominal",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 97.3,
+      "measured": 97.28682170542635,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "band_ratio",
+      "quote": "the model's 80% band is 41% of the baseline's",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 41,
+      "measured": 40.870675875405155,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "covmonth_2025_05",
+      "quote": "coverage of the model's 80% day-ahead band ranges from 90.9% in May 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 90.9,
+      "measured": 90.86021505376345,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "covmonth_2026_01",
+      "quote": "and 90.2% in January 2026",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 90.2,
+      "measured": 90.18817204301075,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "covmonth_2025_07",
+      "quote": "to 58.6% in July 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 58.6,
+      "measured": 58.602150537634415,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "covmonth_2025_03",
+      "quote": "63.0% in March 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 63.0,
+      "measured": 63.03763440860215,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "covmonth_2025_06",
+      "quote": "67.6% in June 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 67.6,
+      "measured": 67.63888888888889,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "covmonth_2026_07",
+      "quote": "and 68.7% in July 2026",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 68.7,
+      "measured": 68.68279569892474,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "covmonth_naive_2025_07",
+      "quote": "The baseline's band does the same in the summer, 34.8% in July 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 34.8,
+      "measured": 34.81182795698924,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "covmonth_naive_2025_08",
+      "quote": "and 41.1% in August 2025",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 41.1,
+      "measured": 41.12903225806452,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window365_80_all",
+      "quote": "365 days, 80%: coverage all months 77.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 77.5,
+      "measured": 77.47785160575859,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window365_80_summer",
+      "quote": "365 days, 80%: June to August 70.3%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 70.3,
+      "measured": 70.31835205992509,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window365_80_other",
+      "quote": "365 days, 80%: other months 80.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 80.5,
+      "measured": 80.48349056603774,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window365_80_width",
+      "quote": "365 days, 80%: width 1,563",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1563,
+      "measured": 1562.7451767066725,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "window365_80_width_summer",
+      "quote": "365 days, 80%: width in summer 1,572",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1572,
+      "measured": 1571.927457915358,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "window56_80_all",
+      "quote": "56 days, 80%: coverage all months 75.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 75.4,
+      "measured": 75.36683277962348,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window56_80_summer",
+      "quote": "56 days, 80%: June to August 73.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 73.5,
+      "measured": 73.54868913857679,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window56_80_other",
+      "quote": "56 days, 80%: other months 76.1%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 76.1,
+      "measured": 76.13011006289308,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window56_80_width",
+      "quote": "56 days, 80%: width 1,545",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1545,
+      "measured": 1544.7650665925341,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "window56_80_width_summer",
+      "quote": "56 days, 80%: width in summer 1,771",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1771,
+      "measured": 1770.850835730833,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "window365_95_all",
+      "quote": "365 days, 95%: coverage all months 93.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 93.8,
+      "measured": 93.84689922480621,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window365_95_summer",
+      "quote": "365 days, 95%: June to August 90.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 90.4,
+      "measured": 90.40262172284645,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window365_95_other",
+      "quote": "365 days, 95%: other months 95.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 95.3,
+      "measured": 95.29284591194968,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window365_95_width",
+      "quote": "365 days, 95%: width 2,573",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2573,
+      "measured": 2573.447021773406,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "window365_95_width_summer",
+      "quote": "365 days, 95%: width in summer 2,582",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2581.5,
+      "measured": 2581.497258458978,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "the memo prints 2,582, rounded from the table's 2581.5; the table value is what is checked",
+      "round": 1
+    },
+    {
+      "id": "window56_95_all",
+      "quote": "56 days, 95%: coverage all months 90.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 90.4,
+      "measured": 90.38621262458472,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window56_95_summer",
+      "quote": "56 days, 95%: June to August 89.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 89.9,
+      "measured": 89.93445692883894,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window56_95_other",
+      "quote": "56 days, 95%: other months 90.6%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 90.6,
+      "measured": 90.57586477987421,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "window56_95_width",
+      "quote": "56 days, 95%: width 2,370",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2370,
+      "measured": 2370.1223602582045,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "window56_95_width_summer",
+      "quote": "56 days, 95%: width in summer 2,853",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2853,
+      "measured": 2853.267454160558,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "peak_naive_mae",
+      "quote": "Seasonal naive: peak MW error 1,293",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1293,
+      "measured": 1292.7109634551496,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "peak_naive_bias",
+      "quote": "Seasonal naive: peak MW bias minus 19",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": -19,
+      "measured": -19.222591362126245,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "peak_naive_at_hour",
+      "quote": "Seasonal naive: error at the actual peak hour 1,329",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1329,
+      "measured": 1328.5398671096345,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "peak_naive_exact",
+      "quote": "Seasonal naive: peak hour exact 46.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 46.0,
+      "measured": 46.013289036544855,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "peak_naive_within1h",
+      "quote": "Seasonal naive: peak hour within an hour 70.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 70.8,
+      "measured": 70.7641196013289,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "peak_model_mae",
+      "quote": "Model: peak MW error 646",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 645.5,
+      "measured": 645.4665104975486,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "the memo and README print 646, rounded from the table's 645.5; the notebook's own candidate count uses 645",
+      "round": 1
+    },
+    {
+      "id": "peak_model_bias",
+      "quote": "Model: peak MW bias minus 144",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": -144,
+      "measured": -143.67215244880535,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "peak_model_at_hour",
+      "quote": "Model: error at the actual peak hour 701",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 701,
+      "measured": 700.960663005857,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "peak_model_exact",
+      "quote": "Model: peak hour exact 54.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 54.3,
+      "measured": 54.31893687707641,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "peak_model_within1h",
+      "quote": "Model: peak hour within an hour 80.2%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 80.2,
+      "measured": 80.23255813953489,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "peak_days",
+      "quote": "over 602 days",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 602,
+      "measured": 602,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "mean_daily_peak",
+      "quote": "The mean daily peak over the window is 19,046 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 19046,
+      "measured": 19046.445182724252,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "peak_error_pct",
+      "quote": "so the model's peak error is 3.4% of it",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 3.4,
+      "measured": 3.3889080314210434,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "hottest_day_date",
+      "quote": "The hottest day of the window, Tuesday 2026-07-14",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "2026-07-14",
+      "measured": "2026-07-14",
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "hottest_day_peak",
+      "quote": "The actual peak was 25,646 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 25646,
+      "measured": 25646.0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "hottest_day_peak_hour",
+      "quote": "at hour 17",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 17,
+      "measured": 17,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "hottest_day_forecast_at_peak",
+      "quote": "The model called 24,035 MW for that hour",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 24035,
+      "measured": 24034.6,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "hottest_day_short_at_peak",
+      "quote": "1,611 MW short",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1611,
+      "measured": 1611.4000000000015,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "hottest_day_worst_hour",
+      "quote": "its worst hours were 13 and 22, at 2,368 and 2,389 MW short",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2389,
+      "measured": 2389.2000000000007,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "hottest_day_second_worst",
+      "quote": "2,368 MW short at hour 13",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2368,
+      "measured": 2367.5,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "hottest_day_first_six",
+      "quote": "It had the first six hours of the day within 300 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6,
+      "measured": 6,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "hottest_day_mae_model",
+      "quote": "Its error over the day was 1,299 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 1299,
+      "measured": 1299.1208333333332,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "hottest_day_mae_naive",
+      "quote": "against the baseline's 2,625",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 2625,
+      "measured": 2624.875,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "hottest_day_in_band",
+      "quote": "7 of 24 hours fell inside its 80% band",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": 7,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_complete_periods",
+      "quote": "over the 24 complete base periods, 2002-03 to 2025-26",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 24,
+      "measured": 24,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_median_margin",
+      "quote": "The median gap between the fifth and sixth highest daily peaks is 128 MW",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 128,
+      "measured": 128.5,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_margin_2005",
+      "quote": "In 2005-06 it was 8 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 8,
+      "measured": 8,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_margin_2015",
+      "quote": "and in 2015-16 it was 3 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 3,
+      "measured": 3,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_margin_2013",
+      "quote": "The widest was 724 MW, in 2013-14",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 724,
+      "measured": 724,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_widest_period",
+      "quote": "the widest, in 2013-14",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "2013-14",
+      "measured": "2013-14",
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_periods_smaller_than_error",
+      "quote": "It is larger than the gap in 23 of the 24 periods",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 23,
+      "measured": 23,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_2025_top",
+      "quote": "In 2025-26 the top five peaks ran from 24,862 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 24862,
+      "measured": 24862,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_2025_fifth",
+      "quote": "down to 24,211",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 24211,
+      "measured": 24211,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_2025_sixth",
+      "quote": "the sixth was 24,063",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 24063,
+      "measured": 24063,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_2025_margin",
+      "quote": "the gap was 148 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 148,
+      "measured": 148,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_2025_candidates",
+      "quote": "10 days had a peak within 646 MW of the fifth",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 10,
+      "measured": 10,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_2014_candidates",
+      "quote": "In 2014-15 the same rule would have meant 32 days",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 32,
+      "measured": 32,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_summer_periods_since_2019",
+      "quote": "All five top days fell in June, July or August in every base period since 2019-20 except 2023-24",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6,
+      "measured": 6,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_summer_2023",
+      "quote": "2023-24, when two did",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2,
+      "measured": 2,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_2026_days",
+      "quote": "The first 129 days of 2026-27",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 129,
+      "measured": 130,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_2026_margin",
+      "quote": "already show a gap of 307 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 307,
+      "measured": 307,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ici_2026_candidates",
+      "quote": "and 8 candidate days",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8,
+      "measured": 8,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "coef_last_hour_before_origin_lead12",
+      "quote": "Last hour before the origin, lead 12: 1.129",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 1.129,
+      "measured": 1.129,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_last_hour_before_origin_lead18",
+      "quote": "Last hour before the origin, lead 18: 0.763",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.763,
+      "measured": 0.763,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_last_hour_before_origin_lead162",
+      "quote": "Last hour before the origin, lead 162: 0.361",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.361,
+      "measured": 0.361,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_same_hour_origin_day_lead12",
+      "quote": "Same hour on the origin day, lead 12: 0.341",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.341,
+      "measured": 0.341,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_same_hour_origin_day_lead18",
+      "quote": "Same hour on the origin day, lead 18: 0.789",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.789,
+      "measured": 0.789,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_same_hour_origin_day_lead162",
+      "quote": "Same hour on the origin day, lead 162: 0.016",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.016,
+      "measured": 0.016,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_mean_origin_day_lead12",
+      "quote": "Mean of the origin day, lead 12: minus 0.535",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": -0.535,
+      "measured": -0.535,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_mean_origin_day_lead18",
+      "quote": "Mean of the origin day, lead 18: minus 0.867",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": -0.867,
+      "measured": -0.867,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_mean_origin_day_lead162",
+      "quote": "Mean of the origin day, lead 162: minus 0.289",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": -0.289,
+      "measured": -0.289,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_mean_origin_week_lead12",
+      "quote": "Mean of the origin week, lead 12: 0.007",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.007,
+      "measured": 0.007,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_mean_origin_week_lead18",
+      "quote": "Mean of the origin week, lead 18: 0.132",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.132,
+      "measured": 0.132,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_mean_origin_week_lead162",
+      "quote": "Mean of the origin week, lead 162: 0.088",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.088,
+      "measured": 0.088,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_same_hour_1w_ago_lead12",
+      "quote": "Same hour one week before the target, lead 12: minus 0.047",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": -0.047,
+      "measured": -0.047,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_same_hour_1w_ago_lead18",
+      "quote": "Same hour one week before the target, lead 18: minus 0.034",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": -0.034,
+      "measured": -0.034,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_same_hour_1w_ago_lead162",
+      "quote": "Same hour one week before the target, lead 162: 0.016",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.016,
+      "measured": 0.016,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_same_hour_2w_ago_lead12",
+      "quote": "Same hour two weeks before the target, lead 12: minus 0.026",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": -0.026,
+      "measured": -0.026,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_same_hour_2w_ago_lead18",
+      "quote": "Same hour two weeks before the target, lead 18: 0.029",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.029,
+      "measured": 0.029,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_same_hour_2w_ago_lead162",
+      "quote": "Same hour two weeks before the target, lead 162: 0.072",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.072,
+      "measured": 0.072,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "coef_target_is_saturday_lead12",
+      "quote": "Target is a Saturday, MW, lead 12: minus 907",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": -907,
+      "measured": -906.68,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "coef_target_is_saturday_lead18",
+      "quote": "Target is a Saturday, MW, lead 18: minus 725",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": -725,
+      "measured": -724.869,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "coef_target_is_saturday_lead162",
+      "quote": "Target is a Saturday, MW, lead 162: minus 998",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": -998,
+      "measured": -997.93,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "coef_target_is_sunday_lead12",
+      "quote": "Target is a Sunday, MW, lead 12: minus 1,071",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": -1071,
+      "measured": -1070.936,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "coef_target_is_sunday_lead18",
+      "quote": "Target is a Sunday, MW, lead 18: minus 387",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": -387,
+      "measured": -387.233,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "coef_target_is_sunday_lead162",
+      "quote": "Target is a Sunday, MW, lead 162: minus 910",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": -910,
+      "measured": -909.939,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "coef_target_is_holiday_lead12",
+      "quote": "Target is a holiday, MW, lead 12: minus 944",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": -944,
+      "measured": -944.034,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "coef_target_is_holiday_lead18",
+      "quote": "Target is a holiday, MW, lead 18: minus 476",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": -476,
+      "measured": -475.802,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "coef_target_is_holiday_lead162",
+      "quote": "Target is a holiday, MW, lead 162: minus 1,323",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": -1323,
+      "measured": -1323.245,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "coef_intercept_lead12",
+      "quote": "Intercept, MW, lead 12: 4,432",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 4432,
+      "measured": 4431.931,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "coef_intercept_lead18",
+      "quote": "Intercept, MW, lead 18: 4,668",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 4668,
+      "measured": 4667.769,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "coef_intercept_lead162",
+      "quote": "Intercept, MW, lead 162: 14,477",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 14477,
+      "measured": 14476.646,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_rules",
+      "quote": "18 data quality rules",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 18,
+      "measured": 18,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_block",
+      "quote": "Eight blocking rules passed",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8,
+      "measured": 8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_warn",
+      "quote": "seven warnings carried",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": 7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_note",
+      "quote": "three notes recorded",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": 3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B1",
+      "quote": "B1 duplicate (date, hour) key: 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B2",
+      "quote": "B2 header differs: 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B3",
+      "quote": "B3 inside year differs: 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B4",
+      "quote": "B4 failed integer cast: 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B5",
+      "quote": "B5 hour missing from the spine: 1",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B6",
+      "quote": "B6 date with other than 24 rows: 1",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B7",
+      "quote": "B7 market demand below Ontario demand: 43",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 43,
+      "measured": 43,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B9",
+      "quote": "B9 date with no calendar row: 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B10",
+      "quote": "B10 filled hour in the fact table: 1",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B14",
+      "quote": "B14 test-window day missing: 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B15",
+      "quote": "B15 export row count differs: 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B16",
+      "quote": "B16 scored origin with no model forecast: 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B18",
+      "quote": "B18 zonal value that failed the cast: 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "export_hours",
+      "quote": "The seven tables exported reconciled row for row: 213,336 hours",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 213336,
+      "measured": 213336,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "export_forecast_rows",
+      "quote": "303,408 forecast rows",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 303408,
+      "measured": 303408,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "export_zonal_rows",
+      "quote": "233,750 zonal rows",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 233750,
+      "measured": 233750,
+      "status": "reproduced",
+      "reason": "unchanged although a source moved",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "export_dates",
+      "quote": "9,009 dates",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 9009,
+      "measured": 9009,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "notebook_cells",
+      "quote": "40 cells",
+      "where": [
+        "README"
+      ],
+      "kind": "stat",
+      "expected": null,
+      "measured": null,
+      "status": "not_reproducible",
+      "reason": "a property of the notebook file rather than of the data; the Notebook section of this report says how many code cells ran",
+      "note": "",
+      "round": 0
+    }
+  ],
+  "printed_from": "the executed copy of this run",
+  "has_print_matches": true,
+  "counts": {
+    "reproduced": 275,
+    "drift": 6,
+    "drift_outside_band": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_reproducible": 1
+  },
+  "verdict": "275 of 282 listed figures reproduced on 2026-09-07; 6 drifted inside the band; 1 not reproducible in CI by design.",
+  "blocked_rule": null,
+  "any_source_changed": true,
+  "expected_change": true,
+  "job_failed": false,
+  "failure_reason": "",
+  "working_tree": null
+}

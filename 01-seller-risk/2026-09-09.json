@@ -1,0 +1,845 @@
+{
+  "project": "01-seller-risk",
+  "label": "01: Seller Risk Scoring",
+  "notebook_name": "01_load_explore.ipynb",
+  "measured_on": "2026-08-25",
+  "run_date": "2026-09-09",
+  "run_at_utc": "2026-09-09 08:15:01",
+  "environment": {
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "python": "3.14.7",
+    "duckdb": "1.5.5",
+    "git_sha": "534feb0f652598ba44e54d1a3d829bc2aee75223",
+    "github_run_id": "34327983584"
+  },
+  "sources": [
+    {
+      "id": "olist_kaggle",
+      "refresh": "a static Kaggle dataset, unchanged since 2021",
+      "policy": "static_dataset",
+      "observed": {
+        "olist_customers_dataset.csv": null,
+        "olist_geolocation_dataset.csv": null,
+        "olist_order_items_dataset.csv": null,
+        "olist_order_payments_dataset.csv": null,
+        "olist_order_reviews_dataset.csv": null,
+        "olist_orders_dataset.csv": null,
+        "olist_products_dataset.csv": null,
+        "olist_sellers_dataset.csv": null,
+        "product_category_name_translation.csv": null
+      },
+      "status": "missing",
+      "detail": "no fingerprint could be read after the run"
+    }
+  ],
+  "notebook": {
+    "unavailable": "Kaggle credentials not configured (KAGGLE_USERNAME and KAGGLE_KEY), so olistbr/brazilian-ecommerce cannot be downloaded"
+  },
+  "numbers": [
+    {
+      "id": "orders",
+      "quote": "about 99,441 orders",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 99441,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "delivered_no_date",
+      "quote": "8 orders are marked delivered with no delivery date on file",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "canceled_with_date",
+      "quote": "6 orders marked canceled still have a real delivery date logged",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "canceled_delivered_after_purchase",
+      "quote": "all of them were purchased, delivered weeks later, then canceled",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "orders_clean",
+      "quote": "That leaves 96,470 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 96470,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "orders_dropped",
+      "quote": "The 8 delivered-but-dateless ones are dropped from the clean view",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "the clean view holds delivered orders with a date; the 6 canceled orders were never in it",
+      "round": 0
+    },
+    {
+      "id": "days_early",
+      "quote": "on average they show up about 12 days before the estimated delivery date",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 12,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sellers",
+      "quote": "the 3,095 sellers",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3095,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sellers_with_orders",
+      "quote": "sellers with at least one delivered order",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2970,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "not quoted; the population the median below is taken over",
+      "round": 0
+    },
+    {
+      "id": "median_orders",
+      "quote": "half have 7 or fewer orders total",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "quartile_orders",
+      "quote": "a quarter have 2 or fewer",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cutoff",
+      "quote": "sellers with at least 7 orders, the median",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ranked_sellers",
+      "quote": "which leaves 1,514 sellers",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1514,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "majority_under_10",
+      "quote": "late rate sits under 10% for the majority of the 1,514 sellers",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 50,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "the share is 74.8%; the memo says majority, so the check is that it exceeds 50%",
+      "round": 0
+    },
+    {
+      "id": "tail_top",
+      "quote": "a small tail runs late rates from 30% up to 64%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 64,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "tail_from_30",
+      "quote": "from 30% up",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 21,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "not quoted as a count; the memo calls it a small group",
+      "round": 0
+    },
+    {
+      "id": "worst_1_seller",
+      "quote": "Rank 1: seller b1b39487",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "b1b39487",
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_1_orders",
+      "quote": "Rank 1: 14 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 14,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_1_late",
+      "quote": "Rank 1: 9 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 9,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_1_rate",
+      "quote": "Rank 1: 64.3% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 64.3,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_2_seller",
+      "quote": "Rank 2: seller 312ba1d7",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "312ba1d7",
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_2_orders",
+      "quote": "Rank 2: 7 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_2_late",
+      "quote": "Rank 2: 4 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_2_rate",
+      "quote": "Rank 2: 57.1% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 57.1,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_3_seller",
+      "quote": "Rank 3: seller 973f2178",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "973f2178",
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_3_orders",
+      "quote": "Rank 3: 9 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 9,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_3_late",
+      "quote": "Rank 3: 5 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 5,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_3_rate",
+      "quote": "Rank 3: 55.6% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 55.6,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_4_seller",
+      "quote": "Rank 4: seller 95b29386",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "95b29386",
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_4_orders",
+      "quote": "Rank 4: 9 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 9,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_4_late",
+      "quote": "Rank 4: 4 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_4_rate",
+      "quote": "Rank 4: 44.4% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 44.4,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_5_seller",
+      "quote": "Rank 5: seller 5acd070d",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "5acd070d",
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_5_orders",
+      "quote": "Rank 5: 7 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_5_late",
+      "quote": "Rank 5: 3 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_5_rate",
+      "quote": "Rank 5: 42.9% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 42.9,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_6_seller",
+      "quote": "Rank 6: seller 26e2c91e",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "26e2c91e",
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_6_orders",
+      "quote": "Rank 6: 12 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 12,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_6_late",
+      "quote": "Rank 6: 5 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 5,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_6_rate",
+      "quote": "Rank 6: 41.7% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 41.7,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_7_seller",
+      "quote": "Rank 7: seller 538caafd",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "538caafd",
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_7_orders",
+      "quote": "Rank 7: 8 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_7_late",
+      "quote": "Rank 7: 3 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_7_rate",
+      "quote": "Rank 7: 37.5% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 37.5,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_8_seller",
+      "quote": "Rank 8: seller c990d6cf",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "c990d6cf",
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_8_orders",
+      "quote": "Rank 8: 8 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_8_late",
+      "quote": "Rank 8: 3 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_8_rate",
+      "quote": "Rank 8: 37.5% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 37.5,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_9_seller",
+      "quote": "Rank 9: seller cb41bfbc",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "cb41bfbc",
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_9_orders",
+      "quote": "Rank 9: 11 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 11,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_9_late",
+      "quote": "Rank 9: 4 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_9_rate",
+      "quote": "Rank 9: 36.4% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 36.4,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_10_seller",
+      "quote": "Rank 10: seller 821fb029",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "821fb029",
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_10_orders",
+      "quote": "Rank 10: 24 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 24,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_10_late",
+      "quote": "Rank 10: 8 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_10_rate",
+      "quote": "Rank 10: 33.3% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 33.3,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk/olist.duckdb",
+      "note": "",
+      "round": 1
+    }
+  ],
+  "printed_from": "the committed notebook, because the executed copy was not written",
+  "has_print_matches": false,
+  "counts": {
+    "reproduced": 0,
+    "drift": 0,
+    "drift_outside_band": 0,
+    "failed": 0,
+    "not_run": 56,
+    "not_reproducible": 0
+  },
+  "verdict": "0 of 56 listed figures reproduced on 2026-09-09; 56 not run.",
+  "blocked_rule": null,
+  "any_source_changed": false,
+  "expected_change": false,
+  "job_failed": false,
+  "failure_reason": "",
+  "working_tree": []
+}

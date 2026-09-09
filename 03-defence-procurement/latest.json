@@ -1,0 +1,5186 @@
+{
+  "project": "03-defence-procurement",
+  "label": "03: Defence Procurement Intelligence",
+  "notebook_name": "03_load_explore.ipynb",
+  "measured_on": "2026-09-04",
+  "run_date": "2026-09-09",
+  "run_at_utc": "2026-09-09 08:14:58",
+  "environment": {
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "python": "3.14.7",
+    "duckdb": "1.5.5",
+    "git_sha": "534feb0f652598ba44e54d1a3d829bc2aee75223",
+    "github_run_id": "34327983584"
+  },
+  "sources": [
+    {
+      "id": "canadabuys_history",
+      "refresh": "monthly by the publisher's statement, weekly observed",
+      "policy": "canadabuys_history",
+      "observed": {
+        "": "1d6c1725a400f51d2a00a15007359399ca5fe59717de9cba5e7be85b9315e11c"
+      },
+      "status": "unchanged",
+      "detail": "identical to the committed fingerprint (1 entries)"
+    }
+  ],
+  "notebook": {
+    "cells": 77,
+    "code_cells": 77,
+    "executed": 77,
+    "elapsed_s": 8.6,
+    "error": null,
+    "cell_times": [
+      {
+        "position": 1,
+        "seconds": 0.2,
+        "opening": "DuckDB for the SQL, requests to pull the file. hashlib and json are for the"
+      },
+      {
+        "position": 2,
+        "seconds": 0.7,
+        "opening": "Download the file and write down what actually came back: when I pulled it,"
+      },
+      {
+        "position": 3,
+        "seconds": 0.0,
+        "opening": "Opens (or creates) a local database file to hold the loaded table"
+      },
+      {
+        "position": 4,
+        "seconds": 0.6,
+        "opening": "Everything loads as text. read_csv_auto would guess types here and I'd"
+      },
+      {
+        "position": 5,
+        "seconds": 0.0,
+        "opening": "Row and column count, a first check on whether what landed matches what the"
+      },
+      {
+        "position": 6,
+        "seconds": 0.2,
+        "opening": "Check the column names before writing anything against this table. Headers"
+      },
+      {
+        "position": 7,
+        "seconds": 0.0,
+        "opening": "Anything DuckDB couldn't read lands here. I expect nothing, since every"
+      },
+      {
+        "position": 8,
+        "seconds": 0.0,
+        "opening": "Short names for the 25 columns I actually use. The file ships 91, most of"
+      },
+      {
+        "position": 9,
+        "seconds": 0.1,
+        "opening": "Build the staging table: short names, types I picked rather than types that"
+      },
+      {
+        "position": 10,
+        "seconds": 0.0,
+        "opening": "Check the casts landed where I meant them to, mainly that value came out a"
+      },
+      {
+        "position": 11,
+        "seconds": 0.0,
+        "opening": "Staging should be exactly as tall as raw. If these differ then something in"
+      },
+      {
+        "position": 12,
+        "seconds": 0.0,
+        "opening": "Every assertion is one query that returns the rows that failed it. This"
+      },
+      {
+        "position": 13,
+        "seconds": 0.0,
+        "opening": "A1: the contract key. Everything downstream assumes one row per contract"
+      },
+      {
+        "position": 14,
+        "seconds": 0.0,
+        "opening": "A2: anything DuckDB rejected at load. Same reject table I looked at"
+      },
+      {
+        "position": 15,
+        "seconds": 0.0,
+        "opening": "A3: amendment numbers that aren't three digits. These are exactly the rows"
+      },
+      {
+        "position": 16,
+        "seconds": 0.0,
+        "opening": "Before deciding where the non-numeric codes sort, look at what they are."
+      },
+      {
+        "position": 17,
+        "seconds": 0.0,
+        "opening": "A4: rows where the raw text is present but the cast came back empty. This"
+      },
+      {
+        "position": 18,
+        "seconds": 0.0,
+        "opening": "A5: zero-value rows, and there are a lot of them. Keeping them, they're"
+      },
+      {
+        "position": 19,
+        "seconds": 0.0,
+        "opening": "A6: negative values. Only one of them, but this is a BLOCK because a"
+      },
+      {
+        "position": 20,
+        "seconds": 0.0,
+        "opening": "A7: anything over $100M. Not wrong on its own, contracts that size exist here, but worth r"
+      },
+      {
+        "position": 21,
+        "seconds": 0.0,
+        "opening": "A10: rows where the country is the literal string \"N/A\". Not a null, an"
+      },
+      {
+        "position": 22,
+        "seconds": 0.0,
+        "opening": "A11: this file is meant to be one department's awards. If a third"
+      },
+      {
+        "position": 23,
+        "seconds": 0.0,
+        "opening": "A12: every end-user string that mentions defence in either language. The"
+      },
+      {
+        "position": 24,
+        "seconds": 0.0,
+        "opening": "A13: contracts with no UNSPSC code. These can't be segmented by category,"
+      },
+      {
+        "position": 25,
+        "seconds": 0.0,
+        "opening": "A14: GSIN, the other classification field. Populated so rarely it can't"
+      },
+      {
+        "position": 26,
+        "seconds": 0.0,
+        "opening": "A15: the Canadian content field. This is the one column that would answer"
+      },
+      {
+        "position": 27,
+        "seconds": 0.0,
+        "opening": "A16: the publisher's own standardized supplier name. Too sparse to use as"
+      },
+      {
+        "position": 28,
+        "seconds": 0.0,
+        "opening": "A17: award dates outside the window this file is supposed to cover. A date"
+      },
+      {
+        "position": 29,
+        "seconds": 0.0,
+        "opening": "A20: award dates that are missing altogether. A17 only catches dates that"
+      },
+      {
+        "position": 30,
+        "seconds": 0.0,
+        "opening": "A18: any currency other than CAD. If this ever fires then every total in"
+      },
+      {
+        "position": 31,
+        "seconds": 0.0,
+        "opening": "The suite as it stands. A8, A9 and A19 join it later, once the dedup and"
+      },
+      {
+        "position": 32,
+        "seconds": 0.0,
+        "opening": "Draft the country crosswalk. Two-letter codes pass straight through since"
+      },
+      {
+        "position": 33,
+        "seconds": 0.0,
+        "opening": "Load the reviewed crosswalk back in and prove it covers every country value"
+      },
+      {
+        "position": 34,
+        "seconds": 0.0,
+        "opening": "A23: rows with no supplier name at all. The export reconciliation found one"
+      },
+      {
+        "position": 35,
+        "seconds": 0.1,
+        "opening": "A deterministic key for grouping the same company written different ways:"
+      },
+      {
+        "position": 36,
+        "seconds": 0.0,
+        "opening": "The blank normalisation gets used in three different places from here on,"
+      },
+      {
+        "position": 37,
+        "seconds": 0.0,
+        "opening": "Resolve the N/A country by rule instead of by hand: if the same normalised"
+      },
+      {
+        "position": 38,
+        "seconds": 0.0,
+        "opening": "One country per row: the crosswalk value where there is one, otherwise the"
+      },
+      {
+        "position": 39,
+        "seconds": 0.0,
+        "opening": "End-user dimension with the defence flag. This is a substring match, not an"
+      },
+      {
+        "position": 40,
+        "seconds": 0.0,
+        "opening": "How much keyed value moves if the non-numeric amendment codes are treated"
+      },
+      {
+        "position": 41,
+        "seconds": 0.3,
+        "opening": "One row per contract, the highest amendment winning. This is the step a"
+      },
+      {
+        "position": 42,
+        "seconds": 0.0,
+        "opening": "A8: contracts whose surviving row says $0 while an earlier amendment"
+      },
+      {
+        "position": 43,
+        "seconds": 0.0,
+        "opening": "The wrong answer next to the right one. Summing every amendment row is what"
+      },
+      {
+        "position": 44,
+        "seconds": 0.0,
+        "opening": "A21: the total must be constant within a contract. This started as a"
+      },
+      {
+        "position": 45,
+        "seconds": 0.0,
+        "opening": "What actually changes from one amendment to the next. The total never"
+      },
+      {
+        "position": 46,
+        "seconds": 0.0,
+        "opening": "The same point on a single contract, which is the version worth putting in"
+      },
+      {
+        "position": 47,
+        "seconds": 0.0,
+        "opening": "The country wrong answer, three ways side by side. The literal filter is"
+      },
+      {
+        "position": 48,
+        "seconds": 0.0,
+        "opening": "Why the dual coding is there at all: the publisher changed how they write"
+      },
+      {
+        "position": 49,
+        "seconds": 0.0,
+        "opening": "Reading A: Canadian share by registered address, for everything and for the"
+      },
+      {
+        "position": 50,
+        "seconds": 0.0,
+        "opening": "Canadian-address defence suppliers ranked by keyed value, with the running"
+      },
+      {
+        "position": 51,
+        "seconds": 0.0,
+        "opening": "Every name key that absorbed more than one legal-name spelling, written out"
+      },
+      {
+        "position": 52,
+        "seconds": 0.0,
+        "opening": "The template for the hand-researched control crosswalk."
+      },
+      {
+        "position": 53,
+        "seconds": 0.0,
+        "opening": "Load the researched crosswalk and measure how much of the Canadian-address"
+      },
+      {
+        "position": 54,
+        "seconds": 0.0,
+        "opening": "Supplier dimension. Everyone outside the researched crosswalk defaults to"
+      },
+      {
+        "position": 55,
+        "seconds": 0.0,
+        "opening": "The sensitivity table, which is what this project actually delivers. Two"
+      },
+      {
+        "position": 56,
+        "seconds": 0.0,
+        "opening": "Where the 70% target actually falls against each row. Written out rather"
+      },
+      {
+        "position": 57,
+        "seconds": 2.0,
+        "opening": "Chart 1, the deliverable in a picture. Reading A is a point, reading B is a"
+      },
+      {
+        "position": 58,
+        "seconds": 0.2,
+        "opening": "Keyword search on the free-text fields, kept because it fails. If segments"
+      },
+      {
+        "position": 59,
+        "seconds": 0.1,
+        "opening": "The UNSPSC field holds more than one code per row, starred and newline"
+      },
+      {
+        "position": 60,
+        "seconds": 0.0,
+        "opening": "How much of the defence value this actually costs. Segmenting on the first"
+      },
+      {
+        "position": 61,
+        "seconds": 0.0,
+        "opening": "Family grain is a container, not a category. 7818 holds airframe heavy"
+      },
+      {
+        "position": 62,
+        "seconds": 0.0,
+        "opening": "Draft the UNSPSC segment crosswalk from the families actually present in"
+      },
+      {
+        "position": 63,
+        "seconds": 0.0,
+        "opening": "UNSPSC dimension, keyed on the raw field rather than on a cleaned code,"
+      },
+      {
+        "position": 64,
+        "seconds": 0.0,
+        "opening": "Segments and spend analysis. Concentration is measured twice, once at the"
+      },
+      {
+        "position": 65,
+        "seconds": 0.0,
+        "opening": "The same spend counted two ways. At legal-entity grain a contract belongs"
+      },
+      {
+        "position": 66,
+        "seconds": 0.0,
+        "opening": "Top Canadian-address defence suppliers, ranked twice. The first table is"
+      },
+      {
+        "position": 67,
+        "seconds": 1.1,
+        "opening": "Chart 2, the same suppliers drawn twice. The left panel is the award data"
+      },
+      {
+        "position": 68,
+        "seconds": 0.1,
+        "opening": "The amendment-grain fact, and the clearest place to show the grain defect."
+      },
+      {
+        "position": 69,
+        "seconds": 0.0,
+        "opening": "Before reading anything into the amendment deltas, work out what"
+      },
+      {
+        "position": 70,
+        "seconds": 0.0,
+        "opening": "The previous cell said neither reading explains the file, so partition the"
+      },
+      {
+        "position": 71,
+        "seconds": 0.0,
+        "opening": "A24: the file calls every row a contract, and the publisher's instrument"
+      },
+      {
+        "position": 72,
+        "seconds": 0.0,
+        "opening": "A25: the publisher's own row type. Original rows sit at amendment 000,"
+      },
+      {
+        "position": 73,
+        "seconds": 0.0,
+        "opening": "A26: the rows with no UNSPSC code, no instrument type and no amendment"
+      },
+      {
+        "position": 74,
+        "seconds": 0.0,
+        "opening": "What excluding the offers does to the readings. The instrument type says"
+      },
+      {
+        "position": 75,
+        "seconds": 0.0,
+        "opening": "The two dimensions the star was still missing. Country is keyed on the"
+      },
+      {
+        "position": 76,
+        "seconds": 0.1,
+        "opening": "The star goes out as CSVs for Power BI. The folder sits under data, which"
+      },
+      {
+        "position": 77,
+        "seconds": 0.0,
+        "opening": "The finished assertion suite, every rule that ran and what was decided about"
+      }
+    ],
+    "retried_after": null
+  },
+  "numbers": [
+    {
+      "id": "rows",
+      "quote": "21,890 rows",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 21890,
+      "measured": 21890,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "columns",
+      "quote": "91 columns",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 91,
+      "measured": 91,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "contracts",
+      "quote": "13,296 contracts sit across 21,890 rows",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 13296,
+      "measured": 13296,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "amended_contracts",
+      "quote": "4,314 of them have been amended at least once",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4314,
+      "measured": 4314,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "pct_goods_empty",
+      "quote": "populated on 0 of 21,890 rows (A15)",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 21890,
+      "measured": 21890,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "total_varies",
+      "quote": "A21 finds 0 that do",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "naive_sum",
+      "quote": "Naive sum over every row $132,853,897,948.13",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 132853897948.13,
+      "measured": 132853897948.13,
+      "status": "reproduced",
+      "reason": "",
+      "note": "the one negative contract is excluded from both sums, as the memo's definitions say",
+      "round": 2
+    },
+    {
+      "id": "keyed_sum",
+      "quote": "Keyed sum, one row per contract at its latest amendment $66,363,740,301.42",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 66363740301.42,
+      "measured": 66363740301.42,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "overstatement",
+      "quote": "Overstatement $66,490,157,646.71",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 66490157646.71,
+      "measured": 66490157646.71,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "overstatement_pct",
+      "quote": "or 100.2%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 100.2,
+      "measured": 100.2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "max_per_contract_same",
+      "quote": "Taking the maximum per contract happens to return the same $66,363,740,301.42",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 66363740301.42,
+      "measured": 66363740301.42,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "cw2340003_rows",
+      "quote": "CW2340003 is the largest award in the defence subset, and its total appears three times",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": 3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cw2340003_largest",
+      "quote": "the largest award in the defence subset",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "CW2340003",
+      "measured": "CW2340003",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cw2340003_value",
+      "quote": "$2,283,021,216.00 on every amendment row",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 2283021216.0,
+      "measured": 2283021216.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cw2340003_constant",
+      "quote": "printed unchanged on every amendment row",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cw2340003_naive",
+      "quote": "this one contract contributes $6.8B to a total it is worth $2.3B in",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 6.8,
+      "measured": 6.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cw2340003_dates",
+      "quote": "Award date 2023-12-15 on all three rows",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "2023-12-15",
+      "measured": "2023-12-15",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "country_ca_rows",
+      "quote": "written as CA on 18,315 rows",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 18315,
+      "measured": 18315,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "country_canada_rows",
+      "quote": "and as Canada on 1,488",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1488,
+      "measured": 1488,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "literal_canada_pct",
+      "quote": "Filtering on the literal Canada gives 15.36% of value",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 15.36,
+      "measured": 15.36,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "either_spelling_pct",
+      "quote": "Accepting either spelling gives 89.13%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 89.13,
+      "measured": 89.13,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "crosswalk_pct",
+      "quote": "Resolving all 49 distinct raw values through a published crosswalk also gives 89.13%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 89.13,
+      "measured": 89.13,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "distinct_raw_countries",
+      "quote": "all 49 distinct raw values",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 49,
+      "measured": 49,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "other_values",
+      "quote": "the other 47 values are resolved the same way",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 47,
+      "measured": 47,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "canada_rows_2023",
+      "quote": "Rows written Canada in 2023: 801",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 801,
+      "measured": 801,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ca_rows_2023",
+      "quote": "Rows written CA in 2023: 4,706",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4706,
+      "measured": 4706,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "canada_rows_2024",
+      "quote": "Rows written Canada in 2024: 329",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 329,
+      "measured": 329,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ca_rows_2024",
+      "quote": "Rows written CA in 2024: 6,165",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6165,
+      "measured": 6165,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "canada_rows_2025",
+      "quote": "Rows written Canada in 2025: 87",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 87,
+      "measured": 87,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ca_rows_2025",
+      "quote": "Rows written CA in 2025: 4,905",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4905,
+      "measured": 4905,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "canada_rows_2026",
+      "quote": "Rows written Canada in 2026: 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ca_rows_2026",
+      "quote": "Rows written CA in 2026: 2,539",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2539,
+      "measured": 2539,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "undated_rows",
+      "quote": "Of the 305 undated rows",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 305,
+      "measured": 305,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "undated_canada",
+      "quote": "271 are written Canada",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 271,
+      "measured": 271,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "undated_ca",
+      "quote": "and none is written CA",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "na_row",
+      "quote": "One row is the literal string N/A",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "na_supplier_countries",
+      "quote": "Its supplier appears under exactly one real country elsewhere",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "na_recovered",
+      "quote": "recovering $654.9M for one German supplier",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 654.9,
+      "measured": 654.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "na_german",
+      "quote": "one German supplier",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "DE",
+      "measured": "DE",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "blank_country_rows",
+      "quote": "Three rows are blank and stay unknown",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": 3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "amount_tested",
+      "quote": "Tested on every amended contract where every row carries an amount and the total is non-zero, 2,168 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2168,
+      "measured": 2168,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "reading_neither",
+      "quote": "neither: 866 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 866,
+      "measured": 866.0,
+      "status": "reproduced",
+      "reason": "printed in cell 70",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "reading_neither_pct",
+      "quote": "neither: 39.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 39.9,
+      "measured": 39.9,
+      "status": "reproduced",
+      "reason": "printed in cell 70",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "reading_neither_value",
+      "quote": "neither: $11,972.5M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 11972.5,
+      "measured": 11972.47475014,
+      "status": "reproduced",
+      "reason": "printed in cell 70",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "reading_increment",
+      "quote": "increment per amendment: 855 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 855,
+      "measured": 855.0,
+      "status": "reproduced",
+      "reason": "printed in cell 70",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "reading_increment_pct",
+      "quote": "increment per amendment: 39.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 39.4,
+      "measured": 39.4,
+      "status": "reproduced",
+      "reason": "printed in cell 70",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "reading_increment_value",
+      "quote": "increment per amendment: $4,067.1M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 4067.1,
+      "measured": 4067.08887031,
+      "status": "reproduced",
+      "reason": "printed in cell 70",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "reading_both",
+      "quote": "both, one row carries the whole total: 353 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 353,
+      "measured": 353.0,
+      "status": "reproduced",
+      "reason": "printed in cell 70",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "reading_both_pct",
+      "quote": "both: 16.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 16.3,
+      "measured": 16.3,
+      "status": "reproduced",
+      "reason": "printed in cell 70",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "reading_both_value",
+      "quote": "both: $998.0M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 998.0,
+      "measured": 997.95640323,
+      "status": "reproduced",
+      "reason": "printed in cell 70",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "reading_restatement",
+      "quote": "restatement of the contract: 94 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 94,
+      "measured": 94.0,
+      "status": "reproduced",
+      "reason": "printed in cell 70",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "reading_restatement_pct",
+      "quote": "restatement: 4.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 4.3,
+      "measured": 4.3,
+      "status": "reproduced",
+      "reason": "printed in cell 70",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "reading_restatement_value",
+      "quote": "restatement: $88.9M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 88.9,
+      "measured": 88.9476889,
+      "status": "reproduced",
+      "reason": "printed in cell 70",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "no_original_contracts",
+      "quote": "2,686 contracts have no row typed Original",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2686,
+      "measured": 2686,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "no_original_neither_value",
+      "quote": "$10,400.0M of the $11,972.5M in the neither group sits on those contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 10400.0,
+      "measured": 10400.039999999999,
+      "status": "reproduced",
+      "reason": "printed in cell 72",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "neither_with_original",
+      "quote": "568 of 1,568 testable contracts fit neither reading",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 568,
+      "measured": 568.0,
+      "status": "reproduced",
+      "reason": "printed in cell 72",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "testable_with_original",
+      "quote": "1,568 testable contracts with every row present",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1568,
+      "measured": 1568,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_all_value_a",
+      "quote": "All PSPC, value: reading A 89.13%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 89.13,
+      "measured": 89.13,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_all_value_b_low",
+      "quote": "All PSPC, value: reading B lower 8.43%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 8.43,
+      "measured": 8.43,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_all_value_b_high",
+      "quote": "All PSPC, value: reading B upper 77.87%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 77.87,
+      "measured": 77.87,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_all_value_coverage",
+      "quote": "All PSPC, value: control coverage 22.08%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 22.08,
+      "measured": 22.08,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_all_count_a",
+      "quote": "All PSPC, count: reading A 89.31%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 89.31,
+      "measured": 89.31,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_all_count_b_low",
+      "quote": "All PSPC, count: reading B lower 0.50%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 0.5,
+      "measured": 0.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_all_count_b_high",
+      "quote": "All PSPC, count: reading B upper 88.22%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 88.22,
+      "measured": 88.22,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_all_count_coverage",
+      "quote": "All PSPC, count: control coverage 1.78%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 1.78,
+      "measured": 1.78,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_dnd_value_a",
+      "quote": "Defence subset, value: reading A 78.17%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 78.17,
+      "measured": 78.17,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_dnd_value_b_low",
+      "quote": "Defence subset, value: reading B lower 24.16%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 24.16,
+      "measured": 24.16,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_dnd_value_b_high",
+      "quote": "Defence subset, value: reading B upper 41.04%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 41.04,
+      "measured": 41.04,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_dnd_value_coverage",
+      "quote": "Defence subset, value: control coverage 78.41%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 78.41,
+      "measured": 78.41,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_dnd_count_a",
+      "quote": "Defence subset, count: reading A 86.39%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 86.39,
+      "measured": 86.39,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_dnd_count_b_low",
+      "quote": "Defence subset, count: reading B lower 1.56%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 1.56,
+      "measured": 1.56,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_dnd_count_b_high",
+      "quote": "Defence subset, count: reading B upper 82.44%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 82.44,
+      "measured": 82.44,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "sens_dnd_count_coverage",
+      "quote": "Defence subset, count: control coverage 6.38%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 6.38,
+      "measured": 6.38,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "reading_c_empty",
+      "quote": "Reading C: empty on every row",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "readable_rows",
+      "quote": "The one readable row is the defence value row (coverage above 50%)",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "a_over_target",
+      "quote": "reading A clears the 70% target by eight points",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 8,
+      "measured": 8.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "b_short_of_target",
+      "quote": "its upper bound 29 points short",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 29,
+      "measured": 29.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "readings_apart_low",
+      "quote": "37 to 54 points apart: the narrow end",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 37,
+      "measured": 37.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "readings_apart_high",
+      "quote": "37 to 54 points apart: the wide end",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 54,
+      "measured": 54.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "pspc_only",
+      "quote": "PSPC is the contracting entity on every row (A11)",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "defence_exact_rows",
+      "quote": "an exact match catches only the 374 rows where defence appears alone",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 374,
+      "measured": 374,
+      "status": "reproduced",
+      "reason": "",
+      "note": "the string without the (DND) suffix; the suffixed spelling has 3,240 rows",
+      "round": 0
+    },
+    {
+      "id": "defence_substring_rows",
+      "quote": "against 4,229 for the substring",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4229,
+      "measured": 4229,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "end_user_strings",
+      "quote": "341 distinct end-user strings",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 341,
+      "measured": 341,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "end_user_defence",
+      "quote": "155 of the 341 distinct end-user strings qualify",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 155,
+      "measured": 155,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "end_user_max_bodies",
+      "quote": "one cell can list up to 25 bodies separated by slashes",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 25,
+      "measured": 25,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "end_user_multi",
+      "quote": "217 of the end-user strings name more than one body",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 217,
+      "measured": 217,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "defence_contracts",
+      "quote": "That gives 2,756 contracts",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2756,
+      "measured": 2756,
+      "status": "reproduced",
+      "reason": "",
+      "note": "the one negative contract is quarantined, as the definitions table says",
+      "round": 0
+    },
+    {
+      "id": "defence_value",
+      "quote": "worth $19,878,465,949.91",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 19878465949.91,
+      "measured": 19878465949.91,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "offers_contracts",
+      "quote": "4,239 of the 13,296 contracts are standing offers or supply arrangements",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4239,
+      "measured": 4239,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "supply_arrangement_zero_pct",
+      "quote": "95.2% of supply arrangements carry a $0 total",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 95.2,
+      "measured": 95.2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "standing_offer_zero_pct",
+      "quote": "and 65.2% of standing offers",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 65.2,
+      "measured": 65.2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "offers_zero",
+      "quote": "3,360 of the 3,665 zero-value contracts between them (A24)",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3360,
+      "measured": 3360,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "zero_contracts",
+      "quote": "3,665 zero-value contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3665,
+      "measured": 3665,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "inst_all_instruments_contracts",
+      "quote": "Defence subset, all instruments: 2,280 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2280,
+      "measured": 2280,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "inst_all_instruments_value",
+      "quote": "Defence subset, all instruments: $19,878.5M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 19878.5,
+      "measured": 19878.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "inst_all_instruments_a",
+      "quote": "Defence subset, all instruments: reading A 78.17%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 78.17,
+      "measured": 78.17,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "inst_all_instruments_b_low",
+      "quote": "Defence subset, all instruments: reading B lower 24.16%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 24.16,
+      "measured": 24.16,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "inst_all_instruments_b_high",
+      "quote": "Defence subset, all instruments: reading B upper 41.04%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 41.04,
+      "measured": 41.04,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "inst_all_instruments_coverage",
+      "quote": "Defence subset, all instruments: coverage 78.41%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 78.41,
+      "measured": 78.41,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "inst_without_offers_contracts",
+      "quote": "Defence subset, without offers: 1,897 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1897,
+      "measured": 1897,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "inst_without_offers_value",
+      "quote": "Defence subset, without offers: $18,346.1M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 18346.1,
+      "measured": 18346.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "inst_without_offers_a",
+      "quote": "Defence subset, without offers: reading A 76.42%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 76.42,
+      "measured": 76.42,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "inst_without_offers_b_low",
+      "quote": "Defence subset, without offers: reading B lower 24.31%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 24.31,
+      "measured": 24.31,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "inst_without_offers_b_high",
+      "quote": "Defence subset, without offers: reading B upper 37.79%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 37.79,
+      "measured": 37.79,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "inst_without_offers_coverage",
+      "quote": "Defence subset, without offers: coverage 82.36%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 82.36,
+      "measured": 82.36,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "inst_offers_only_contracts",
+      "quote": "Defence subset, offers only: 383 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 383,
+      "measured": 383,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "inst_offers_only_value",
+      "quote": "Defence subset, offers only: $1,532.4M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 1532.4,
+      "measured": 1532.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "inst_offers_only_a",
+      "quote": "Defence subset, offers only: reading A 99.09%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 99.09,
+      "measured": 99.09,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "inst_offers_only_b_low",
+      "quote": "Defence subset, offers only: reading B lower 22.37%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 22.37,
+      "measured": 22.37,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "inst_offers_only_b_high",
+      "quote": "Defence subset, offers only: reading B upper 79.96%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 79.96,
+      "measured": 79.96,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "inst_offers_only_coverage",
+      "quote": "Defence subset, offers only: coverage 41.88%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 41.88,
+      "measured": 41.88,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "offers_share_of_defence",
+      "quote": "The offers are 7.7% of defence value",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 7.7,
+      "measured": 7.7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "offers_effect_on_a",
+      "quote": "excluding them takes 1.75 points off reading A",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 1.75,
+      "measured": 1.75,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "crosswalk_suppliers",
+      "quote": "which landed at 28 suppliers on this pull",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 28,
+      "measured": 28,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "crosswalk_coverage",
+      "quote": "covers 80.06% of that value (A19)",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 80.06,
+      "measured": 80.06,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "crosswalk_outside",
+      "quote": "The other 1,059 suppliers default to unresolved",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1059,
+      "measured": 1059,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "control_foreign_controlled_subsidiary_n",
+      "quote": "foreign controlled subsidiary: 15 suppliers",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 15,
+      "measured": 15,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "control_foreign_controlled_subsidiary_value",
+      "quote": "foreign controlled subsidiary: $6,802.4M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 6802.4,
+      "measured": 6802.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "control_canadian_controlled_n",
+      "quote": "canadian controlled: 10 suppliers",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 10,
+      "measured": 10,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "control_canadian_controlled_value",
+      "quote": "canadian controlled: $4,802.0M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 4802.0,
+      "measured": 4802.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "control_joint_venture_foreign_n",
+      "quote": "joint venture foreign: 2 suppliers",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2,
+      "measured": 2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "control_joint_venture_foreign_value",
+      "quote": "joint venture foreign: $579.4M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 579.4,
+      "measured": 579.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "control_unresolved_n",
+      "quote": "unresolved: 1 suppliers",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "control_unresolved_value",
+      "quote": "unresolved: $257.0M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 257.0,
+      "measured": 257.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "control_medium",
+      "quote": "five are graded medium",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 5,
+      "measured": 5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "control_dated",
+      "quote": "Every row carries its source, its check date and a confidence grade",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_1_contracts",
+      "quote": "Rank 1 legal entity, Bell Textron Canada Limited: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_1_value",
+      "quote": "Rank 1 legal entity, Bell Textron Canada Limited: $2,283.0M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 2283.0,
+      "measured": 2283.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_2_contracts",
+      "quote": "Rank 2 legal entity, Allied Wings Limited Partnership: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_2_value",
+      "quote": "Rank 2 legal entity, Allied Wings Limited Partnership: $1,772.4M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 1772.4,
+      "measured": 1772.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_3_contracts",
+      "quote": "Rank 3 legal entity, Lockheed Martin Canada Inc.: 6 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6,
+      "measured": 6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_3_value",
+      "quote": "Rank 3 legal entity, Lockheed Martin Canada Inc.: $1,311.9M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 1311.9,
+      "measured": 1311.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_4_contracts",
+      "quote": "Rank 4 legal entity, Cascade Aerospace Inc: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_4_value",
+      "quote": "Rank 4 legal entity, Cascade Aerospace Inc: $1,245.2M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 1245.2,
+      "measured": 1245.2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_5_contracts",
+      "quote": "Rank 5 legal entity, Victoria Shipyards Company Limited: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_5_value",
+      "quote": "Rank 5 legal entity, Victoria Shipyards Company Limited: $786.1M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 786.1,
+      "measured": 786.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_6_contracts",
+      "quote": "Rank 6 legal entity, Weir Canada, Inc.: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_6_value",
+      "quote": "Rank 6 legal entity, Weir Canada, Inc.: $643.9M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 643.9,
+      "measured": 643.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_7_contracts",
+      "quote": "Rank 7 legal entity, Bombardier Inc.: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_7_value",
+      "quote": "Rank 7 legal entity, Bombardier Inc.: $634.0M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 634.0,
+      "measured": 634.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_8_contracts",
+      "quote": "Rank 8 legal entity, Thales Canada and Thales Australia in joint venture: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_8_value",
+      "quote": "Rank 8 legal entity, Thales Canada and Thales Australia in joint venture: $517.5M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 517.5,
+      "measured": 517.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_9_contracts",
+      "quote": "Rank 9 legal entity, MDA Systems Ltd: 7 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": 7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_9_value",
+      "quote": "Rank 9 legal entity, MDA Systems Ltd: $490.4M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 490.4,
+      "measured": 490.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_10_contracts",
+      "quote": "Rank 10 legal entity, General Dynamics Ordnance and Tactical Systems - Canada Inc.: 33 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 33,
+      "measured": 33,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_10_value",
+      "quote": "Rank 10 legal entity, General Dynamics Ordnance and Tactical Systems - Canada Inc.: $356.0M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 356.0,
+      "measured": 356.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_11_contracts",
+      "quote": "Rank 11 legal entity, Colt Canada Corporation: 20 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 20,
+      "measured": 20,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_11_value",
+      "quote": "Rank 11 legal entity, Colt Canada Corporation: $336.1M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 336.1,
+      "measured": 336.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_12_contracts",
+      "quote": "Rank 12 legal entity, General Dynamics-OTS Canada Inc.: 19 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 19,
+      "measured": 19,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_12_value",
+      "quote": "Rank 12 legal entity, General Dynamics-OTS Canada Inc.: $323.1M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 323.1,
+      "measured": 323.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_13_contracts",
+      "quote": "Rank 13 legal entity, C3 Fuel Nunavik Inc.: 3 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": 3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_13_value",
+      "quote": "Rank 13 legal entity, C3 Fuel Nunavik Inc.: $257.0M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 257.0,
+      "measured": 257.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_14_contracts",
+      "quote": "Rank 14 legal entity, CAE: 5 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 5,
+      "measured": 5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_14_value",
+      "quote": "Rank 14 legal entity, CAE: $172.5M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 172.5,
+      "measured": 172.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_entity_15_contracts",
+      "quote": "Rank 15 legal entity, Magellan Aerospace Limited: 4 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_entity_15_value",
+      "quote": "Rank 15 legal entity, Magellan Aerospace Limited: $139.2M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 139.2,
+      "measured": 139.2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_parent_1_keys",
+      "quote": "Rank 1 parent, Textron Inc.: 1 name keys",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_1_contracts",
+      "quote": "Rank 1 parent, Textron Inc.: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_1_value",
+      "quote": "Rank 1 parent, Textron Inc.: $2,283.0M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 2283.0,
+      "measured": 2283.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_parent_2_keys",
+      "quote": "Rank 2 parent, KF Aerospace (Barry Lapointe Holdings): 1 name keys",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_2_contracts",
+      "quote": "Rank 2 parent, KF Aerospace (Barry Lapointe Holdings): 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_2_value",
+      "quote": "Rank 2 parent, KF Aerospace (Barry Lapointe Holdings): $1,772.4M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 1772.4,
+      "measured": 1772.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_parent_3_keys",
+      "quote": "Rank 3 parent, Lockheed Martin Corporation: 1 name keys",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_3_contracts",
+      "quote": "Rank 3 parent, Lockheed Martin Corporation: 6 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6,
+      "measured": 6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_3_value",
+      "quote": "Rank 3 parent, Lockheed Martin Corporation: $1,311.9M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 1311.9,
+      "measured": 1311.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_parent_4_keys",
+      "quote": "Rank 4 parent, IMP Group International Inc.: 1 name keys",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_4_contracts",
+      "quote": "Rank 4 parent, IMP Group International Inc.: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_4_value",
+      "quote": "Rank 4 parent, IMP Group International Inc.: $1,245.2M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 1245.2,
+      "measured": 1245.2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_parent_5_keys",
+      "quote": "Rank 5 parent, General Dynamics Corporation: 4 name keys",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_5_contracts",
+      "quote": "Rank 5 parent, General Dynamics Corporation: 57 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 57,
+      "measured": 57,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_5_value",
+      "quote": "Rank 5 parent, General Dynamics Corporation: $837.6M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 837.6,
+      "measured": 837.6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_parent_6_keys",
+      "quote": "Rank 6 parent, The Washington Companies: 1 name keys",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_6_contracts",
+      "quote": "Rank 6 parent, The Washington Companies: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_6_value",
+      "quote": "Rank 6 parent, The Washington Companies: $786.1M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 786.1,
+      "measured": 786.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_parent_7_keys",
+      "quote": "Rank 7 parent, The Weir Group PLC: 1 name keys",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_7_contracts",
+      "quote": "Rank 7 parent, The Weir Group PLC: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_7_value",
+      "quote": "Rank 7 parent, The Weir Group PLC: $643.9M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 643.9,
+      "measured": 643.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_parent_8_keys",
+      "quote": "Rank 8 parent, Bombardier Inc.: 1 name keys",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_8_contracts",
+      "quote": "Rank 8 parent, Bombardier Inc.: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_8_value",
+      "quote": "Rank 8 parent, Bombardier Inc.: $634.0M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 634.0,
+      "measured": 634.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_parent_9_keys",
+      "quote": "Rank 9 parent, Thales S.A.: 1 name keys",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_9_contracts",
+      "quote": "Rank 9 parent, Thales S.A.: 1 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_9_value",
+      "quote": "Rank 9 parent, Thales S.A.: $517.5M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 517.5,
+      "measured": 517.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "top_parent_10_keys",
+      "quote": "Rank 10 parent, MDA Space Ltd.: 1 name keys",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_10_contracts",
+      "quote": "Rank 10 parent, MDA Space Ltd.: 7 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": 7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "top_parent_10_value",
+      "quote": "Rank 10 parent, MDA Space Ltd.: $490.4M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 490.4,
+      "measured": 490.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "gd_names",
+      "quote": "Its awards arrived under four separate legal names",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "gd_parent_rank",
+      "quote": "Grouped by owner it is the fifth-largest supplier of the subset",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 5,
+      "measured": 5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "allied_wings_medium",
+      "quote": "Allied Wings is graded medium confidence",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "medium",
+      "measured": "medium",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "allied_wings_undated",
+      "quote": "the one large contract in the subset with no award date",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "kw_carbon_fibre",
+      "quote": "carbon fib matches 0 rows",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "kw_composite",
+      "quote": "composite 20",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 20,
+      "measured": 20,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "kw_aerospace",
+      "quote": "aerospace or aircraft 252",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 252,
+      "measured": 252,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "kw_uncrewed",
+      "quote": "and the uncrewed vocabulary 75",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 75,
+      "measured": 75.0,
+      "status": "reproduced",
+      "reason": "printed in cell 58",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "segment_prefixes",
+      "quote": "a published crosswalk of 350 code prefixes",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 350,
+      "measured": 350,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "segment_families",
+      "quote": "238 at family grain",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 238,
+      "measured": 238,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "segment_classes",
+      "quote": "and 112 at class grain",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 112,
+      "measured": 112,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "unclassified_share",
+      "quote": "45.1% of defence value carries no UNSPSC code at all",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 45.1,
+      "measured": 45.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "unclassified_value",
+      "quote": "$8,968.5M on 260 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 8968.5,
+      "measured": 8968.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "unclassified_contracts",
+      "quote": "260 contracts carry no UNSPSC code",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 260,
+      "measured": 260,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "unclassified_avg",
+      "quote": "Those 260 contracts average $34.5M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 34.5,
+      "measured": 34.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "classified_avg",
+      "quote": "against $4.4M for the ones that do carry a code",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 4.4,
+      "measured": 4.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "classified_value",
+      "quote": "the segment shares below describe $10,909.9M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 10909.9,
+      "measured": 10909.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "legacy_rows",
+      "quote": "The rows with no UNSPSC code, no instrument type and no amendment type are the same 1,762 rows",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1762,
+      "measured": 1762,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "legacy_rows_same_set",
+      "quote": "the same 1,762 rows as the rows with no UNSPSC code (A13)",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1762,
+      "measured": 1762,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "legacy_rows_no_cw",
+      "quote": "none of them carries a CanadaBuys CW reference number",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "legacy_undated",
+      "quote": "every undated row in the file is one of them (A26)",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "legacy_defence_contracts",
+      "quote": "In the defence subset they are 290 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 290,
+      "measured": 290,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "legacy_defence_value",
+      "quote": "worth $10,889.4M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 10889.5,
+      "measured": 10889.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "the memo prints 10,889.4; the two legacy rows of the notebook's table sum to 10,889.46, so the memo truncated rather than rounded",
+      "round": 1
+    },
+    {
+      "id": "legacy_defence_share",
+      "quote": "54.8% of the value",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 54.8,
+      "measured": 54.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "unclassified_all_legacy",
+      "quote": "all 260 unclassified contracts are among them",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "seg_aerospace_contracts",
+      "quote": "aerospace: 49 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 49,
+      "measured": 49,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "seg_aerospace_value",
+      "quote": "aerospace: $4,308.2M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 4308.2,
+      "measured": 4308.2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_aerospace_share",
+      "quote": "aerospace: 39.49% of classified value",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 39.49,
+      "measured": 39.49,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "seg_aerospace_a",
+      "quote": "aerospace: reading A 97.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 97.5,
+      "measured": 97.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_aerospace_b_low",
+      "quote": "aerospace: reading B lower 43.6%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 43.6,
+      "measured": 43.6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_aerospace_b_high",
+      "quote": "aerospace: reading B upper 44.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 44.5,
+      "measured": 44.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_aerospace_coverage",
+      "quote": "aerospace: coverage 99.1%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 99.1,
+      "measured": 99.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_specialized_manufacturing_contracts",
+      "quote": "specialized manufacturing: 80 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 80,
+      "measured": 80,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "seg_specialized_manufacturing_value",
+      "quote": "specialized manufacturing: $1,826.4M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 1826.4,
+      "measured": 1826.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_specialized_manufacturing_share",
+      "quote": "specialized manufacturing: 16.74% of classified value",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 16.74,
+      "measured": 16.74,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "seg_specialized_manufacturing_a",
+      "quote": "specialized manufacturing: reading A 53.1%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 53.1,
+      "measured": 53.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_specialized_manufacturing_b_low",
+      "quote": "specialized manufacturing: reading B lower 1.6%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 1.6,
+      "measured": 1.6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_specialized_manufacturing_b_high",
+      "quote": "specialized manufacturing: reading B upper 4.6%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 4.6,
+      "measured": 4.6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_specialized_manufacturing_coverage",
+      "quote": "specialized manufacturing: coverage 94.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 94.3,
+      "measured": 94.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_uncrewed_autonomous_contracts",
+      "quote": "uncrewed autonomous: 20 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 20,
+      "measured": 20,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "seg_uncrewed_autonomous_value",
+      "quote": "uncrewed autonomous: $2.1M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 2.1,
+      "measured": 2.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_uncrewed_autonomous_share",
+      "quote": "uncrewed autonomous: 0.02% of classified value",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 0.02,
+      "measured": 0.02,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "seg_uncrewed_autonomous_a",
+      "quote": "uncrewed autonomous: reading A 35.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 35.3,
+      "measured": 35.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_uncrewed_autonomous_b_uninterpretable",
+      "quote": "uncrewed autonomous: reading B not interpretable",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "seg_uncrewed_autonomous_coverage",
+      "quote": "uncrewed autonomous: coverage 0.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 0.0,
+      "measured": 0.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_other_contracts",
+      "quote": "other: 2,347 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2347,
+      "measured": 2347,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "seg_other_value",
+      "quote": "other: $4,773.2M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 4773.2,
+      "measured": 4773.2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_other_share",
+      "quote": "other: 43.75% of classified value",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 43.75,
+      "measured": 43.75,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "seg_other_a",
+      "quote": "other: reading A 96.1%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 96.1,
+      "measured": 96.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_other_b_uninterpretable",
+      "quote": "other: reading B not interpretable",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "seg_other_coverage",
+      "quote": "other: coverage 34.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 34.8,
+      "measured": 34.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_unclassified_contracts",
+      "quote": "unclassified: 260 contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 260,
+      "measured": 260,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "seg_unclassified_value",
+      "quote": "unclassified: $8,968.5M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 8968.5,
+      "measured": 8968.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_unclassified_a",
+      "quote": "unclassified: reading A 64.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 64.4,
+      "measured": 64.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_unclassified_b_low",
+      "quote": "unclassified: reading B lower 25.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 25.9,
+      "measured": 25.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_unclassified_b_high",
+      "quote": "unclassified: reading B upper 28.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 28.9,
+      "measured": 28.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "seg_unclassified_coverage",
+      "quote": "unclassified: coverage 95.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 95.3,
+      "measured": 95.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "bell_share_aerospace",
+      "quote": "Bell Textron's contract is 53.0% of the aerospace segment on its own",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 53.0,
+      "measured": 53.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "bell_share_classified",
+      "quote": "20.9% of all classified defence value",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 20.9,
+      "measured": 20.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "bell_share_subset",
+      "quote": "and 11.5% of the whole subset",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 11.5,
+      "measured": 11.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "fuel_family_value",
+      "quote": "The fuels family is $1,208.2M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 1208.2,
+      "measured": 1208.2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "fuel_family_share",
+      "quote": "11.1% of classified value",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 11.1,
+      "measured": 11.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "fuel_family_other",
+      "quote": "it is tagged other",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "other",
+      "measured": "other",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "multi_code_rows",
+      "quote": "Where a contract carries several UNSPSC codes, and 6,866 rows do",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6866,
+      "measured": 6866,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "multi_code_max",
+      "quote": "up to 29 on one row",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 29,
+      "measured": 29,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "single_code_share",
+      "quote": "90.3% of classified defence value sits on single-code contracts",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 90.3,
+      "measured": 90.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "multi_code_share",
+      "quote": "so the approximation touches the remaining 9.7%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 9.7,
+      "measured": 9.7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "class_rows_carved",
+      "quote": "seven class rows are carved back to other",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": 7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "class_rows_value",
+      "quote": "reassigning $37.91M",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 37.91,
+      "measured": 37.91,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "conc_aerospace_entities",
+      "quote": "aerospace: 41 entities",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 41,
+      "measured": 41,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_aerospace_hhi_entity",
+      "quote": "aerospace: HHI entity 3,864",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 3864,
+      "measured": 3864.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_aerospace_top1",
+      "quote": "aerospace: top 1 53.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 53.0,
+      "measured": 53.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_aerospace_top3_entity",
+      "quote": "aerospace: top 3 96.6%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 96.6,
+      "measured": 96.6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_aerospace_parents",
+      "quote": "aerospace: 41 parents",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 41,
+      "measured": 41,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_aerospace_hhi_parent",
+      "quote": "aerospace: HHI parent 3,864",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 3864,
+      "measured": 3864.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_aerospace_top3_parent",
+      "quote": "aerospace: top 3 at parent grain 96.6%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 96.6,
+      "measured": 96.6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_aerospace_gap",
+      "quote": "aerospace: gap 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0,
+      "measured": 0.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_specialized_manufacturing_entities",
+      "quote": "specialized manufacturing: 36 entities",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 36,
+      "measured": 36,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_specialized_manufacturing_hhi_entity",
+      "quote": "specialized manufacturing: HHI entity 2,138",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 2138,
+      "measured": 2138.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_specialized_manufacturing_top1",
+      "quote": "specialized manufacturing: top 1 37.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 37.9,
+      "measured": 37.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_specialized_manufacturing_top3_entity",
+      "quote": "specialized manufacturing: top 3 71.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 71.3,
+      "measured": 71.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_specialized_manufacturing_parents",
+      "quote": "specialized manufacturing: 34 parents",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 34,
+      "measured": 34,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_specialized_manufacturing_hhi_parent",
+      "quote": "specialized manufacturing: HHI parent 2,446",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 2446,
+      "measured": 2446.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_specialized_manufacturing_top3_parent",
+      "quote": "specialized manufacturing: top 3 at parent grain 79.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 79.9,
+      "measured": 79.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_specialized_manufacturing_gap",
+      "quote": "specialized manufacturing: gap 308",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 308,
+      "measured": 308.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_unclassified_entities",
+      "quote": "unclassified: 78 entities",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 78,
+      "measured": 78,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_unclassified_hhi_entity",
+      "quote": "unclassified: HHI entity 1,051",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 1051,
+      "measured": 1051.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_unclassified_top1",
+      "quote": "unclassified: top 1 19.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 19.8,
+      "measured": 19.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_unclassified_top3_entity",
+      "quote": "unclassified: top 3 49.1%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 49.1,
+      "measured": 49.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_unclassified_parents",
+      "quote": "unclassified: 78 parents",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 78,
+      "measured": 78,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_unclassified_hhi_parent",
+      "quote": "unclassified: HHI parent 1,051",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 1051,
+      "measured": 1051.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_unclassified_top3_parent",
+      "quote": "unclassified: top 3 at parent grain 49.1%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 49.1,
+      "measured": 49.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_unclassified_gap",
+      "quote": "unclassified: gap 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0,
+      "measured": 0.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_other_entities",
+      "quote": "other: 1,169 entities",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1169,
+      "measured": 1169,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_other_hhi_entity",
+      "quote": "other: HHI entity 219",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 219,
+      "measured": 219.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_other_top1",
+      "quote": "other: top 1 10.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 10.8,
+      "measured": 10.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_other_top3_entity",
+      "quote": "other: top 3 19.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 19.8,
+      "measured": 19.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_other_parents",
+      "quote": "other: 1,169 parents",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1169,
+      "measured": 1169,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_other_hhi_parent",
+      "quote": "other: HHI parent 219",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 219,
+      "measured": 219.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_other_top3_parent",
+      "quote": "other: top 3 at parent grain 19.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 19.8,
+      "measured": 19.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_other_gap",
+      "quote": "other: gap 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0,
+      "measured": 0.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_uncrewed_autonomous_entities",
+      "quote": "uncrewed autonomous: 18 entities",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 18,
+      "measured": 18,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_uncrewed_autonomous_hhi_entity",
+      "quote": "uncrewed autonomous: HHI entity 4,921",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 4921,
+      "measured": 4921.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_uncrewed_autonomous_top1",
+      "quote": "uncrewed autonomous: top 1 64.7%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 64.7,
+      "measured": 64.7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_uncrewed_autonomous_top3_entity",
+      "quote": "uncrewed autonomous: top 3 100.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 100.0,
+      "measured": 100.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_uncrewed_autonomous_parents",
+      "quote": "uncrewed autonomous: 18 parents",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 18,
+      "measured": 18,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_uncrewed_autonomous_hhi_parent",
+      "quote": "uncrewed autonomous: HHI parent 4,921",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 4921,
+      "measured": 4921.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "conc_uncrewed_autonomous_top3_parent",
+      "quote": "uncrewed autonomous: top 3 at parent grain 100.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 100.0,
+      "measured": 100.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "conc_uncrewed_autonomous_gap",
+      "quote": "uncrewed autonomous: gap 0",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0,
+      "measured": 0.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "nonnumeric_amendments",
+      "quote": "The 55 non-numeric amendment codes sort first",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 55,
+      "measured": 55,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "negative_contracts",
+      "quote": "The one negative contract, quarantined at A6",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "zero_rows",
+      "quote": "contract value is $0 on 5,502 rows",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 5502,
+      "measured": 5502,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "undated_contracts",
+      "quote": "285 undated contracts, all legacy-format records",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 285,
+      "measured": 285,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "undated_contracts_legacy",
+      "quote": "all legacy-format records",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "terminated_rows",
+      "quote": "Contracts are terminated, 38 rows here",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 38,
+      "measured": 38,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "over_100m",
+      "quote": "contract value above $100M: 115 rows",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 115,
+      "measured": 115,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_rules",
+      "quote": "25 data quality rules",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 25,
+      "measured": 25,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_block",
+      "quote": "four of them block the notebook",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A1",
+      "quote": "A1: 0 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A2",
+      "quote": "A2: 0 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A3",
+      "quote": "A3: 55 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 55,
+      "measured": 55,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A4",
+      "quote": "A4: 0 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A5",
+      "quote": "A5: 5,502 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 5502,
+      "measured": 5502,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A6",
+      "quote": "A6: 1 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A7",
+      "quote": "A7: 115 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 115,
+      "measured": 115,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A8",
+      "quote": "A8: 0 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A9",
+      "quote": "A9: 0 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A10",
+      "quote": "A10: 1 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A11",
+      "quote": "A11: 0 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A13",
+      "quote": "A13: 1,762 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1762,
+      "measured": 1762,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A14",
+      "quote": "A14: 20,082 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 20082,
+      "measured": 20082,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A15",
+      "quote": "A15: 21,890 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 21890,
+      "measured": 21890,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A16",
+      "quote": "A16: 16,814 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 16814,
+      "measured": 16814,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A17",
+      "quote": "A17: 0 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A18",
+      "quote": "A18: 0 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A19",
+      "quote": "A19: 1,059 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1059,
+      "measured": 1059,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A20",
+      "quote": "A20: 305 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 305,
+      "measured": 305,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A21",
+      "quote": "A21: 0 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A22",
+      "quote": "A22: 6,866 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6866,
+      "measured": 6866,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A23",
+      "quote": "A23: 1 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A24",
+      "quote": "A24: 6,519 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6519,
+      "measured": 6519,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A25",
+      "quote": "A25: 2,686 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2686,
+      "measured": 2686,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_A26",
+      "quote": "A26: 2,343 failing",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2343,
+      "measured": 2343,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "xw_country_rows",
+      "quote": "country_crosswalk.csv: 49 rows",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 49,
+      "measured": 49,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "xw_na_rows",
+      "quote": "country_na_resolution.csv: 1 row",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "xw_control_rows",
+      "quote": "supplier_control_crosswalk.csv: 28 rows",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 28,
+      "measured": 28,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "xw_name_groups_rows",
+      "quote": "supplier_name_groups.csv: 303 rows",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 303,
+      "measured": 303,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "xw_segment_rows",
+      "quote": "unspsc_segment_crosswalk.csv: 350 rows",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 350,
+      "measured": 350,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "file_bytes",
+      "quote": "The first cell downloads the 57.7 MB source",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 57.7,
+      "measured": null,
+      "status": "not_reproducible",
+      "reason": "the byte count is read from the pull manifest by the fingerprint step, not from a table; a changed size shows there as a changed source",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "notebook_cells",
+      "quote": "77 cells, two charts",
+      "where": [
+        "README"
+      ],
+      "kind": "constant",
+      "expected": 77,
+      "measured": null,
+      "status": "not_reproducible",
+      "reason": "a property of the notebook file rather than of the data; the Notebook section of this report says how many code cells ran",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "six_pulls",
+      "quote": "it had not changed on six pulls through 2026-09-04",
+      "where": [
+        "findings"
+      ],
+      "kind": "constant",
+      "expected": 6,
+      "measured": null,
+      "status": "not_reproducible",
+      "reason": "a history of hand pulls recorded in memo/data_contract.md; each CI run adds one more pull to the fingerprint record",
+      "note": "",
+      "round": 0
+    }
+  ],
+  "printed_from": "the executed copy of this run",
+  "has_print_matches": true,
+  "counts": {
+    "reproduced": 334,
+    "drift": 0,
+    "drift_outside_band": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_reproducible": 3
+  },
+  "verdict": "334 of 337 listed figures reproduced on 2026-09-09; 3 not reproducible in CI by design.",
+  "blocked_rule": null,
+  "any_source_changed": false,
+  "expected_change": false,
+  "job_failed": false,
+  "failure_reason": "",
+  "working_tree": [
+    "M 03-defence-procurement/crosswalks/supplier_control_crosswalk.csv",
+    " M 03-defence-procurement/crosswalks/supplier_name_groups.csv",
+    " M 03-defence-procurement/crosswalks/unspsc_segment_crosswalk.csv",
+    " M 03-defence-procurement/definition_sensitivity.png",
+    " M 03-defence-procurement/memo/pull_manifest.json",
+    " M 03-defence-procurement/top_suppliers_by_control.png"
+  ]
+}

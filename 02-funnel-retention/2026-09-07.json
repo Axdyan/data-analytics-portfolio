@@ -1,0 +1,502 @@
+{
+  "project": "02-funnel-retention",
+  "label": "02: Funnel and Retention",
+  "notebook_name": "02_load_explore.ipynb",
+  "measured_on": "2026-08-25",
+  "run_date": "2026-09-07",
+  "run_at_utc": "2026-09-07 14:48:02",
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.14.5",
+    "duckdb": "1.5.5",
+    "git_sha": null,
+    "github_run_id": null
+  },
+  "sources": [
+    {
+      "id": "cosmetics_kaggle",
+      "refresh": "a static Kaggle dataset, unchanged since 2020",
+      "policy": "static_dataset",
+      "observed": {
+        "2019-Oct.csv": 482542278,
+        "2019-Nov.csv": 545839412,
+        "2019-Dec.csv": 415302972,
+        "2020-Jan.csv": 501792804,
+        "2020-Feb.csv": 488799986
+      },
+      "status": "unchanged",
+      "detail": "identical to the committed fingerprint (5 entries)"
+    }
+  ],
+  "notebook": {
+    "cells": 31,
+    "code_cells": 25,
+    "executed": 25,
+    "elapsed_s": 15.5,
+    "error": null,
+    "cell_times": [
+      {
+        "position": 1,
+        "seconds": 0.0,
+        "opening": "DuckDB: an in-process SQL engine, good for querying CSVs directly without a server"
+      },
+      {
+        "position": 2,
+        "seconds": 0.0,
+        "opening": "Opens (or creates) a local database file to hold the loaded table"
+      },
+      {
+        "position": 3,
+        "seconds": 5.6,
+        "opening": "All 5 monthly files share the same schema, one continuous event stream split"
+      },
+      {
+        "position": 4,
+        "seconds": 0.0,
+        "opening": "Confirm the table loaded successfully"
+      },
+      {
+        "position": 5,
+        "seconds": 0.0,
+        "opening": "Total row count across all 5 months combined"
+      },
+      {
+        "position": 6,
+        "seconds": 0.0,
+        "opening": "Check column names and types before writing queries against this table"
+      },
+      {
+        "position": 7,
+        "seconds": 0.0,
+        "opening": "See what values event_type takes and how many rows fall in each,"
+      },
+      {
+        "position": 8,
+        "seconds": 0.2,
+        "opening": "Check the date range this data actually covers, and null counts for the"
+      },
+      {
+        "position": 9,
+        "seconds": 0.0,
+        "opening": "user_id is the other essential column for retention/cohort analysis,"
+      },
+      {
+        "position": 11,
+        "seconds": 1.1,
+        "opening": "Count total sessions and how many reached each funnel stage at least once."
+      },
+      {
+        "position": 12,
+        "seconds": 0.0,
+        "opening": "Save the funnel stage counts as a view: total sessions, and how many"
+      },
+      {
+        "position": 13,
+        "seconds": 1.5,
+        "opening": "Convert the raw counts into conversion rates between stages, both against"
+      },
+      {
+        "position": 15,
+        "seconds": 0.1,
+        "opening": "Check whether repeat purchasing actually happens in this data: for each"
+      },
+      {
+        "position": 16,
+        "seconds": 0.0,
+        "opening": "Assign each purchaser to a cohort based on the calendar month of their"
+      },
+      {
+        "position": 17,
+        "seconds": 0.1,
+        "opening": "con.execute(\"\"\""
+      },
+      {
+        "position": 18,
+        "seconds": 0.2,
+        "opening": "Turn the raw counts into retention percentages: what share of each"
+      },
+      {
+        "position": 20,
+        "seconds": 0.9,
+        "opening": "Pull retention percentages for charting, excluding the most recent cohort"
+      },
+      {
+        "position": 21,
+        "seconds": 0.4,
+        "opening": "import matplotlib.pyplot as plt"
+      },
+      {
+        "position": 22,
+        "seconds": 0.3,
+        "opening": "One fixed color per cohort, chosen to stay distinguishable under color"
+      },
+      {
+        "position": 24,
+        "seconds": 2.3,
+        "opening": "Reshape the funnel counts into one row per stage, in funnel order, both"
+      },
+      {
+        "position": 25,
+        "seconds": 0.2,
+        "opening": "import matplotlib.pyplot as plt"
+      },
+      {
+        "position": 27,
+        "seconds": 0.0,
+        "opening": "Sum cart value per session, and flag whether that session ever purchased."
+      },
+      {
+        "position": 28,
+        "seconds": 0.6,
+        "opening": "Split total cart value into what converted vs what never did, plus the"
+      },
+      {
+        "position": 29,
+        "seconds": 0.0,
+        "opening": "Actual revenue from completed purchases, as a separate check, this isn't"
+      },
+      {
+        "position": 31,
+        "seconds": 0.0,
+        "opening": ""
+      }
+    ],
+    "retried_after": null
+  },
+  "numbers": [
+    {
+      "id": "events",
+      "quote": "about 20.7 million events",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 20692840,
+      "measured": 20692840,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "months",
+      "quote": "across 5 months",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 5,
+      "measured": 5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "span",
+      "quote": "October 2019 to February 2020",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "2019-10 to 2020-02",
+      "measured": "2019-10 to 2020-02",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sessions_with_view_pct",
+      "quote": "94.4% of sessions include at least one view event",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 94.4,
+      "measured": 94.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sessions_with_cart_pct",
+      "quote": "only 21.7% of sessions ever add anything to a cart",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 21.7,
+      "measured": 21.7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sessions_with_purchase_pct",
+      "quote": "21.7% down to 3.4% overall",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 3.4,
+      "measured": 3.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "view_without_cart_pct",
+      "quote": "two-thirds of sessions that view a product never add anything to a cart",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 77.0,
+      "measured": 77.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "the README says two-thirds and the memo says close to three out of four; the table says 77.0% of viewing sessions never cart",
+      "round": 1
+    },
+    {
+      "id": "cart_to_purchase",
+      "quote": "about 1 in 6 carting sessions converting",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "ratio",
+      "expected": 6,
+      "measured": 6.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "purchasers",
+      "quote": "the 110,518 purchasers in this data",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 110518,
+      "measured": 110518,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "repeat_pct",
+      "quote": "16.0% of the 110,518 purchasers bought again in a different calendar month",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 16.0,
+      "measured": 16.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "retention_m1_2019-10",
+      "quote": "Month-1 retention for the 2019-10 cohort is 18.5%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 18.5,
+      "measured": 18.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "retention_m1_2019-11",
+      "quote": "Month-1 retention for the 2019-11 cohort is 9.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 9.8,
+      "measured": 9.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "retention_m1_2019-12",
+      "quote": "Month-1 retention for the 2019-12 cohort is 8.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 8.5,
+      "measured": 8.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "retention_m1_2020-01",
+      "quote": "Month-1 retention for the 2020-01 cohort is 8.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 8.9,
+      "measured": 8.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "october_uptick",
+      "quote": "a small uptick at month 3 that the other cohorts do not show",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 0,
+      "measured": 0.3999999999999986,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "floor_low",
+      "quote": "a flat floor around 8 to 10% for everyone after it: the low end",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 8.5,
+      "measured": 8.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "floor_high",
+      "quote": "the high end",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 9.8,
+      "measured": 9.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cart_unconverted",
+      "quote": "$23,993,092 belongs to sessions that never bought anything",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 23993092,
+      "measured": 23993092.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cart_total",
+      "quote": "of $29,863,849 in cart value",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 29863849,
+      "measured": 29863849.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cart_unconverted_pct",
+      "quote": "80.3%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 80.3,
+      "measured": 80.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "purchase_revenue",
+      "quote": "Actual purchase revenue over the same period comes to $6,348,005",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 6348005,
+      "measured": 6348005.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "revenue_exceeds_cart",
+      "quote": "a bit higher than the cart value tied to purchasing sessions",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 0,
+      "measured": 477247.8999996539,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    }
+  ],
+  "printed_from": "the executed copy of this run",
+  "has_print_matches": false,
+  "counts": {
+    "reproduced": 22,
+    "drift": 0,
+    "drift_outside_band": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_reproducible": 0
+  },
+  "verdict": "22 of 22 listed figures reproduced on 2026-09-07.",
+  "blocked_rule": null,
+  "any_source_changed": false,
+  "expected_change": false,
+  "job_failed": false,
+  "failure_reason": "",
+  "working_tree": null
+}

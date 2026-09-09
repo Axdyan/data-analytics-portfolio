@@ -1,0 +1,5 @@
+08:14:59  project 02-funnel-retention in /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention
+08:14:59  source cosmetics_kaggle: Kaggle credentials not configured (KAGGLE_USERNAME and KAGGLE_KEY), so mkechinov/ecommerce-events-history-in-cosmetics-shop cannot be downloaded
+08:14:59  source cosmetics_kaggle: missing, no fingerprint could be read after the run
+08:14:59  report written: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/ci/reports/02-funnel-retention/2026-09-09.md
+08:14:59  0 of 22 listed figures reproduced on 2026-09-09; 22 not run.

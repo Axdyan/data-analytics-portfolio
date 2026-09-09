@@ -1,0 +1,5 @@
+08:15:01  project 01-seller-risk in /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk
+08:15:01  source olist_kaggle: Kaggle credentials not configured (KAGGLE_USERNAME and KAGGLE_KEY), so olistbr/brazilian-ecommerce cannot be downloaded
+08:15:01  source olist_kaggle: missing, no fingerprint could be read after the run
+08:15:01  report written: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/ci/reports/01-seller-risk/2026-09-09.md
+08:15:01  0 of 56 listed figures reproduced on 2026-09-09; 56 not run.

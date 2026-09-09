@@ -1,0 +1,370 @@
+{
+  "project": "02-funnel-retention",
+  "label": "02: Funnel and Retention",
+  "notebook_name": "02_load_explore.ipynb",
+  "measured_on": "2026-08-25",
+  "run_date": "2026-09-09",
+  "run_at_utc": "2026-09-09 08:14:59",
+  "environment": {
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "python": "3.14.7",
+    "duckdb": "1.5.5",
+    "git_sha": "534feb0f652598ba44e54d1a3d829bc2aee75223",
+    "github_run_id": "34327983584"
+  },
+  "sources": [
+    {
+      "id": "cosmetics_kaggle",
+      "refresh": "a static Kaggle dataset, unchanged since 2020",
+      "policy": "static_dataset",
+      "observed": {
+        "2019-Oct.csv": null,
+        "2019-Nov.csv": null,
+        "2019-Dec.csv": null,
+        "2020-Jan.csv": null,
+        "2020-Feb.csv": null
+      },
+      "status": "missing",
+      "detail": "no fingerprint could be read after the run"
+    }
+  ],
+  "notebook": {
+    "unavailable": "Kaggle credentials not configured (KAGGLE_USERNAME and KAGGLE_KEY), so mkechinov/ecommerce-events-history-in-cosmetics-shop cannot be downloaded"
+  },
+  "numbers": [
+    {
+      "id": "events",
+      "quote": "about 20.7 million events",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 20692840,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "months",
+      "quote": "across 5 months",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 5,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "span",
+      "quote": "October 2019 to February 2020",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "2019-10 to 2020-02",
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sessions_with_view_pct",
+      "quote": "94.4% of sessions include at least one view event",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 94.4,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sessions_with_cart_pct",
+      "quote": "only 21.7% of sessions ever add anything to a cart",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 21.7,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sessions_with_purchase_pct",
+      "quote": "21.7% down to 3.4% overall",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 3.4,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "view_without_cart_pct",
+      "quote": "two-thirds of sessions that view a product never add anything to a cart",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 77.0,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "the README says two-thirds and the memo says close to three out of four; the table says 77.0% of viewing sessions never cart",
+      "round": 1
+    },
+    {
+      "id": "cart_to_purchase",
+      "quote": "about 1 in 6 carting sessions converting",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "ratio",
+      "expected": 6,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "purchasers",
+      "quote": "the 110,518 purchasers in this data",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 110518,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "repeat_pct",
+      "quote": "16.0% of the 110,518 purchasers bought again in a different calendar month",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 16.0,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "retention_m1_2019-10",
+      "quote": "Month-1 retention for the 2019-10 cohort is 18.5%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 18.5,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "retention_m1_2019-11",
+      "quote": "Month-1 retention for the 2019-11 cohort is 9.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 9.8,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "retention_m1_2019-12",
+      "quote": "Month-1 retention for the 2019-12 cohort is 8.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 8.5,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "retention_m1_2020-01",
+      "quote": "Month-1 retention for the 2020-01 cohort is 8.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 8.9,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "october_uptick",
+      "quote": "a small uptick at month 3 that the other cohorts do not show",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 0,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "floor_low",
+      "quote": "a flat floor around 8 to 10% for everyone after it: the low end",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 8.5,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "floor_high",
+      "quote": "the high end",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 9.8,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cart_unconverted",
+      "quote": "$23,993,092 belongs to sessions that never bought anything",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 23993092,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cart_total",
+      "quote": "of $29,863,849 in cart value",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 29863849,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cart_unconverted_pct",
+      "quote": "80.3%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 80.3,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "purchase_revenue",
+      "quote": "Actual purchase revenue over the same period comes to $6,348,005",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 6348005,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "revenue_exceeds_cart",
+      "quote": "a bit higher than the cart value tied to purchasing sessions",
+      "where": [
+        "findings"
+      ],
+      "kind": "money",
+      "expected": 0,
+      "measured": null,
+      "status": "not_run",
+      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "note": "",
+      "round": 0
+    }
+  ],
+  "printed_from": "the committed notebook, because the executed copy was not written",
+  "has_print_matches": false,
+  "counts": {
+    "reproduced": 0,
+    "drift": 0,
+    "drift_outside_band": 0,
+    "failed": 0,
+    "not_run": 22,
+    "not_reproducible": 0
+  },
+  "verdict": "0 of 22 listed figures reproduced on 2026-09-09; 22 not run.",
+  "blocked_rule": null,
+  "any_source_changed": false,
+  "expected_change": false,
+  "job_failed": false,
+  "failure_reason": "",
+  "working_tree": []
+}

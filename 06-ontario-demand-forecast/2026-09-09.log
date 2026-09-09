@@ -1,0 +1,49 @@
+08:14:58  project 06-ontario-demand-forecast in /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/06-ontario-demand-forecast
+08:14:58  executing 06_load_explore.ipynb
+08:15:01  cell   1      0.1s  Nothing here needs a database yet. The IESO publishes Ontario's hourly demand as one CSV
+08:15:02  cell   2      1.8s  The report folder is a plain directory listing, so the file names come out of the anchor
+08:15:04  cell   3      1.9s  The first lines of one file, printed as the bytes they are. Every one of these reports
+08:15:12  cell   4      8.2s  The pull, one file per year, with a record of what came back. The current year's file is
+08:15:23  cell   5     10.1s  The zonal report, same pull, same checks. Ten zones plus a total and a difference column,
+08:15:23  cell   6      0.0s  Write the manifest beside the memos so the pull travels with the repo. It records the
+08:15:34  cell   7     11.1s  Which copy is canonical. Each year sits on the server twice, as the plain yearly file and
+08:15:34  cell   8      0.0s  Opens (or creates) the local database file that holds this project's tables.
+08:15:35  cell   9      0.8s  Load every yearly file as text. The metadata lines and the header are skipped by count,
+08:15:35  cell  10      0.0s  Rows per file against the rows a full year should hold. Twenty-four hours a day for every
+08:15:35  cell  11      0.1s  Typed staging. Hour is published as 1 to 24 and means the hour ending, so hour 1 is the
+08:15:35  cell  12      0.0s  Is the key a key. One row per date and hour is what everything downstream assumes, so I
+08:15:35  cell  13      0.0s  Every hour that should exist between the first and the last, and does not. A day with
+08:15:35  cell  14      0.0s  Plausibility. The range of the series, the hours where market demand sits below Ontario
+08:15:35  cell  15      0.0s  A holiday calendar, because a statutory holiday on a Tuesday looks like a Sunday to the
+08:15:35  cell  16      0.0s  One row per calendar date with everything the model and the memo need to know about it:
+08:15:35  cell  17      0.2s  The hourly fact table on a complete spine. Where an hour is missing from the source it is
+08:15:35  cell  18      0.0s  The series year by year: mean load, the annual peak and when it happened, and energy. This
+08:15:35  cell  19      0.0s  The daily shape by day type in the most recent complete year, at a few hours across the
+08:15:35  cell  20      0.0s  The design, fixed before any forecast is scored. Forecasts are issued once a day at
+08:15:35  cell  21      0.1s  The whole hourly series as a matrix with one row per day and one column per hour. Every
+08:15:35  cell  22      0.0s  Origins and actuals. An origin is the end of a day; its targets are the 168 hours of the
+08:15:35  cell  23      0.1s  The one model, and what it is allowed to see. For each lead time separately, a linear
+08:15:39  cell  24      4.0s  Fit and forecast, walking forward. Every four weeks the model is refit on the five years o
+08:15:39  cell  25      0.1s  The score. Mean absolute error in megawatts, root mean squared error, and the absolute
+08:15:40  cell  26      0.8s  Is the gap between the model and the baseline real or a run of luck? A Diebold-Mariano
+08:15:40  cell  27      0.0s  Where the model is weak. Day-ahead error by the type of day being forecast and by month,
+08:15:43  cell  28      2.5s  Prediction intervals that are honest about where they come from. For each origin and each
+08:15:43  cell  29      0.0s  The calibration check. An 80% interval should contain the outcome 80% of the time; the
+08:15:43  cell  30      0.0s  Coverage month by month at day-ahead, because a single coverage number can hide a band
+08:15:43  cell  31      0.3s  A shorter memory for the intervals, as a sensitivity. The trailing-year window carries
+08:15:43  cell  32      0.0s  The daily peak, which is what most users of a demand forecast actually care about. For
+08:15:43  cell  33      0.0s  Who acts on this, and what the error costs them in their own units. Ontario's largest
+08:15:43  cell  34      0.0s  One day, read row by row: the highest-demand day of the test window, from the forecast
+08:15:43  cell  35      0.3s  Every reported number written back to the database as tables, so the memo and the
+08:15:44  cell  36      1.2s  The first chart: error by lead time for the baseline and the model, over the test window.
+08:15:45  cell  37      0.3s  The second chart: are the intervals calibrated. Nominal coverage across, empirical coverag
+08:15:46  cell  38      1.5s  The zonal report, loaded the same way as the provincial one and checked against it. Ten
+08:15:47  cell  39      0.4s  The star schema for the dashboard, written out as CSVs and reconciled against the tables
+08:15:47  cell  40      0.1s  The checks this notebook made along the way, gathered into one table so a reader can see
+08:15:48  notebook finished: 40 of 40 code cells in 49.1s
+08:15:48  source ieso_demand_closed: unchanged, identical to the committed fingerprint (24 entries)
+08:15:48  source ieso_demand_current: changed, 1 of 1 entries differ: PUB_Demand_2026.csv
+08:15:48  source ieso_zonal_closed: unchanged, identical to the committed fingerprint (23 entries)
+08:15:48  source ieso_zonal_current: changed, 1 of 1 entries differ: PUB_DemandZonal_2026.csv
+08:15:48  report written: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/ci/reports/06-ontario-demand-forecast/2026-09-09.md
+08:15:48  275 of 282 listed figures reproduced on 2026-09-09; 6 drifted inside the band; 1 not reproducible in CI by design.
