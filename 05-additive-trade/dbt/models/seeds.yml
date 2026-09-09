@@ -1,0 +1,39 @@
+version: 2
+
+seeds:
+  - name: concordance_202201
+    description: >
+      The publisher's ten-digit statistical concordance for the January 2022 tariff, obsolete code
+      to new code, from both spreadsheets, with the source file, its hash and the pull date on every
+      row. Written by the notebook from the downloaded files and reviewed as a file.
+    columns:
+      - name: obsolete_hs10
+        tests: [not_null]
+      - name: new_hs10
+        tests: [not_null]
+
+  - name: series_definitions
+    description: >
+      Which codes make up each series, over which months, under which regime label, with the rule,
+      a confidence and the source on every row. The series marts read this; nothing about series
+      membership lives in SQL. A row with no code is a window in which the goods had no code of
+      their own.
+    columns:
+      - name: series_key
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['am_recipients', 'am_donors', 'carbon_fibre_articles', 'carbon_fibre_epoxide_sheet']
+      - name: role
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['recipient', 'donor', 'carbon fibre', 'carbon fibre sheet', 'window']
+      - name: window_from
+        tests: [not_null]
+      - name: window_to
+        tests: [not_null]
+      - name: regime
+        tests: [not_null]

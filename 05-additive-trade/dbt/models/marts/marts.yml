@@ -1,0 +1,109 @@
+version: 2
+
+models:
+  - name: dim_hs10
+    description: >
+      The validity dimension, one row per HS10 code and period, in the shape of a type 2
+      dimension built from the publisher's own ranges. The fact table joins to it on
+      hs10_period_key.
+    columns:
+      - name: hs10_period_key
+        tests: [unique, not_null]
+      - name: hs10
+        tests: [not_null]
+      - name: valid_from
+        tests: [not_null]
+      - name: valid_to
+        tests: [not_null]
+
+  - name: dim_hs10_current
+    description: One row per code that has an open period, with its current description. The naive dimension, kept for comparison.
+    columns:
+      - name: hs10
+        tests: [unique, not_null]
+
+  - name: dim_date
+    description: One row per month across the data.
+    columns:
+      - name: ref_month
+        tests: [unique, not_null]
+
+  - name: dim_lookups
+    description: One row per code within each of country, province, state and unit of measure, with the latest description.
+    columns:
+      - name: lookup
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['country', 'province', 'state', 'uom']
+      - name: code
+        tests: [not_null]
+
+  - name: fct_imports_monthly
+    description: >
+      Imports at source grain: month, HS10 code, partner country, province of clearance and US
+      state. Carries the validity period key from the temporal join and the equijoin_status that
+      says what a join on the code alone would have done to the row. Incremental by year.
+    columns:
+      - name: year
+        tests: [not_null]
+      - name: ref_month
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: ref_month
+      - name: hs10
+        tests: [not_null]
+      - name: hs10_period_key
+        description: Null only where the code is missing from the dictionary; the singular test counts those.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_hs10')
+                field: hs10_period_key
+      - name: equijoin_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['same', 'current description differs', 'no current period', 'unmatched']
+      - name: partner_country
+        tests: [not_null]
+      - name: province
+        tests: [not_null]
+
+  - name: mart_equijoin_corruption
+    description: By year, the value a join on the code alone would misdescribe or orphan. C9.
+    columns:
+      - name: year
+        tests: [unique, not_null]
+
+  - name: mart_series_am
+    description: >
+      Monthly national import value for the additive manufacturing series: each recipient and donor
+      code, and the recipient, donor and combined baskets. Zero rows for months without imports.
+    columns:
+      - name: series_month_key
+        tests: [unique, not_null]
+      - name: series_group
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['code', 'basket']
+      - name: value_cad
+        tests: [not_null]
+
+  - name: mart_series_carbon_fibre
+    description: >
+      Carbon fibre by month from 1988 with the dictionary's regime for each month. Value is null
+      where no code carried carbon fibre on its own, zero in a coded month with no imports.
+    columns:
+      - name: series_month_key
+        tests: [unique, not_null]
+      - name: regime
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['not separately coded', 'clean code', 'commingled with refractory brick', 'split into three codes', 'epoxide sheet with carbon fibres']

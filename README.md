@@ -34,6 +34,20 @@ estimate is an upper bound, and whether the rotor grew (44% against 34%) is insi
 uncertainty. The obvious fixed-effects regression says 30% and the memo shows why that is not
 the answer. Full writeup in [`04-wind-repowering/memo/findings.md`](04-wind-repowering/memo/findings.md).
 
+**Additive manufacturing trade reconstruction** (Statistics Canada import files, 1988 to 2026):
+Canada's ten-digit import codes change meaning, and 8485100000 meant ships' propellers from
+1988 to 2006 before it meant metal 3D printers from 2022. A join on the code alone would
+misdescribe 8.49% of import value across 39 years and lose another 35.24% under codes that no
+longer exist, 89.13% of 1988 alone; joined on the code and the month against the dictionary's
+own validity ranges, every one of 186 million rows lands on exactly one meaning. The nine
+3D-printing codes rose from $49.5M in 2022 to $116.1M in 2025 with nothing before them to
+compare against. The seventeen codes they came from, named by the publisher's own
+concordance, are fifty times larger and show no fall at the break; the one that does, plastics
+machinery, bridges the plastics printers to 142% growth from 2021 with a bootstrap interval of
+36% to 1,463%, against 48% for the basket whose goods do not change. Carbon fibre has five
+stretches under four regime labels and cannot be read as a series. Full writeup in
+[`05-additive-trade/memo/findings.md`](05-additive-trade/memo/findings.md).
+
 **Ontario demand forecast** (IESO hourly demand, 2002 to 2026): a day ahead, a transparent
 linear model with no weather input misses hourly demand by 523 MW, 3.0% of demand, against
 1,221 MW for the same-hour-last-week baseline, removing 57% of its error; a week ahead it
@@ -56,6 +70,7 @@ The badge at the top is written by a workflow that runs each shipped project's n
 | [02: Funnel & Retention](02-funnel-retention/) | Cosmetics Shop Clickstream |
 | [03: Defence Procurement](03-defence-procurement/) | CanadaBuys Contract Award History |
 | [04: Wind Repowering Uplift](04-wind-repowering/) | US Wind Turbine Database, EIA-923 |
+| [05: Additive Manufacturing Trade Reconstruction](05-additive-trade/) | Statistics Canada CIMT imports by HS10, 1988 to 2026 |
 | [06: Ontario Demand Forecast](06-ontario-demand-forecast/) | IESO hourly Ontario demand |
 
 ## Repo layout
@@ -67,6 +82,7 @@ data_analytics_portfolio/
 ├── 02-funnel-retention/
 ├── 03-defence-procurement/
 ├── 04-wind-repowering/
+├── 05-additive-trade/       # plus dbt/ for the modelling layer, python/ for the backfill and its run log, crosswalks/ for the seeds
 ├── 06-ontario-demand-forecast/
 ├── ci/                      # the reproducibility runner, one manifest per project, the drift contract, memos
 ├── .github/workflows/       # the reproduce workflow that writes the badge and the dated reports

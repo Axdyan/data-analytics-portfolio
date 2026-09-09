@@ -1,0 +1,37 @@
+version: 2
+
+sources:
+  - name: raw
+    description: >
+      The files as pulled, every column text, read in place from the data folder. The imports are
+      the year-partitioned Parquet written by python/backfill_cimt.py; the dictionaries are the
+      fixed-width lookup files parsed by the notebook into Parquet. CIMT_DATA is the absolute path
+      of data/cimt and is set by the notebook before each dbt run.
+    schema: main
+    tables:
+      - name: cimt_imports
+        description: >
+          HS10 monthly imports, one row per month, ten-digit code, partner country, province of
+          clearance and US state, with value in nominal CAD, quantity and its unit. One Parquet
+          file per year; the year comes from the folder name.
+        meta:
+          external_location: "read_parquet('{{ env_var('CIMT_DATA') }}/parquet/year=*/imports.parquet', hive_partitioning = true, file_row_number = true)"
+      - name: hs10_dictionary
+        description: >
+          One row per HS10 code and validity period. valid_from and valid_to are YYYYMM text and
+          999912 marks a period still open. Parsed from the fixed-width file shipped in the most
+          recent imports zip.
+        meta:
+          external_location: "read_parquet('{{ env_var('CIMT_DATA') }}/dictionary/hs10_desc.parquet')"
+      - name: country_dictionary
+        meta:
+          external_location: "read_parquet('{{ env_var('CIMT_DATA') }}/dictionary/country_desc.parquet')"
+      - name: province_dictionary
+        meta:
+          external_location: "read_parquet('{{ env_var('CIMT_DATA') }}/dictionary/province_desc.parquet')"
+      - name: state_dictionary
+        meta:
+          external_location: "read_parquet('{{ env_var('CIMT_DATA') }}/dictionary/state_desc.parquet')"
+      - name: uom_dictionary
+        meta:
+          external_location: "read_parquet('{{ env_var('CIMT_DATA') }}/dictionary/uom_desc.parquet')"

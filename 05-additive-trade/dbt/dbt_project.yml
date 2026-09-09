@@ -1,0 +1,60 @@
+name: cimt_additive_trade
+version: "1.0.0"
+config-version: 2
+
+profile: cimt_additive_trade
+
+flags:
+  # The review export the notebook writes beside the seeds is configured below as a disabled seed.
+  # Until the notebook has written it once, dbt warns that the config applies to nothing. That one
+  # warning is silenced here, and nothing else is.
+  warn_error_options:
+    silence:
+      - UnusedResourceConfigPath
+
+model-paths: ["models"]
+test-paths: ["tests"]
+# The seeds are the project's crosswalks, kept one level up so they sit with the other reviewable
+# CSVs rather than inside the dbt folder. Every CSV there becomes a seed unless disabled below.
+seed-paths: ["../crosswalks"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  cimt_additive_trade:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: table
+    marts:
+      +materialized: table
+
+seeds:
+  cimt_additive_trade:
+    # Every column stays text. Left to type inference a code such as 0208900090 becomes a number
+    # and loses its leading zero, and a date column would be typed before the model casts it.
+    concordance_202201:
+      +column_types:
+        obsolete_hs10: varchar
+        new_hs10: varchar
+        source_file: varchar
+        source_url: varchar
+        source_sha256: varchar
+        checked_on: varchar
+    series_definitions:
+      +column_types:
+        series_key: varchar
+        role: varchar
+        hs10: varchar
+        window_from: varchar
+        window_to: varchar
+        regime: varchar
+        rule: varchar
+        confidence: varchar
+        source_url: varchar
+        checked_on: varchar
+        note: varchar
+    # Written by the notebook from the built concordance model, for review. Not a seed.
+    concordance_202201_with_descriptions:
+      +enabled: false

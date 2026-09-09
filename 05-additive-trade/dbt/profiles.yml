@@ -1,0 +1,18 @@
+# The DuckDB file sits next to the notebook, one level above this folder. The notebook passes the
+# absolute path through CIMT_DUCKDB before every run; from a terminal opened in this folder the
+# default relative path reaches the same file. The settings cap DuckDB's memory at a level the
+# machine can spare with the editor and the kernel open, and drop insertion-order preservation,
+# which buys memory back on a fact table of over a hundred million rows. Spill files go to
+# DuckDB's default, a folder next to the database file, because the adapter re-applies these
+# settings on every cursor it opens and DuckDB refuses to change the temporary directory once it
+# has been used, which is exactly when the next cursor would ask.
+cimt_additive_trade:
+  target: duckdb
+  outputs:
+    duckdb:
+      type: duckdb
+      path: "{{ env_var('CIMT_DUCKDB', '../cimt.duckdb') }}"
+      threads: 4
+      settings:
+        memory_limit: "{{ env_var('CIMT_MEMORY_LIMIT', '4GB') }}"
+        preserve_insertion_order: false

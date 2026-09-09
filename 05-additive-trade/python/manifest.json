@@ -1,0 +1,471 @@
+{
+ "pulled_at_utc": "2026-09-09T09:10:06Z",
+ "endpoint": "https://open.canada.ca/data/api/action/package_show",
+ "packages": [
+  {
+   "id": "a2b38e8a-b0b0-4163-8426-c4729b0a9689",
+   "title": "Canadian International Merchandise Trade Web Application (CIMT), 1988-1991",
+   "metadata_modified": "2021-10-28T12:51:47.861026",
+   "n_resources": 16,
+   "n_csv": 12,
+   "csv_kinds": [
+    "Domestic Exports",
+    "Imports",
+    "Total Exports"
+   ],
+   "import_years": [
+    1988,
+    1989,
+    1990,
+    1991
+   ]
+  },
+  {
+   "id": "6eacb78a-7fb1-49ce-b13c-2a7564092a55",
+   "title": "Canadian International Merchandise Trade Web Application (CIMT), 1992-1995",
+   "metadata_modified": "2021-10-28T12:51:49.365852",
+   "n_resources": 16,
+   "n_csv": 12,
+   "csv_kinds": [
+    "Domestic Exports",
+    "Imports",
+    "Total Exports"
+   ],
+   "import_years": [
+    1992,
+    1993,
+    1994,
+    1995
+   ]
+  },
+  {
+   "id": "ed551c1b-ba5d-4391-a08e-8c154fb2e629",
+   "title": "Canadian International Merchandise Trade Web Application (CIMT), 1996-2001",
+   "metadata_modified": "2021-10-28T12:51:51.903746",
+   "n_resources": 22,
+   "n_csv": 18,
+   "csv_kinds": [
+    "Domestic Exports",
+    "Imports",
+    "Total Exports"
+   ],
+   "import_years": [
+    1996,
+    1997,
+    1998,
+    1999,
+    2000,
+    2001
+   ]
+  },
+  {
+   "id": "7b9ef472-e806-42f8-8e2a-c8d954e250e0",
+   "title": "Canadian International Merchandise Trade Web Application (CIMT), 2002-2006",
+   "metadata_modified": "2021-10-28T12:51:53.525749",
+   "n_resources": 19,
+   "n_csv": 15,
+   "csv_kinds": [
+    "Domestic Exports",
+    "Imports",
+    "Total Exports"
+   ],
+   "import_years": [
+    2002,
+    2003,
+    2004,
+    2005,
+    2006
+   ]
+  },
+  {
+   "id": "d0c43a70-3390-4879-8f1d-b602bb0eba3d",
+   "title": "Canadian International Merchandise Trade Web Application (CIMT), 2007-2011",
+   "metadata_modified": "2021-10-28T12:51:55.065340",
+   "n_resources": 19,
+   "n_csv": 15,
+   "csv_kinds": [
+    "Domestic Exports",
+    "Imports",
+    "Total Exports"
+   ],
+   "import_years": [
+    2007,
+    2008,
+    2009,
+    2010,
+    2011
+   ]
+  },
+  {
+   "id": "6f3fd3d9-5a35-47a8-a45a-4b2a8c957453",
+   "title": "Canadian International Merchandise Trade Web Application (CIMT), 2012-2016",
+   "metadata_modified": "2021-10-28T13:01:49.015339",
+   "n_resources": 19,
+   "n_csv": 15,
+   "csv_kinds": [
+    "Domestic Exports",
+    "Imports",
+    "Total Exports"
+   ],
+   "import_years": [
+    2012,
+    2013,
+    2014,
+    2015,
+    2016
+   ]
+  },
+  {
+   "id": "b1126a07-fd85-4d56-8395-143aba1747a4",
+   "title": "Canadian International Merchandise Trade Web Application (CIMT), 2017-2022",
+   "metadata_modified": "2022-03-11T18:40:32.203604",
+   "n_resources": 22,
+   "n_csv": 18,
+   "csv_kinds": [
+    "Domestic Exports",
+    "Imports",
+    "Total Exports"
+   ],
+   "import_years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+   ]
+  },
+  {
+   "id": "2909a648-5753-4924-878a-b069392d9cde",
+   "title": "Canadian International Merchandise Trade Web Application (CIMT), 2023 - 2026",
+   "metadata_modified": "2026-03-11T19:41:45.969892",
+   "n_resources": 16,
+   "n_csv": 12,
+   "csv_kinds": [
+    "Domestic Exports",
+    "Imports",
+    "Total Exports"
+   ],
+   "import_years": [
+    2023,
+    2024,
+    2025,
+    2026
+   ]
+  }
+ ],
+ "imports": [
+  {
+   "year": 1988,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_1988.zip",
+   "resource_id": "4b691902-09f6-49b1-8e20-37410382a7ef",
+   "resource_name": "Imports, 1988",
+   "resource_last_modified": null,
+   "package_id": "a2b38e8a-b0b0-4163-8426-c4729b0a9689"
+  },
+  {
+   "year": 1989,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_1989.zip",
+   "resource_id": "3d401cdf-576d-49a0-8a6c-4d6b4c5b7796",
+   "resource_name": "Imports, 1989",
+   "resource_last_modified": null,
+   "package_id": "a2b38e8a-b0b0-4163-8426-c4729b0a9689"
+  },
+  {
+   "year": 1990,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_1990.zip",
+   "resource_id": "25011411-f48e-4ce4-8749-434677e98cff",
+   "resource_name": "Imports, 1990",
+   "resource_last_modified": null,
+   "package_id": "a2b38e8a-b0b0-4163-8426-c4729b0a9689"
+  },
+  {
+   "year": 1991,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_1991.zip",
+   "resource_id": "9e22d738-23c9-4bf4-89f8-3539d7dc8acf",
+   "resource_name": "Imports, 1991",
+   "resource_last_modified": null,
+   "package_id": "a2b38e8a-b0b0-4163-8426-c4729b0a9689"
+  },
+  {
+   "year": 1992,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_1992.zip",
+   "resource_id": "6b4a186f-1872-4e20-b4cc-519dfc45c121",
+   "resource_name": "Imports, 1992",
+   "resource_last_modified": null,
+   "package_id": "6eacb78a-7fb1-49ce-b13c-2a7564092a55"
+  },
+  {
+   "year": 1993,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_1993.zip",
+   "resource_id": "baf361a3-6b2b-4ae9-b5e1-8ce319750409",
+   "resource_name": "Imports, 1993",
+   "resource_last_modified": null,
+   "package_id": "6eacb78a-7fb1-49ce-b13c-2a7564092a55"
+  },
+  {
+   "year": 1994,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_1994.zip",
+   "resource_id": "e5731904-63bd-45d2-ad5a-297386802969",
+   "resource_name": "Imports, 1994",
+   "resource_last_modified": null,
+   "package_id": "6eacb78a-7fb1-49ce-b13c-2a7564092a55"
+  },
+  {
+   "year": 1995,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_1995.zip",
+   "resource_id": "f8c9eef2-817c-42d9-982d-86ef42b08c24",
+   "resource_name": "Imports, 1995",
+   "resource_last_modified": null,
+   "package_id": "6eacb78a-7fb1-49ce-b13c-2a7564092a55"
+  },
+  {
+   "year": 1996,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_1996.zip",
+   "resource_id": "9d5a3110-6545-4e2c-a8a6-bf2854870ca4",
+   "resource_name": "Imports, 1996",
+   "resource_last_modified": null,
+   "package_id": "ed551c1b-ba5d-4391-a08e-8c154fb2e629"
+  },
+  {
+   "year": 1997,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_1997.zip",
+   "resource_id": "ff57d3ae-999a-4784-bf49-5661516be3b8",
+   "resource_name": "Imports, 1997",
+   "resource_last_modified": null,
+   "package_id": "ed551c1b-ba5d-4391-a08e-8c154fb2e629"
+  },
+  {
+   "year": 1998,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_1998.zip",
+   "resource_id": "0dfdc28f-e996-4e5e-89f8-4cde211b417a",
+   "resource_name": "Imports, 1998",
+   "resource_last_modified": null,
+   "package_id": "ed551c1b-ba5d-4391-a08e-8c154fb2e629"
+  },
+  {
+   "year": 1999,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_1999.zip",
+   "resource_id": "7fa2b6ed-9ddf-4806-bf80-2891927f53a1",
+   "resource_name": "Imports, 1999",
+   "resource_last_modified": null,
+   "package_id": "ed551c1b-ba5d-4391-a08e-8c154fb2e629"
+  },
+  {
+   "year": 2000,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2000.zip",
+   "resource_id": "7f911d4a-5084-422a-82fa-308742850325",
+   "resource_name": "Imports, 2000",
+   "resource_last_modified": null,
+   "package_id": "ed551c1b-ba5d-4391-a08e-8c154fb2e629"
+  },
+  {
+   "year": 2001,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2001.zip",
+   "resource_id": "33469c9a-a516-4043-81c3-c64ff0514f0b",
+   "resource_name": "Imports, 2001",
+   "resource_last_modified": null,
+   "package_id": "ed551c1b-ba5d-4391-a08e-8c154fb2e629"
+  },
+  {
+   "year": 2002,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2002.zip",
+   "resource_id": "3d0044a3-7852-434e-9396-55929dd31776",
+   "resource_name": "Imports, 2002",
+   "resource_last_modified": null,
+   "package_id": "7b9ef472-e806-42f8-8e2a-c8d954e250e0"
+  },
+  {
+   "year": 2003,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2003.zip",
+   "resource_id": "99e345a9-7ba6-4844-93c2-b61efc4a9d54",
+   "resource_name": "Imports, 2003",
+   "resource_last_modified": null,
+   "package_id": "7b9ef472-e806-42f8-8e2a-c8d954e250e0"
+  },
+  {
+   "year": 2004,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2004.zip",
+   "resource_id": "702b7e1d-bc3e-46bb-823a-7bfb013aa27e",
+   "resource_name": "Imports, 2004",
+   "resource_last_modified": null,
+   "package_id": "7b9ef472-e806-42f8-8e2a-c8d954e250e0"
+  },
+  {
+   "year": 2005,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2005.zip",
+   "resource_id": "2bb39431-a58d-4cb6-be1e-a0a225bab567",
+   "resource_name": "Imports, 2005",
+   "resource_last_modified": null,
+   "package_id": "7b9ef472-e806-42f8-8e2a-c8d954e250e0"
+  },
+  {
+   "year": 2006,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2006.zip",
+   "resource_id": "2fc466c1-d9b8-43c2-ad24-143aea1b6998",
+   "resource_name": "Imports, 2006",
+   "resource_last_modified": null,
+   "package_id": "7b9ef472-e806-42f8-8e2a-c8d954e250e0"
+  },
+  {
+   "year": 2007,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2007.zip",
+   "resource_id": "5cfdbc2b-2023-4aa2-b65c-617103636783",
+   "resource_name": "Imports, 2007",
+   "resource_last_modified": null,
+   "package_id": "d0c43a70-3390-4879-8f1d-b602bb0eba3d"
+  },
+  {
+   "year": 2008,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2008.zip",
+   "resource_id": "b0cbb35e-6945-4888-b80a-843bd7e764c8",
+   "resource_name": "Imports, 2008",
+   "resource_last_modified": null,
+   "package_id": "d0c43a70-3390-4879-8f1d-b602bb0eba3d"
+  },
+  {
+   "year": 2009,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2009.zip",
+   "resource_id": "345b4c2f-731b-499a-ba1a-60adbd520348",
+   "resource_name": "Imports, 2009",
+   "resource_last_modified": null,
+   "package_id": "d0c43a70-3390-4879-8f1d-b602bb0eba3d"
+  },
+  {
+   "year": 2010,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2010.zip",
+   "resource_id": "36bd0df8-b160-4419-94e0-51e2e7d2ff4d",
+   "resource_name": "Imports, 2010",
+   "resource_last_modified": null,
+   "package_id": "d0c43a70-3390-4879-8f1d-b602bb0eba3d"
+  },
+  {
+   "year": 2011,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2011.zip",
+   "resource_id": "e9ca54e2-2e01-4edc-9918-ea50070a0abe",
+   "resource_name": "Imports, 2011",
+   "resource_last_modified": null,
+   "package_id": "d0c43a70-3390-4879-8f1d-b602bb0eba3d"
+  },
+  {
+   "year": 2012,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2012.zip",
+   "resource_id": "667a7e53-b4f9-4bb1-9f5a-43ae9eae1828",
+   "resource_name": "Imports, 2012",
+   "resource_last_modified": null,
+   "package_id": "6f3fd3d9-5a35-47a8-a45a-4b2a8c957453"
+  },
+  {
+   "year": 2013,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2013.zip",
+   "resource_id": "f60dd619-582d-4de3-962d-5e183a7f8064",
+   "resource_name": "Imports, 2013",
+   "resource_last_modified": null,
+   "package_id": "6f3fd3d9-5a35-47a8-a45a-4b2a8c957453"
+  },
+  {
+   "year": 2014,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2014.zip",
+   "resource_id": "9e42f1f9-45b5-49a3-b55a-d690332469f1",
+   "resource_name": "Imports, 2014",
+   "resource_last_modified": null,
+   "package_id": "6f3fd3d9-5a35-47a8-a45a-4b2a8c957453"
+  },
+  {
+   "year": 2015,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2015.zip",
+   "resource_id": "618e38f7-cfaf-4d4e-9769-b079c3a0ddd7",
+   "resource_name": "Imports, 2015",
+   "resource_last_modified": null,
+   "package_id": "6f3fd3d9-5a35-47a8-a45a-4b2a8c957453"
+  },
+  {
+   "year": 2016,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2016.zip",
+   "resource_id": "1abd1485-ede3-45d2-b49c-993bb92b0ec2",
+   "resource_name": "Imports, 2016",
+   "resource_last_modified": null,
+   "package_id": "6f3fd3d9-5a35-47a8-a45a-4b2a8c957453"
+  },
+  {
+   "year": 2017,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2017.zip",
+   "resource_id": "9335002d-a12b-47fc-9adb-77394bae3f6d",
+   "resource_name": "Imports, 2017",
+   "resource_last_modified": null,
+   "package_id": "b1126a07-fd85-4d56-8395-143aba1747a4"
+  },
+  {
+   "year": 2018,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2018.zip",
+   "resource_id": "a838caf9-5fd2-4dcd-85ee-5fe86df35071",
+   "resource_name": "Imports, 2018",
+   "resource_last_modified": null,
+   "package_id": "b1126a07-fd85-4d56-8395-143aba1747a4"
+  },
+  {
+   "year": 2019,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2019.zip",
+   "resource_id": "f411c832-46c6-45a6-8043-6831d1e50a50",
+   "resource_name": "Imports, 2019",
+   "resource_last_modified": null,
+   "package_id": "b1126a07-fd85-4d56-8395-143aba1747a4"
+  },
+  {
+   "year": 2020,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2020.zip",
+   "resource_id": "84a207a6-8e9f-4437-993c-601ee53ff65b",
+   "resource_name": "Imports, 2020",
+   "resource_last_modified": null,
+   "package_id": "b1126a07-fd85-4d56-8395-143aba1747a4"
+  },
+  {
+   "year": 2021,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2021.zip",
+   "resource_id": "bd24fc8b-5874-4d6b-a6e4-5accf04b1bd3",
+   "resource_name": "Imports, 2021",
+   "resource_last_modified": null,
+   "package_id": "b1126a07-fd85-4d56-8395-143aba1747a4"
+  },
+  {
+   "year": 2022,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2022.zip",
+   "resource_id": "290f3412-e6b7-4811-b738-c360e11d22ef",
+   "resource_name": "Imports, 2022",
+   "resource_last_modified": null,
+   "package_id": "b1126a07-fd85-4d56-8395-143aba1747a4"
+  },
+  {
+   "year": 2023,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2023.zip",
+   "resource_id": "8ac71c82-6711-4dd6-8922-061aff4d7db5",
+   "resource_name": "Imports, 2023",
+   "resource_last_modified": null,
+   "package_id": "2909a648-5753-4924-878a-b069392d9cde"
+  },
+  {
+   "year": 2024,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2024.zip",
+   "resource_id": "109aa106-1463-4593-885d-5ab0c6de3405",
+   "resource_name": "Imports, 2024",
+   "resource_last_modified": null,
+   "package_id": "2909a648-5753-4924-878a-b069392d9cde"
+  },
+  {
+   "year": 2025,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2025.zip",
+   "resource_id": "75e39f3f-d5c1-4f02-8919-5c9daf79fadc",
+   "resource_name": "Imports, 2025",
+   "resource_last_modified": null,
+   "package_id": "2909a648-5753-4924-878a-b069392d9cde"
+  },
+  {
+   "year": 2026,
+   "url": "https://www150.statcan.gc.ca/n1/pub/71-607-x/2021004/zip/CIMT-CICM_Imp_2026.zip",
+   "resource_id": "22d58168-f6d2-4a89-ad20-4980e9e7530d",
+   "resource_name": "Imports, 2026",
+   "resource_last_modified": null,
+   "package_id": "2909a648-5753-4924-878a-b069392d9cde"
+  }
+ ]
+}

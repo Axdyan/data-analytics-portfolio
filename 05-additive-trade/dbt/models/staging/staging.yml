@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: stg_cimt_imports
+    description: >
+      Typed imports, one row per source row. Casts that fail come through as null beside the raw
+      text; the tests here count them. C7 in the project's assertion suite.
+    columns:
+      - name: year
+        tests: [not_null]
+      - name: ref_month
+        description: First day of the reference month.
+        tests: [not_null]
+      - name: hs10
+        tests: [not_null]
+      - name: partner_country
+        tests: [not_null]
+      - name: province
+        tests: [not_null]
+      - name: value_cad
+        description: Import value in nominal Canadian dollars at customs valuation. No deflation anywhere in this project.
+        tests:
+          - not_null:
+              config:
+                severity: warn
+
+  - name: stg_hs10_dictionary
+    description: One row per HS10 code and validity period, months converted to dates, the 999912 sentinel converted to 9999-12-31.
+    columns:
+      - name: hs10
+        tests: [not_null]
+      - name: valid_from
+        tests: [not_null]
+      - name: valid_to
+        description: Last day of the closing month; 9999-12-31 for a period still open. C14 in the assertion suite.
+        tests: [not_null]
+      - name: desc_en
+        tests: [not_null]
+
+  - name: stg_lookups
+    description: Countries, provinces, US states and units of measure, typed, with their validity ranges.
+    columns:
+      - name: lookup
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['country', 'province', 'state', 'uom']
+      - name: code
+        tests: [not_null]
+      - name: valid_from
+        tests: [not_null]
+      - name: valid_to
+        tests: [not_null]
