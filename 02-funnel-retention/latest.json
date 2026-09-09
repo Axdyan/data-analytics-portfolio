@@ -4,13 +4,13 @@
   "notebook_name": "02_load_explore.ipynb",
   "measured_on": "2026-08-25",
   "run_date": "2026-09-09",
-  "run_at_utc": "2026-09-09 08:14:59",
+  "run_at_utc": "2026-09-09 08:50:23",
   "environment": {
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
     "python": "3.14.7",
     "duckdb": "1.5.5",
     "git_sha": "534feb0f652598ba44e54d1a3d829bc2aee75223",
-    "github_run_id": "34327983584"
+    "github_run_id": "34331203695"
   },
   "sources": [
     {
@@ -18,18 +18,150 @@
       "refresh": "a static Kaggle dataset, unchanged since 2020",
       "policy": "static_dataset",
       "observed": {
-        "2019-Oct.csv": null,
-        "2019-Nov.csv": null,
-        "2019-Dec.csv": null,
-        "2020-Jan.csv": null,
-        "2020-Feb.csv": null
+        "2019-Oct.csv": 482542278,
+        "2019-Nov.csv": 545839412,
+        "2019-Dec.csv": 415302972,
+        "2020-Jan.csv": 501792804,
+        "2020-Feb.csv": 488799986
       },
-      "status": "missing",
-      "detail": "no fingerprint could be read after the run"
+      "status": "unchanged",
+      "detail": "identical to the committed fingerprint (5 entries)"
     }
   ],
   "notebook": {
-    "unavailable": "Kaggle credentials not configured (KAGGLE_USERNAME and KAGGLE_KEY), so mkechinov/ecommerce-events-history-in-cosmetics-shop cannot be downloaded"
+    "cells": 31,
+    "code_cells": 25,
+    "executed": 25,
+    "elapsed_s": 26.3,
+    "error": null,
+    "cell_times": [
+      {
+        "position": 1,
+        "seconds": 0.0,
+        "opening": "DuckDB: an in-process SQL engine, good for querying CSVs directly without a server"
+      },
+      {
+        "position": 2,
+        "seconds": 0.0,
+        "opening": "Opens (or creates) a local database file to hold the loaded table"
+      },
+      {
+        "position": 3,
+        "seconds": 12.6,
+        "opening": "All 5 monthly files share the same schema, one continuous event stream split"
+      },
+      {
+        "position": 4,
+        "seconds": 0.0,
+        "opening": "Confirm the table loaded successfully"
+      },
+      {
+        "position": 5,
+        "seconds": 0.0,
+        "opening": "Total row count across all 5 months combined"
+      },
+      {
+        "position": 6,
+        "seconds": 0.0,
+        "opening": "Check column names and types before writing queries against this table"
+      },
+      {
+        "position": 7,
+        "seconds": 0.0,
+        "opening": "See what values event_type takes and how many rows fall in each,"
+      },
+      {
+        "position": 8,
+        "seconds": 0.4,
+        "opening": "Check the date range this data actually covers, and null counts for the"
+      },
+      {
+        "position": 9,
+        "seconds": 0.0,
+        "opening": "user_id is the other essential column for retention/cohort analysis,"
+      },
+      {
+        "position": 11,
+        "seconds": 1.6,
+        "opening": "Count total sessions and how many reached each funnel stage at least once."
+      },
+      {
+        "position": 12,
+        "seconds": 0.0,
+        "opening": "Save the funnel stage counts as a view: total sessions, and how many"
+      },
+      {
+        "position": 13,
+        "seconds": 1.6,
+        "opening": "Convert the raw counts into conversion rates between stages, both against"
+      },
+      {
+        "position": 15,
+        "seconds": 0.1,
+        "opening": "Check whether repeat purchasing actually happens in this data: for each"
+      },
+      {
+        "position": 16,
+        "seconds": 0.0,
+        "opening": "Assign each purchaser to a cohort based on the calendar month of their"
+      },
+      {
+        "position": 17,
+        "seconds": 0.2,
+        "opening": "con.execute(\"\"\""
+      },
+      {
+        "position": 18,
+        "seconds": 0.5,
+        "opening": "Turn the raw counts into retention percentages: what share of each"
+      },
+      {
+        "position": 20,
+        "seconds": 1.1,
+        "opening": "Pull retention percentages for charting, excluding the most recent cohort"
+      },
+      {
+        "position": 21,
+        "seconds": 0.9,
+        "opening": "import matplotlib.pyplot as plt"
+      },
+      {
+        "position": 22,
+        "seconds": 0.3,
+        "opening": "One fixed color per cohort, chosen to stay distinguishable under color"
+      },
+      {
+        "position": 24,
+        "seconds": 3.5,
+        "opening": "Reshape the funnel counts into one row per stage, in funnel order, both"
+      },
+      {
+        "position": 25,
+        "seconds": 0.2,
+        "opening": "import matplotlib.pyplot as plt"
+      },
+      {
+        "position": 27,
+        "seconds": 0.0,
+        "opening": "Sum cart value per session, and flag whether that session ever purchased."
+      },
+      {
+        "position": 28,
+        "seconds": 0.9,
+        "opening": "Split total cart value into what converted vs what never did, plus the"
+      },
+      {
+        "position": 29,
+        "seconds": 0.0,
+        "opening": "Actual revenue from completed purchases, as a separate check, this isn't"
+      },
+      {
+        "position": 31,
+        "seconds": 0.0,
+        "opening": ""
+      }
+    ],
+    "retried_after": null
   },
   "numbers": [
     {
@@ -41,9 +173,9 @@
       ],
       "kind": "count",
       "expected": 20692840,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 20692840,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 0
     },
@@ -56,9 +188,9 @@
       ],
       "kind": "count",
       "expected": 5,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 5,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 0
     },
@@ -71,9 +203,9 @@
       ],
       "kind": "text",
       "expected": "2019-10 to 2020-02",
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": "2019-10 to 2020-02",
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 0
     },
@@ -85,9 +217,9 @@
       ],
       "kind": "pct",
       "expected": 94.4,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 94.4,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 1
     },
@@ -99,9 +231,9 @@
       ],
       "kind": "pct",
       "expected": 21.7,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 21.7,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 1
     },
@@ -113,9 +245,9 @@
       ],
       "kind": "pct",
       "expected": 3.4,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 3.4,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 1
     },
@@ -128,9 +260,9 @@
       ],
       "kind": "pct",
       "expected": 77.0,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 77.0,
+      "status": "reproduced",
+      "reason": "",
       "note": "the README says two-thirds and the memo says close to three out of four; the table says 77.0% of viewing sessions never cart",
       "round": 1
     },
@@ -143,9 +275,9 @@
       ],
       "kind": "ratio",
       "expected": 6,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 6.0,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 0
     },
@@ -157,9 +289,9 @@
       ],
       "kind": "count",
       "expected": 110518,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 110518,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 0
     },
@@ -171,9 +303,9 @@
       ],
       "kind": "pct",
       "expected": 16.0,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 16.0,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 1
     },
@@ -186,9 +318,9 @@
       ],
       "kind": "pct",
       "expected": 18.5,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 18.5,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 1
     },
@@ -200,9 +332,9 @@
       ],
       "kind": "pct",
       "expected": 9.8,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 9.8,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 1
     },
@@ -214,9 +346,9 @@
       ],
       "kind": "pct",
       "expected": 8.5,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 8.5,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 1
     },
@@ -228,9 +360,9 @@
       ],
       "kind": "pct",
       "expected": 8.9,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 8.9,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 1
     },
@@ -242,9 +374,9 @@
       ],
       "kind": "pct",
       "expected": 0,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 0.3999999999999986,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 0
     },
@@ -256,9 +388,9 @@
       ],
       "kind": "pct",
       "expected": 8.5,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 8.5,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 1
     },
@@ -270,9 +402,9 @@
       ],
       "kind": "pct",
       "expected": 9.8,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 9.8,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 1
     },
@@ -285,9 +417,9 @@
       ],
       "kind": "money",
       "expected": 23993092,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 23993092.0,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 0
     },
@@ -300,9 +432,9 @@
       ],
       "kind": "money",
       "expected": 29863849,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 29863849.0,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 0
     },
@@ -315,9 +447,9 @@
       ],
       "kind": "pct",
       "expected": 80.3,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 80.3,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 1
     },
@@ -329,9 +461,9 @@
       ],
       "kind": "money",
       "expected": 6348005,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 6348005.0,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 0
     },
@@ -343,28 +475,31 @@
       ],
       "kind": "money",
       "expected": 0,
-      "measured": null,
-      "status": "not_run",
-      "reason": "database file not found: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention/cosmetics.duckdb",
+      "measured": 477247.90000019874,
+      "status": "reproduced",
+      "reason": "",
       "note": "",
       "round": 0
     }
   ],
-  "printed_from": "the committed notebook, because the executed copy was not written",
+  "printed_from": "the executed copy of this run",
   "has_print_matches": false,
   "counts": {
-    "reproduced": 0,
+    "reproduced": 22,
     "drift": 0,
     "drift_outside_band": 0,
     "failed": 0,
-    "not_run": 22,
+    "not_run": 0,
     "not_reproducible": 0
   },
-  "verdict": "0 of 22 listed figures reproduced on 2026-09-09; 22 not run.",
+  "verdict": "22 of 22 listed figures reproduced on 2026-09-09.",
   "blocked_rule": null,
   "any_source_changed": false,
   "expected_change": false,
   "job_failed": false,
   "failure_reason": "",
-  "working_tree": []
+  "working_tree": [
+    "M 02-funnel-retention/funnel_dropoff.png",
+    " M 02-funnel-retention/retention_by_cohort.png"
+  ]
 }

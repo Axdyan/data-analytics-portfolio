@@ -1,5 +1,28 @@
-08:15:01  project 01-seller-risk in /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk
-08:15:01  source olist_kaggle: Kaggle credentials not configured (KAGGLE_USERNAME and KAGGLE_KEY), so olistbr/brazilian-ecommerce cannot be downloaded
-08:15:01  source olist_kaggle: missing, no fingerprint could be read after the run
-08:15:01  report written: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/ci/reports/01-seller-risk/2026-09-09.md
-08:15:01  0 of 56 listed figures reproduced on 2026-09-09; 56 not run.
+08:50:31  project 01-seller-risk in /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk
+08:50:31  source olist_kaggle: downloading olistbr/brazilian-ecommerce into /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/data/olist
+08:50:34  source olist_kaggle: downloaded in 3s
+08:50:34  executing 01_load_explore.ipynb
+08:50:36  cell   1      0.0s  DuckDB: an in-process SQL engine, good for querying CSVs directly without a separate datab
+08:50:36  cell   2      0.0s  Opens (or creates) a local database file to hold the loaded tables
+08:50:36  cell   3      0.0s  Names of the raw Olist CSVs to load, one table per file
+08:50:38  cell   4      1.7s  Load each CSV into its own table, replacing it if it already exists
+08:50:38  cell   5      0.0s  Confirm all 9 tables loaded successfully
+08:50:38  cell   6      0.0s  Row counts per table, a quick sanity check against the known Olist dataset sizes
+08:50:38  cell   7      0.0s  Check column names and types before writing queries against this table
+08:50:38  cell   8      0.0s  Get a quick picture of the orders table: total rows, how many are missing
+08:50:38  cell   9      0.0s  Naive math predicted only ~2 mismatched rows, but that assumed status and
+08:50:38  cell  10      0.0s  Check the flip side: orders not marked delivered that still have a
+08:50:38  cell  12      0.0s  Build a clean view of delivered orders with a valid delivery date, plus how
+08:50:38  cell  13      0.0s  Sanity check: row count should be 96,478 delivered orders minus the 8 with
+08:50:38  cell  14      0.0s  Attach seller_id to each order via order_items. DISTINCT avoids counting the
+08:50:38  cell  15      0.1s  Aggregate order-level lateness up to one row per seller: order volume,
+08:50:38  cell  16      0.1s  Look at the spread of order volume per seller before deciding on a
+08:50:38  cell  17      0.1s  Restrict to sellers with at least the median order count (7), so the late
+08:50:38  cell  19      0.1s  Final Stage 3 output: sellers with enough order volume to trust the rate,
+08:50:40  cell  21      1.7s  Histogram: how late rate is distributed across the 1,514 sellers with
+08:50:40  cell  23      0.1s  Horizontal bar chart: the 15 sellers with the highest late rate (7+ orders)
+08:50:40  cell  24      0.0s  
+08:50:40  notebook finished: 20 of 20 code cells in 5.9s
+08:50:40  source olist_kaggle: unchanged, identical to the committed fingerprint (9 entries)
+08:50:42  report written: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/ci/reports/01-seller-risk/2026-09-09.md
+08:50:42  56 of 56 listed figures reproduced on 2026-09-09.
