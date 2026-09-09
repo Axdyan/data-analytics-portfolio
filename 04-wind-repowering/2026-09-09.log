@@ -1,96 +1,96 @@
-09:21:10  project 04-wind-repowering in /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/04-wind-repowering
-09:21:10  executing 04_load_explore.ipynb
-09:21:14  cell   1      0.2s  Nothing here needs a database yet. Before I commit to pulling turbine data I want
-09:21:16  cell   2      2.9s  The turbine data is served by a PostgREST API, and PostgREST publishes an OpenAPI
-09:21:17  cell   3      0.4s  Older releases are catalogued as separate records rather than as versions of one
-09:21:17  cell   4      0.0s  One block per matching record: the id, its dates, its files and its links. The
-09:21:18  cell   5      1.0s  The bulk downloads have moved host at least once over the years, so I check which
-09:21:18  cell   6      0.3s  Every release ships a changelog, and it is 31 KB against 5 MB for a data file, so it
-09:21:18  cell   7      0.0s  The lines that mention the fields I depend on, with one line of context either side.
-09:21:19  cell   8      1.0s  The oldest release, April 2018. Rotor diameters recorded in here predate every
-09:21:19  cell   9      0.0s  What is actually inside the archive and what the columns are called. A file from 2018
-09:21:20  cell  10      0.5s  The changelog records the retrofit fields being renamed part way through the series,
-09:21:20  cell  11      0.0s  Pull the CSV out of the archive so it can be read directly. The zip also carries a
-09:21:20  cell  12      0.1s  Opens (or creates) the local database file that holds this project's tables.
-09:21:20  cell  13      0.4s  Load the 2018 file as text, every column. This one codes missing numbers as -9999 and
-09:21:20  cell  14      0.2s  Row count first, then how often the two fields the rotor comparison rests on are not
-09:21:23  cell  15      2.6s  Pull the current turbine table and write down what actually came back: when I pulled
-09:21:24  cell  16      0.7s  Load it as text, same as the 2018 file. A REST endpoint can change a type between
-09:21:24  cell  17      0.0s  Row and column counts against the manifest. A REST endpoint that silently caps its
-09:21:24  cell  18      0.0s  How many turbines are marked as retrofitted, and in which years. This is the treatment
-09:21:24  cell  19      0.0s  The question the rotor comparison rests on. If a repowered turbine keeps its case_id
-09:21:24  cell  20      0.0s  The same overlap broken out by retrofit year. If the loss is uniform the comparison is
-09:21:24  cell  21      0.0s  The turbine identifier does not survive a repowering, so I need a key that identifies
-09:21:24  cell  22      0.0s  First candidate bridge. For every repowered turbine, does its project id appear
-09:21:24  cell  23      0.0s  Second candidate bridge, in case the project id is thinly populated. Project name plus
-09:21:24  cell  24      0.0s  One project, both files side by side. A rotor ratio computed across a hundred projects
-09:25:26  cell  25    242.5s  Only the current year of the generation data was ever confirmed as a download. The
-09:26:25  cell  26     59.3s  Two years from opposite ends of the range. The risk here is not that a file is missing,
-09:26:25  cell  27      0.0s  What is actually inside each archive. The naming of these workbooks has changed over the
-09:26:25  cell  28      0.0s  The download reported 200 and the file then would not open, so the first question is
-09:27:22  cell  29     56.8s  Where these files actually live. HEAD came back 503 on every past year while GET came
-09:27:22  cell  30      0.0s  A fetch that refuses to save anything that is not really an archive. This publisher
-09:27:58  cell  31     35.7s  Prove the guard rejects something before thirteen downloads depend on it. The path that
-09:27:58  cell  32      0.0s  Clear out the files that turned out to be web pages. I test each one before deleting it
-09:29:59  cell  33    120.6s  Every year the panel needs. Each file is checked before it is written, so a year that
-09:29:59  cell  34      0.0s  What is actually inside each year. These workbooks have been renamed more than once
-09:29:59  cell  35      0.0s  Resolve which member of each archive holds the generation data. Ten of the thirteen
-09:29:59  cell  36      0.9s  Sheet names at three points across the range: the oldest file, one from the middle, and
-09:30:00  cell  37      0.7s  Where the real header sits. These workbooks open with several rows of title and notes
-09:30:01  cell  38      0.7s  The column names at row 5, compared across the range. The later files wrap header text
-09:30:01  cell  39      0.0s  The handful of columns this project actually reads: the plant key, the fuel code that
-09:30:01  cell  40      0.0s  The loader, with the rename map the comparison above produced. Only two of the columns
-09:30:08  cell  41      7.4s  Smoke test on the two ends of the range before committing to thirteen loads. 2013 is the
-09:31:16  cell  42     67.6s  Every year, keeping only the wind rows. Filtering before collecting keeps this small,
-09:31:16  cell  43      0.1s  The sheet carries twelve monthly columns and a stated annual total, which is a free
-09:31:16  cell  44      0.0s  Is 2025 short on months or short on respondents? Counting how many rows carry a number
-09:31:16  cell  45      0.0s  The other half of the same question. If the plants reporting in 2025 are a subset of the
-09:31:16  cell  46      0.0s  Before either key column is used as a key, check that it really holds numbers. This
-09:31:16  cell  47      0.1s  Coerce the keys to numbers and set the unusable rows aside rather than dropping them
-09:31:16  cell  48      0.0s  Plants reporting per year, which is the check that decides whether the last year of the
-09:31:16  cell  49      0.0s  Generation is reported per plant, turbines are recorded per turbine, and the only thing
-09:31:16  cell  50      0.0s  Roll turbines up to the plant, because that is the grain generation is reported at. A
-09:31:16  cell  51      0.0s  The classification that decides who is in the study. A plant where every turbine was
-09:31:16  cell  52      0.0s  When the treated plants were repowered. The spread across years is the whole reason this
-09:31:16  cell  53      0.0s  A trap in the commissioning year. For some repowered turbines this column has been
-09:31:16  cell  54      0.0s  Label every plant and decide which ones can serve as controls. A control has to be
-09:31:16  cell  55      0.0s  Who is actually in the study once the age window is applied. The gap between the control
-09:31:16  cell  56      0.0s  The panel: one row per plant and year, for treated plants and for the controls that fall
-09:31:16  cell  57      0.0s  How many plants the join lost. A turbine record and a generation record are published by
-09:31:16  cell  58      0.0s  Whether each plant reports every year, and whether it reports a positive number every
-09:31:16  cell  59      0.1s  The analysis sample: plants that report a positive number in every one of the twelve
-09:31:16  cell  60      0.0s  The treatment groups that actually carry the estimate, with the years available either
-09:31:18  cell  61      1.6s  What is available for the estimation work. The main estimator here gets written out by
-09:31:18  cell  62      0.0s  Whether the two groups looked alike before any repowering happened. This is the check that
-09:31:18  cell  63      0.0s  The two groups year by year before treatment starts. Balance on averages is not enough on
-09:31:18  cell  64      0.0s  To measure what a plant's capacity was before it was repowered I need the 2018 turbine
-09:31:18  cell  65      0.1s  Capacity as it stood in 2018, per plant. Only projects that map to a single plant are
-09:31:18  cell  66      0.0s  Before any capacity factor is built on these numbers, check the denominator. The 2018 file
-09:31:18  cell  67      0.0s  The same question per plant rather than on averages, because an average hides the shape.
-09:31:18  cell  68      0.0s  The comparison the earlier table could not make, now that the denominator has been
-09:31:18  cell  69      0.0s  The question the 2018 archive was fetched for. A repowering that fits longer blades is a
-09:31:18  cell  70      0.0s  Split the treated plants by whether the rotor actually grew. The threshold is two percent
-09:31:18  cell  71      0.0s  The set of plants the estimate rests on, pulled once into memory so every estimator below
-09:31:20  cell  72      1.9s  The regression everyone would run first: log generation on a treated-and-after flag with
-09:31:20  cell  73      0.0s  Take the regression apart. On a balanced panel the coefficient above is exactly a weighted
-09:31:20  cell  74      0.0s  The estimator written out by hand, so every number in it can be pointed at. For each
-09:31:20  cell  75      0.0s  One number per cohort and year is too many numbers to act on, so they get combined two
-09:31:27  cell  76      6.6s  Uncertainty, by redrawing plants. Generation at one plant is correlated across its own
-09:31:27  cell  77      0.0s  What this design could have found. Before looking at any treated plant, the question an
-09:31:45  cell  78     18.5s  Does the uplift differ between plants that fitted a bigger rotor and plants that did not?
-09:31:45  cell  79      0.0s  Four treated plants carry no rotor record because nothing bridges them to the 2018 file,
-09:32:32  cell  80     46.7s  The same estimate under the alternatives that could have been chosen instead, each one a
-09:32:32  cell  81      0.0s  Every reported number written back to the database as two small tables, so the memo and
-09:32:33  cell  82      0.3s  The same estimator from a library, as a check on my arithmetic rather than a replacement
-09:32:33  cell  83      0.4s  A second library, a port of the original R implementation of this estimator, with the same
-09:32:33  cell  84      0.3s  The event study as a picture, in percent so it reads as generation rather than logs. The
-09:32:34  cell  85      0.4s  The decomposition as a picture. Every point is one two-group, two-period comparison inside
-09:32:34  cell  86      0.2s  The star schema for the dashboard, written out as four CSVs. The dashboard reads the same
-09:32:34  cell  87      0.1s  The checks this notebook made along the way, gathered into one table so a reader can see
-09:32:37  notebook finished: 87 of 87 code cells in 685.9s
-09:32:37  source uswtdb_current: unchanged, identical to the committed fingerprint (1 entries)
-09:32:37  source uswtdb_2018_archive: unchanged, identical to the committed fingerprint (1 entries)
-09:32:37  source eia923_closed: unchanged, identical to the committed fingerprint (12 entries)
-09:32:37  source eia923_provisional: unchanged, identical to the committed fingerprint (1 entries)
-09:32:37  report written: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/ci/reports/04-wind-repowering/2026-09-09.md
-09:32:37  173 of 220 listed figures reproduced on 2026-09-09; 47 not reproducible in CI by design.
+13:46:00  project 04-wind-repowering in /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/04-wind-repowering
+13:46:00  executing 04_load_explore.ipynb
+13:46:01  cell   1      0.1s  Nothing here needs a database yet. Before I commit to pulling turbine data I want
+13:46:02  cell   2      0.4s  The turbine data is served by a PostgREST API, and PostgREST publishes an OpenAPI
+13:46:02  cell   3      0.4s  Older releases are catalogued as separate records rather than as versions of one
+13:46:02  cell   4      0.0s  One block per matching record: the id, its dates, its files and its links. The
+13:46:03  cell   5      0.6s  The bulk downloads have moved host at least once over the years, so I check which
+13:46:03  cell   6      0.4s  Every release ships a changelog, and it is 31 KB against 5 MB for a data file, so it
+13:46:03  cell   7      0.0s  The lines that mention the fields I depend on, with one line of context either side.
+13:46:04  cell   8      0.6s  The oldest release, April 2018. Rotor diameters recorded in here predate every
+13:46:04  cell   9      0.0s  What is actually inside the archive and what the columns are called. A file from 2018
+13:46:04  cell  10      0.3s  The changelog records the retrofit fields being renamed part way through the series,
+13:46:04  cell  11      0.0s  Pull the CSV out of the archive so it can be read directly. The zip also carries a
+13:46:04  cell  12      0.1s  Opens (or creates) the local database file that holds this project's tables.
+13:46:04  cell  13      0.4s  Load the 2018 file as text, every column. This one codes missing numbers as -9999 and
+13:46:05  cell  14      0.2s  Row count first, then how often the two fields the rotor comparison rests on are not
+13:46:07  cell  15      2.1s  Pull the current turbine table and write down what actually came back: when I pulled
+13:46:07  cell  16      0.5s  Load it as text, same as the 2018 file. A REST endpoint can change a type between
+13:46:07  cell  17      0.0s  Row and column counts against the manifest. A REST endpoint that silently caps its
+13:46:07  cell  18      0.0s  How many turbines are marked as retrofitted, and in which years. This is the treatment
+13:46:07  cell  19      0.0s  The question the rotor comparison rests on. If a repowered turbine keeps its case_id
+13:46:07  cell  20      0.0s  The same overlap broken out by retrofit year. If the loss is uniform the comparison is
+13:46:07  cell  21      0.0s  The turbine identifier does not survive a repowering, so I need a key that identifies
+13:46:07  cell  22      0.0s  First candidate bridge. For every repowered turbine, does its project id appear
+13:46:07  cell  23      0.0s  Second candidate bridge, in case the project id is thinly populated. Project name plus
+13:46:07  cell  24      0.0s  One project, both files side by side. A rotor ratio computed across a hundred projects
+13:50:13  cell  25    245.6s  Only the current year of the generation data was ever confirmed as a download. The
+13:51:08  cell  26     55.6s  Two years from opposite ends of the range. The risk here is not that a file is missing,
+13:51:08  cell  27      0.0s  What is actually inside each archive. The naming of these workbooks has changed over the
+13:51:08  cell  28      0.0s  The download reported 200 and the file then would not open, so the first question is
+13:52:04  cell  29     55.6s  Where these files actually live. HEAD came back 503 on every past year while GET came
+13:52:04  cell  30      0.0s  A fetch that refuses to save anything that is not really an archive. This publisher
+13:52:42  cell  31     37.8s  Prove the guard rejects something before thirteen downloads depend on it. The path that
+13:52:42  cell  32      0.0s  Clear out the files that turned out to be web pages. I test each one before deleting it
+13:54:47  cell  33    125.1s  Every year the panel needs. Each file is checked before it is written, so a year that
+13:54:47  cell  34      0.0s  What is actually inside each year. These workbooks have been renamed more than once
+13:54:47  cell  35      0.0s  Resolve which member of each archive holds the generation data. Ten of the thirteen
+13:54:48  cell  36      0.9s  Sheet names at three points across the range: the oldest file, one from the middle, and
+13:54:49  cell  37      0.8s  Where the real header sits. These workbooks open with several rows of title and notes
+13:54:50  cell  38      0.8s  The column names at row 5, compared across the range. The later files wrap header text
+13:54:50  cell  39      0.0s  The handful of columns this project actually reads: the plant key, the fuel code that
+13:54:50  cell  40      0.0s  The loader, with the rename map the comparison above produced. Only two of the columns
+13:54:58  cell  41      8.7s  Smoke test on the two ends of the range before committing to thirteen loads. 2013 is the
+13:56:20  cell  42     81.8s  Every year, keeping only the wind rows. Filtering before collecting keeps this small,
+13:56:20  cell  43      0.1s  The sheet carries twelve monthly columns and a stated annual total, which is a free
+13:56:20  cell  44      0.0s  Is 2025 short on months or short on respondents? Counting how many rows carry a number
+13:56:20  cell  45      0.0s  The other half of the same question. If the plants reporting in 2025 are a subset of the
+13:56:20  cell  46      0.0s  Before either key column is used as a key, check that it really holds numbers. This
+13:56:20  cell  47      0.1s  Coerce the keys to numbers and set the unusable rows aside rather than dropping them
+13:56:20  cell  48      0.0s  Plants reporting per year, which is the check that decides whether the last year of the
+13:56:20  cell  49      0.0s  Generation is reported per plant, turbines are recorded per turbine, and the only thing
+13:56:20  cell  50      0.0s  Roll turbines up to the plant, because that is the grain generation is reported at. A
+13:56:20  cell  51      0.0s  The classification that decides who is in the study. A plant where every turbine was
+13:56:20  cell  52      0.0s  When the treated plants were repowered. The spread across years is the whole reason this
+13:56:20  cell  53      0.0s  A trap in the commissioning year. For some repowered turbines this column has been
+13:56:20  cell  54      0.0s  Label every plant and decide which ones can serve as controls. A control has to be
+13:56:20  cell  55      0.0s  Who is actually in the study once the age window is applied. The gap between the control
+13:56:20  cell  56      0.0s  The panel: one row per plant and year, for treated plants and for the controls that fall
+13:56:20  cell  57      0.0s  How many plants the join lost. A turbine record and a generation record are published by
+13:56:20  cell  58      0.0s  Whether each plant reports every year, and whether it reports a positive number every
+13:56:20  cell  59      0.0s  The analysis sample: plants that report a positive number in every one of the twelve
+13:56:20  cell  60      0.0s  The treatment groups that actually carry the estimate, with the years available either
+13:56:22  cell  61      1.5s  What is available for the estimation work. The main estimator here gets written out by
+13:56:22  cell  62      0.0s  Whether the two groups looked alike before any repowering happened. This is the check that
+13:56:22  cell  63      0.0s  The two groups year by year before treatment starts. Balance on averages is not enough on
+13:56:22  cell  64      0.0s  To measure what a plant's capacity was before it was repowered I need the 2018 turbine
+13:56:22  cell  65      0.0s  Capacity as it stood in 2018, per plant. Only projects that map to a single plant are
+13:56:22  cell  66      0.0s  Before any capacity factor is built on these numbers, check the denominator. The 2018 file
+13:56:22  cell  67      0.0s  The same question per plant rather than on averages, because an average hides the shape.
+13:56:22  cell  68      0.0s  The comparison the earlier table could not make, now that the denominator has been
+13:56:22  cell  69      0.0s  The question the 2018 archive was fetched for. A repowering that fits longer blades is a
+13:56:22  cell  70      0.0s  Split the treated plants by whether the rotor actually grew. The threshold is two percent
+13:56:22  cell  71      0.0s  The set of plants the estimate rests on, pulled once into memory so every estimator below
+13:56:23  cell  72      1.3s  The regression everyone would run first: log generation on a treated-and-after flag with
+13:56:24  cell  73      0.1s  Take the regression apart. On a balanced panel the coefficient above is exactly a weighted
+13:56:24  cell  74      0.0s  The estimator written out by hand, so every number in it can be pointed at. For each
+13:56:24  cell  75      0.0s  One number per cohort and year is too many numbers to act on, so they get combined two
+13:56:32  cell  76      8.2s  Uncertainty, by redrawing plants. Generation at one plant is correlated across its own
+13:56:32  cell  77      0.0s  What this design could have found. Before looking at any treated plant, the question an
+13:56:55  cell  78     23.0s  Does the uplift differ between plants that fitted a bigger rotor and plants that did not?
+13:56:55  cell  79      0.0s  Four treated plants carry no rotor record because nothing bridges them to the 2018 file,
+13:57:52  cell  80     57.2s  The same estimate under the alternatives that could have been chosen instead, each one a
+13:57:52  cell  81      0.0s  Every reported number written back to the database as two small tables, so the memo and
+13:57:52  cell  82      0.4s  The same estimator from a library, as a check on my arithmetic rather than a replacement
+13:57:53  cell  83      0.5s  A second library, a port of the original R implementation of this estimator, with the same
+13:57:53  cell  84      0.4s  The event study as a picture, in percent so it reads as generation rather than logs. The
+13:57:54  cell  85      0.5s  The decomposition as a picture. Every point is one two-group, two-period comparison inside
+13:57:54  cell  86      0.2s  The star schema for the dashboard, written out as four CSVs. The dashboard reads the same
+13:57:54  cell  87      0.1s  The checks this notebook made along the way, gathered into one table so a reader can see
+13:57:57  notebook finished: 87 of 87 code cells in 716.9s
+13:57:57  source uswtdb_current: unchanged, identical to the committed fingerprint (1 entries)
+13:57:57  source uswtdb_2018_archive: unchanged, identical to the committed fingerprint (1 entries)
+13:57:57  source eia923_closed: unchanged, identical to the committed fingerprint (12 entries)
+13:57:57  source eia923_provisional: unchanged, identical to the committed fingerprint (1 entries)
+13:57:57  report written: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/ci/reports/04-wind-repowering/2026-09-09.md
+13:57:57  215 of 220 listed figures reproduced on 2026-09-09; 5 not reproducible in CI by design.

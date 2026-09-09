@@ -4,13 +4,13 @@
   "notebook_name": "01_load_explore.ipynb",
   "measured_on": "2026-08-25",
   "run_date": "2026-09-09",
-  "run_at_utc": "2026-09-09 09:21:22",
+  "run_at_utc": "2026-09-09 13:46:01",
   "environment": {
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
     "python": "3.14.7",
     "duckdb": "1.5.5",
-    "git_sha": "b561b8b3798953e56c45773ad53dfa60e859174e",
-    "github_run_id": "34334087783"
+    "git_sha": "e217475669463be60b1f0938acd20f70346cccb7",
+    "github_run_id": "34359065067"
   },
   "sources": [
     {
@@ -36,7 +36,7 @@
     "cells": 24,
     "code_cells": 20,
     "executed": 20,
-    "elapsed_s": 8.0,
+    "elapsed_s": 5.6,
     "error": null,
     "cell_times": [
       {
@@ -46,7 +46,7 @@
       },
       {
         "position": 2,
-        "seconds": 0.0,
+        "seconds": 0.2,
         "opening": "Opens (or creates) a local database file to hold the loaded tables"
       },
       {
@@ -56,7 +56,7 @@
       },
       {
         "position": 4,
-        "seconds": 2.0,
+        "seconds": 2.4,
         "opening": "Load each CSV into its own table, replacing it if it already exists"
       },
       {
@@ -106,7 +106,7 @@
       },
       {
         "position": 15,
-        "seconds": 0.3,
+        "seconds": 0.0,
         "opening": "Aggregate order-level lateness up to one row per seller: order volume,"
       },
       {
@@ -121,12 +121,12 @@
       },
       {
         "position": 19,
-        "seconds": 0.1,
+        "seconds": 0.0,
         "opening": "Final Stage 3 output: sellers with enough order volume to trust the rate,"
       },
       {
         "position": 21,
-        "seconds": 3.0,
+        "seconds": 0.9,
         "opening": "Histogram: how late rate is distributed across the 1,514 sellers with"
       },
       {
