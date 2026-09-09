@@ -4,13 +4,13 @@
   "notebook_name": "01_load_explore.ipynb",
   "measured_on": "2026-08-25",
   "run_date": "2026-09-09",
-  "run_at_utc": "2026-09-09 08:50:31",
+  "run_at_utc": "2026-09-09 09:21:22",
   "environment": {
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
     "python": "3.14.7",
     "duckdb": "1.5.5",
-    "git_sha": "534feb0f652598ba44e54d1a3d829bc2aee75223",
-    "github_run_id": "34331203695"
+    "git_sha": "b561b8b3798953e56c45773ad53dfa60e859174e",
+    "github_run_id": "34334087783"
   },
   "sources": [
     {
@@ -36,7 +36,7 @@
     "cells": 24,
     "code_cells": 20,
     "executed": 20,
-    "elapsed_s": 5.9,
+    "elapsed_s": 8.0,
     "error": null,
     "cell_times": [
       {
@@ -56,7 +56,7 @@
       },
       {
         "position": 4,
-        "seconds": 1.7,
+        "seconds": 2.0,
         "opening": "Load each CSV into its own table, replacing it if it already exists"
       },
       {
@@ -106,17 +106,17 @@
       },
       {
         "position": 15,
-        "seconds": 0.1,
+        "seconds": 0.3,
         "opening": "Aggregate order-level lateness up to one row per seller: order volume,"
       },
       {
         "position": 16,
-        "seconds": 0.1,
+        "seconds": 0.0,
         "opening": "Look at the spread of order volume per seller before deciding on a"
       },
       {
         "position": 17,
-        "seconds": 0.1,
+        "seconds": 0.0,
         "opening": "Restrict to sellers with at least the median order count (7), so the late"
       },
       {
@@ -126,7 +126,7 @@
       },
       {
         "position": 21,
-        "seconds": 1.7,
+        "seconds": 3.0,
         "opening": "Histogram: how late rate is distributed across the 1,514 sellers with"
       },
       {

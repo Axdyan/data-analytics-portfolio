@@ -4,13 +4,13 @@
   "notebook_name": "02_load_explore.ipynb",
   "measured_on": "2026-08-25",
   "run_date": "2026-09-09",
-  "run_at_utc": "2026-09-09 08:50:23",
+  "run_at_utc": "2026-09-09 09:21:03",
   "environment": {
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
     "python": "3.14.7",
     "duckdb": "1.5.5",
-    "git_sha": "534feb0f652598ba44e54d1a3d829bc2aee75223",
-    "github_run_id": "34331203695"
+    "git_sha": "b561b8b3798953e56c45773ad53dfa60e859174e",
+    "github_run_id": "34334087783"
   },
   "sources": [
     {
@@ -32,7 +32,7 @@
     "cells": 31,
     "code_cells": 25,
     "executed": 25,
-    "elapsed_s": 26.3,
+    "elapsed_s": 27.6,
     "error": null,
     "cell_times": [
       {
@@ -47,7 +47,7 @@
       },
       {
         "position": 3,
-        "seconds": 12.6,
+        "seconds": 12.9,
         "opening": "All 5 monthly files share the same schema, one continuous event stream split"
       },
       {
@@ -67,7 +67,7 @@
       },
       {
         "position": 7,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "See what values event_type takes and how many rows fall in each,"
       },
       {
@@ -92,7 +92,7 @@
       },
       {
         "position": 13,
-        "seconds": 1.6,
+        "seconds": 1.7,
         "opening": "Convert the raw counts into conversion rates between stages, both against"
       },
       {
@@ -117,12 +117,12 @@
       },
       {
         "position": 20,
-        "seconds": 1.1,
+        "seconds": 1.2,
         "opening": "Pull retention percentages for charting, excluding the most recent cohort"
       },
       {
         "position": 21,
-        "seconds": 0.9,
+        "seconds": 1.5,
         "opening": "import matplotlib.pyplot as plt"
       },
       {
@@ -132,7 +132,7 @@
       },
       {
         "position": 24,
-        "seconds": 3.5,
+        "seconds": 3.6,
         "opening": "Reshape the funnel counts into one row per stage, in funnel order, both"
       },
       {
@@ -475,7 +475,7 @@
       ],
       "kind": "money",
       "expected": 0,
-      "measured": 477247.90000019874,
+      "measured": 477247.90000020247,
       "status": "reproduced",
       "reason": "",
       "note": "",

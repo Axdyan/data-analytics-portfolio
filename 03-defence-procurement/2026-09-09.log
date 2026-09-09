@@ -1,83 +1,83 @@
-08:50:27  project 03-defence-procurement in /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/03-defence-procurement
-08:50:27  executing 03_load_explore.ipynb
-08:50:28  cell   1      0.2s  DuckDB for the SQL, requests to pull the file. hashlib and json are for the
-08:50:29  cell   2      0.5s  Download the file and write down what actually came back: when I pulled it,
-08:50:29  cell   3      0.0s  Opens (or creates) a local database file to hold the loaded table
-08:50:30  cell   4      0.6s  Everything loads as text. read_csv_auto would guess types here and I'd
-08:50:30  cell   5      0.0s  Row and column count, a first check on whether what landed matches what the
-08:50:30  cell   6      0.2s  Check the column names before writing anything against this table. Headers
-08:50:30  cell   7      0.0s  Anything DuckDB couldn't read lands here. I expect nothing, since every
-08:50:30  cell   8      0.0s  Short names for the 25 columns I actually use. The file ships 91, most of
-08:50:30  cell   9      0.1s  Build the staging table: short names, types I picked rather than types that
-08:50:30  cell  10      0.0s  Check the casts landed where I meant them to, mainly that value came out a
-08:50:30  cell  11      0.0s  Staging should be exactly as tall as raw. If these differ then something in
-08:50:30  cell  12      0.0s  Every assertion is one query that returns the rows that failed it. This
-08:50:30  cell  13      0.0s  A1: the contract key. Everything downstream assumes one row per contract
-08:50:30  cell  14      0.0s  A2: anything DuckDB rejected at load. Same reject table I looked at
-08:50:30  cell  15      0.0s  A3: amendment numbers that aren't three digits. These are exactly the rows
-08:50:30  cell  16      0.0s  Before deciding where the non-numeric codes sort, look at what they are.
-08:50:30  cell  17      0.0s  A4: rows where the raw text is present but the cast came back empty. This
-08:50:30  cell  18      0.0s  A5: zero-value rows, and there are a lot of them. Keeping them, they're
-08:50:30  cell  19      0.0s  A6: negative values. Only one of them, but this is a BLOCK because a
-08:50:30  cell  20      0.0s  A7: anything over $100M. Not wrong on its own, contracts that size exist here, but worth r
-08:50:30  cell  21      0.0s  A10: rows where the country is the literal string "N/A". Not a null, an
-08:50:30  cell  22      0.0s  A11: this file is meant to be one department's awards. If a third
-08:50:30  cell  23      0.0s  A12: every end-user string that mentions defence in either language. The
-08:50:30  cell  24      0.0s  A13: contracts with no UNSPSC code. These can't be segmented by category,
-08:50:30  cell  25      0.0s  A14: GSIN, the other classification field. Populated so rarely it can't
-08:50:30  cell  26      0.0s  A15: the Canadian content field. This is the one column that would answer
-08:50:30  cell  27      0.0s  A16: the publisher's own standardized supplier name. Too sparse to use as
-08:50:30  cell  28      0.0s  A17: award dates outside the window this file is supposed to cover. A date
-08:50:30  cell  29      0.0s  A20: award dates that are missing altogether. A17 only catches dates that
-08:50:30  cell  30      0.0s  A18: any currency other than CAD. If this ever fires then every total in
-08:50:30  cell  31      0.0s  The suite as it stands. A8, A9 and A19 join it later, once the dedup and
-08:50:30  cell  32      0.0s  Draft the country crosswalk. Two-letter codes pass straight through since
-08:50:30  cell  33      0.0s  Load the reviewed crosswalk back in and prove it covers every country value
-08:50:30  cell  34      0.0s  A23: rows with no supplier name at all. The export reconciliation found one
-08:50:30  cell  35      0.1s  A deterministic key for grouping the same company written different ways:
-08:50:30  cell  36      0.0s  The blank normalisation gets used in three different places from here on,
-08:50:30  cell  37      0.0s  Resolve the N/A country by rule instead of by hand: if the same normalised
-08:50:30  cell  38      0.0s  One country per row: the crosswalk value where there is one, otherwise the
-08:50:30  cell  39      0.0s  End-user dimension with the defence flag. This is a substring match, not an
-08:50:30  cell  40      0.0s  How much keyed value moves if the non-numeric amendment codes are treated
-08:50:31  cell  41      0.3s  One row per contract, the highest amendment winning. This is the step a
-08:50:31  cell  42      0.0s  A8: contracts whose surviving row says $0 while an earlier amendment
-08:50:31  cell  43      0.0s  The wrong answer next to the right one. Summing every amendment row is what
-08:50:31  cell  44      0.0s  A21: the total must be constant within a contract. This started as a
-08:50:31  cell  45      0.0s  What actually changes from one amendment to the next. The total never
-08:50:31  cell  46      0.0s  The same point on a single contract, which is the version worth putting in
-08:50:31  cell  47      0.0s  The country wrong answer, three ways side by side. The literal filter is
-08:50:31  cell  48      0.0s  Why the dual coding is there at all: the publisher changed how they write
-08:50:31  cell  49      0.0s  Reading A: Canadian share by registered address, for everything and for the
-08:50:31  cell  50      0.0s  Canadian-address defence suppliers ranked by keyed value, with the running
-08:50:31  cell  51      0.0s  Every name key that absorbed more than one legal-name spelling, written out
-08:50:31  cell  52      0.0s  The template for the hand-researched control crosswalk.
-08:50:31  cell  53      0.0s  Load the researched crosswalk and measure how much of the Canadian-address
-08:50:31  cell  54      0.0s  Supplier dimension. Everyone outside the researched crosswalk defaults to
-08:50:31  cell  55      0.0s  The sensitivity table, which is what this project actually delivers. Two
-08:50:31  cell  56      0.0s  Where the 70% target actually falls against each row. Written out rather
-08:50:33  cell  57      2.1s  Chart 1, the deliverable in a picture. Reading A is a point, reading B is a
-08:50:33  cell  58      0.2s  Keyword search on the free-text fields, kept because it fails. If segments
-08:50:33  cell  59      0.1s  The UNSPSC field holds more than one code per row, starred and newline
-08:50:33  cell  60      0.0s  How much of the defence value this actually costs. Segmenting on the first
-08:50:33  cell  61      0.0s  Family grain is a container, not a category. 7818 holds airframe heavy
-08:50:33  cell  62      0.0s  Draft the UNSPSC segment crosswalk from the families actually present in
-08:50:33  cell  63      0.0s  UNSPSC dimension, keyed on the raw field rather than on a cleaned code,
-08:50:34  cell  64      0.0s  Segments and spend analysis. Concentration is measured twice, once at the
-08:50:34  cell  65      0.0s  The same spend counted two ways. At legal-entity grain a contract belongs
-08:50:34  cell  66      0.0s  Top Canadian-address defence suppliers, ranked twice. The first table is
-08:50:35  cell  67      1.1s  Chart 2, the same suppliers drawn twice. The left panel is the award data
-08:50:35  cell  68      0.1s  The amendment-grain fact, and the clearest place to show the grain defect.
-08:50:35  cell  69      0.0s  Before reading anything into the amendment deltas, work out what
-08:50:35  cell  70      0.0s  The previous cell said neither reading explains the file, so partition the
-08:50:35  cell  71      0.0s  A24: the file calls every row a contract, and the publisher's instrument
-08:50:35  cell  72      0.0s  A25: the publisher's own row type. Original rows sit at amendment 000,
-08:50:35  cell  73      0.0s  A26: the rows with no UNSPSC code, no instrument type and no amendment
-08:50:35  cell  74      0.0s  What excluding the offers does to the readings. The instrument type says
-08:50:35  cell  75      0.0s  The two dimensions the star was still missing. Country is keyed on the
-08:50:35  cell  76      0.1s  The star goes out as CSVs for Power BI. The folder sits under data, which
-08:50:35  cell  77      0.0s  The finished assertion suite, every rule that ran and what was decided about
-08:50:35  notebook finished: 77 of 77 code cells in 8.4s
-08:50:35  source canadabuys_history: unchanged, identical to the committed fingerprint (1 entries)
-08:50:36  report written: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/ci/reports/03-defence-procurement/2026-09-09.md
-08:50:36  334 of 337 listed figures reproduced on 2026-09-09; 3 not reproducible in CI by design.
+09:21:08  project 03-defence-procurement in /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/03-defence-procurement
+09:21:08  executing 03_load_explore.ipynb
+09:21:11  cell   1      0.2s  DuckDB for the SQL, requests to pull the file. hashlib and json are for the
+09:21:13  cell   2      1.5s  Download the file and write down what actually came back: when I pulled it,
+09:21:13  cell   3      0.0s  Opens (or creates) a local database file to hold the loaded table
+09:21:13  cell   4      0.6s  Everything loads as text. read_csv_auto would guess types here and I'd
+09:21:13  cell   5      0.0s  Row and column count, a first check on whether what landed matches what the
+09:21:14  cell   6      0.2s  Check the column names before writing anything against this table. Headers
+09:21:14  cell   7      0.0s  Anything DuckDB couldn't read lands here. I expect nothing, since every
+09:21:14  cell   8      0.0s  Short names for the 25 columns I actually use. The file ships 91, most of
+09:21:14  cell   9      0.1s  Build the staging table: short names, types I picked rather than types that
+09:21:14  cell  10      0.0s  Check the casts landed where I meant them to, mainly that value came out a
+09:21:14  cell  11      0.0s  Staging should be exactly as tall as raw. If these differ then something in
+09:21:14  cell  12      0.0s  Every assertion is one query that returns the rows that failed it. This
+09:21:14  cell  13      0.0s  A1: the contract key. Everything downstream assumes one row per contract
+09:21:14  cell  14      0.0s  A2: anything DuckDB rejected at load. Same reject table I looked at
+09:21:14  cell  15      0.0s  A3: amendment numbers that aren't three digits. These are exactly the rows
+09:21:14  cell  16      0.0s  Before deciding where the non-numeric codes sort, look at what they are.
+09:21:14  cell  17      0.0s  A4: rows where the raw text is present but the cast came back empty. This
+09:21:14  cell  18      0.0s  A5: zero-value rows, and there are a lot of them. Keeping them, they're
+09:21:14  cell  19      0.0s  A6: negative values. Only one of them, but this is a BLOCK because a
+09:21:14  cell  20      0.0s  A7: anything over $100M. Not wrong on its own, contracts that size exist here, but worth r
+09:21:14  cell  21      0.0s  A10: rows where the country is the literal string "N/A". Not a null, an
+09:21:14  cell  22      0.0s  A11: this file is meant to be one department's awards. If a third
+09:21:14  cell  23      0.0s  A12: every end-user string that mentions defence in either language. The
+09:21:14  cell  24      0.0s  A13: contracts with no UNSPSC code. These can't be segmented by category,
+09:21:14  cell  25      0.0s  A14: GSIN, the other classification field. Populated so rarely it can't
+09:21:14  cell  26      0.0s  A15: the Canadian content field. This is the one column that would answer
+09:21:14  cell  27      0.0s  A16: the publisher's own standardized supplier name. Too sparse to use as
+09:21:14  cell  28      0.0s  A17: award dates outside the window this file is supposed to cover. A date
+09:21:14  cell  29      0.0s  A20: award dates that are missing altogether. A17 only catches dates that
+09:21:14  cell  30      0.0s  A18: any currency other than CAD. If this ever fires then every total in
+09:21:14  cell  31      0.0s  The suite as it stands. A8, A9 and A19 join it later, once the dedup and
+09:21:14  cell  32      0.0s  Draft the country crosswalk. Two-letter codes pass straight through since
+09:21:14  cell  33      0.0s  Load the reviewed crosswalk back in and prove it covers every country value
+09:21:14  cell  34      0.0s  A23: rows with no supplier name at all. The export reconciliation found one
+09:21:14  cell  35      0.1s  A deterministic key for grouping the same company written different ways:
+09:21:14  cell  36      0.0s  The blank normalisation gets used in three different places from here on,
+09:21:14  cell  37      0.0s  Resolve the N/A country by rule instead of by hand: if the same normalised
+09:21:14  cell  38      0.0s  One country per row: the crosswalk value where there is one, otherwise the
+09:21:14  cell  39      0.0s  End-user dimension with the defence flag. This is a substring match, not an
+09:21:14  cell  40      0.0s  How much keyed value moves if the non-numeric amendment codes are treated
+09:21:15  cell  41      0.3s  One row per contract, the highest amendment winning. This is the step a
+09:21:15  cell  42      0.0s  A8: contracts whose surviving row says $0 while an earlier amendment
+09:21:15  cell  43      0.0s  The wrong answer next to the right one. Summing every amendment row is what
+09:21:15  cell  44      0.0s  A21: the total must be constant within a contract. This started as a
+09:21:15  cell  45      0.0s  What actually changes from one amendment to the next. The total never
+09:21:15  cell  46      0.0s  The same point on a single contract, which is the version worth putting in
+09:21:15  cell  47      0.0s  The country wrong answer, three ways side by side. The literal filter is
+09:21:15  cell  48      0.0s  Why the dual coding is there at all: the publisher changed how they write
+09:21:15  cell  49      0.0s  Reading A: Canadian share by registered address, for everything and for the
+09:21:15  cell  50      0.0s  Canadian-address defence suppliers ranked by keyed value, with the running
+09:21:15  cell  51      0.0s  Every name key that absorbed more than one legal-name spelling, written out
+09:21:15  cell  52      0.0s  The template for the hand-researched control crosswalk.
+09:21:15  cell  53      0.0s  Load the researched crosswalk and measure how much of the Canadian-address
+09:21:15  cell  54      0.0s  Supplier dimension. Everyone outside the researched crosswalk defaults to
+09:21:15  cell  55      0.0s  The sensitivity table, which is what this project actually delivers. Two
+09:21:15  cell  56      0.0s  Where the 70% target actually falls against each row. Written out rather
+09:21:16  cell  57      1.4s  Chart 1, the deliverable in a picture. Reading A is a point, reading B is a
+09:21:16  cell  58      0.2s  Keyword search on the free-text fields, kept because it fails. If segments
+09:21:16  cell  59      0.1s  The UNSPSC field holds more than one code per row, starred and newline
+09:21:16  cell  60      0.0s  How much of the defence value this actually costs. Segmenting on the first
+09:21:16  cell  61      0.0s  Family grain is a container, not a category. 7818 holds airframe heavy
+09:21:16  cell  62      0.0s  Draft the UNSPSC segment crosswalk from the families actually present in
+09:21:17  cell  63      0.0s  UNSPSC dimension, keyed on the raw field rather than on a cleaned code,
+09:21:17  cell  64      0.0s  Segments and spend analysis. Concentration is measured twice, once at the
+09:21:17  cell  65      0.0s  The same spend counted two ways. At legal-entity grain a contract belongs
+09:21:17  cell  66      0.0s  Top Canadian-address defence suppliers, ranked twice. The first table is
+09:21:18  cell  67      1.1s  Chart 2, the same suppliers drawn twice. The left panel is the award data
+09:21:18  cell  68      0.1s  The amendment-grain fact, and the clearest place to show the grain defect.
+09:21:18  cell  69      0.0s  Before reading anything into the amendment deltas, work out what
+09:21:18  cell  70      0.0s  The previous cell said neither reading explains the file, so partition the
+09:21:18  cell  71      0.0s  A24: the file calls every row a contract, and the publisher's instrument
+09:21:18  cell  72      0.0s  A25: the publisher's own row type. Original rows sit at amendment 000,
+09:21:18  cell  73      0.0s  A26: the rows with no UNSPSC code, no instrument type and no amendment
+09:21:18  cell  74      0.0s  What excluding the offers does to the readings. The instrument type says
+09:21:18  cell  75      0.0s  The two dimensions the star was still missing. Country is keyed on the
+09:21:18  cell  76      0.1s  The star goes out as CSVs for Power BI. The folder sits under data, which
+09:21:18  cell  77      0.0s  The finished assertion suite, every rule that ran and what was decided about
+09:21:18  notebook finished: 77 of 77 code cells in 9.8s
+09:21:18  source canadabuys_history: unchanged, identical to the committed fingerprint (1 entries)
+09:21:19  report written: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/ci/reports/03-defence-procurement/2026-09-09.md
+09:21:19  334 of 337 listed figures reproduced on 2026-09-09; 3 not reproducible in CI by design.

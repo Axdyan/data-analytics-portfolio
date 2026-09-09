@@ -4,13 +4,13 @@
   "notebook_name": "04_load_explore.ipynb",
   "measured_on": "2026-09-03",
   "run_date": "2026-09-09",
-  "run_at_utc": "2026-09-09 08:50:25",
+  "run_at_utc": "2026-09-09 09:21:10",
   "environment": {
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
     "python": "3.14.7",
     "duckdb": "1.5.5",
-    "git_sha": "534feb0f652598ba44e54d1a3d829bc2aee75223",
-    "github_run_id": "34331203695"
+    "git_sha": "b561b8b3798953e56c45773ad53dfa60e859174e",
+    "github_run_id": "34334087783"
   },
   "sources": [
     {
@@ -69,22 +69,22 @@
     "cells": 87,
     "code_cells": 87,
     "executed": 87,
-    "elapsed_s": 670.0,
+    "elapsed_s": 685.9,
     "error": null,
     "cell_times": [
       {
         "position": 1,
-        "seconds": 0.0,
+        "seconds": 0.2,
         "opening": "Nothing here needs a database yet. Before I commit to pulling turbine data I want"
       },
       {
         "position": 2,
-        "seconds": 2.3,
+        "seconds": 2.9,
         "opening": "The turbine data is served by a PostgREST API, and PostgREST publishes an OpenAPI"
       },
       {
         "position": 3,
-        "seconds": 0.2,
+        "seconds": 0.4,
         "opening": "Older releases are catalogued as separate records rather than as versions of one"
       },
       {
@@ -94,12 +94,12 @@
       },
       {
         "position": 5,
-        "seconds": 0.8,
+        "seconds": 1.0,
         "opening": "The bulk downloads have moved host at least once over the years, so I check which"
       },
       {
         "position": 6,
-        "seconds": 0.2,
+        "seconds": 0.3,
         "opening": "Every release ships a changelog, and it is 31 KB against 5 MB for a data file, so it"
       },
       {
@@ -109,7 +109,7 @@
       },
       {
         "position": 8,
-        "seconds": 3.8,
+        "seconds": 1.0,
         "opening": "The oldest release, April 2018. Rotor diameters recorded in here predate every"
       },
       {
@@ -119,7 +119,7 @@
       },
       {
         "position": 10,
-        "seconds": 0.3,
+        "seconds": 0.5,
         "opening": "The changelog records the retrofit fields being renamed part way through the series,"
       },
       {
@@ -129,12 +129,12 @@
       },
       {
         "position": 12,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "Opens (or creates) the local database file that holds this project's tables."
       },
       {
         "position": 13,
-        "seconds": 0.3,
+        "seconds": 0.4,
         "opening": "Load the 2018 file as text, every column. This one codes missing numbers as -9999 and"
       },
       {
@@ -149,7 +149,7 @@
       },
       {
         "position": 16,
-        "seconds": 0.4,
+        "seconds": 0.7,
         "opening": "Load it as text, same as the 2018 file. A REST endpoint can change a type between"
       },
       {
@@ -194,12 +194,12 @@
       },
       {
         "position": 25,
-        "seconds": 248.6,
+        "seconds": 242.5,
         "opening": "Only the current year of the generation data was ever confirmed as a download. The"
       },
       {
         "position": 26,
-        "seconds": 54.0,
+        "seconds": 59.3,
         "opening": "Two years from opposite ends of the range. The risk here is not that a file is missing,"
       },
       {
@@ -214,7 +214,7 @@
       },
       {
         "position": 29,
-        "seconds": 50.9,
+        "seconds": 56.8,
         "opening": "Where these files actually live. HEAD came back 503 on every past year while GET came"
       },
       {
@@ -224,7 +224,7 @@
       },
       {
         "position": 31,
-        "seconds": 36.5,
+        "seconds": 35.7,
         "opening": "Prove the guard rejects something before thirteen downloads depend on it. The path that"
       },
       {
@@ -234,7 +234,7 @@
       },
       {
         "position": 33,
-        "seconds": 123.3,
+        "seconds": 120.6,
         "opening": "Every year the panel needs. Each file is checked before it is written, so a year that"
       },
       {
@@ -249,17 +249,17 @@
       },
       {
         "position": 36,
-        "seconds": 0.7,
+        "seconds": 0.9,
         "opening": "Sheet names at three points across the range: the oldest file, one from the middle, and"
       },
       {
         "position": 37,
-        "seconds": 0.6,
+        "seconds": 0.7,
         "opening": "Where the real header sits. These workbooks open with several rows of title and notes"
       },
       {
         "position": 38,
-        "seconds": 0.6,
+        "seconds": 0.7,
         "opening": "The column names at row 5, compared across the range. The later files wrap header text"
       },
       {
@@ -274,12 +274,12 @@
       },
       {
         "position": 41,
-        "seconds": 6.7,
+        "seconds": 7.4,
         "opening": "Smoke test on the two ends of the range before committing to thirteen loads. 2013 is the"
       },
       {
         "position": 42,
-        "seconds": 62.7,
+        "seconds": 67.6,
         "opening": "Every year, keeping only the wind rows. Filtering before collecting keeps this small,"
       },
       {
@@ -364,7 +364,7 @@
       },
       {
         "position": 59,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "The analysis sample: plants that report a positive number in every one of the twelve"
       },
       {
@@ -374,7 +374,7 @@
       },
       {
         "position": 61,
-        "seconds": 1.2,
+        "seconds": 1.6,
         "opening": "What is available for the estimation work. The main estimator here gets written out by"
       },
       {
@@ -394,7 +394,7 @@
       },
       {
         "position": 65,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "Capacity as it stood in 2018, per plant. Only projects that map to a single plant are"
       },
       {
@@ -429,7 +429,7 @@
       },
       {
         "position": 72,
-        "seconds": 0.9,
+        "seconds": 1.9,
         "opening": "The regression everyone would run first: log generation on a treated-and-after flag with"
       },
       {
@@ -449,7 +449,7 @@
       },
       {
         "position": 76,
-        "seconds": 6.1,
+        "seconds": 6.6,
         "opening": "Uncertainty, by redrawing plants. Generation at one plant is correlated across its own"
       },
       {
@@ -459,7 +459,7 @@
       },
       {
         "position": 78,
-        "seconds": 17.1,
+        "seconds": 18.5,
         "opening": "Does the uplift differ between plants that fitted a bigger rotor and plants that did not?"
       },
       {
@@ -469,7 +469,7 @@
       },
       {
         "position": 80,
-        "seconds": 42.7,
+        "seconds": 46.7,
         "opening": "The same estimate under the alternatives that could have been chosen instead, each one a"
       },
       {
@@ -499,7 +499,7 @@
       },
       {
         "position": 86,
-        "seconds": 0.3,
+        "seconds": 0.2,
         "opening": "The star schema for the dashboard, written out as four CSVs. The dashboard reads the same"
       },
       {
