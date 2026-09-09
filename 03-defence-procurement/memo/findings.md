@@ -273,7 +273,7 @@ instrument type and no amendment type are the same 1,762 rows, and none of them
 carries a CanadaBuys `CW` reference number. They are records carried over from
 the procurement system that preceded CanadaBuys, kept in this file because their
 amendments continue, and every undated row in the file is one of them (A26). In
-the defence subset they are 290 contracts worth $10,889.4M, 54.8% of the value,
+the defence subset they are 290 contracts worth $10,889.5M, 54.8% of the value,
 and all 260 unclassified contracts are among them. The gap is not a coding lapse
 scattered through the file. It is the old system's records, and they are the
 large, long-running contracts.

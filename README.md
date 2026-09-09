@@ -12,7 +12,7 @@ runs late rates from 30% up to 64%, and that's where the real delivery risk on t
 concentrates. Full writeup in [`01-seller-risk/memo/findings.md`](01-seller-risk/memo/findings.md).
 
 **Funnel & retention** (cosmetics shop clickstream): the real leak in the funnel sits before the
-cart, not after, two-thirds of sessions that view a product never add anything to a cart, while
+cart, not after, three in four sessions that view a product never add anything to a cart, while
 cart-to-purchase conversion is a comparatively gentle 1 in 6. $23.99M of $29.86M in cart value,
 80.3%, is never converted, and month-1 retention falls off a cliff for every cohort but one
 unexplained outlier. Full writeup in [`02-funnel-retention/memo/findings.md`](02-funnel-retention/memo/findings.md).
@@ -28,7 +28,7 @@ missed depending on the definition, and the Strategy does not publish one. Full 
 
 **Wind repowering uplift** (US Wind Turbine Database and EIA-923 generation): from the first full
 year after repowering, a repowered plant generates 48% more than it did the year before the
-work, relative to 498 never-repowered plants of the same vintage, with a 95% interval of 37% to
+work, relative to 498 never-repowered plants of the same vintage, with a 95% interval of 36% to
 61% and a minimum detectable effect of 14%. About nine points of that is added capacity, the
 estimate is an upper bound, and whether the rotor grew (44% against 34%) is inside the
 uncertainty. The obvious fixed-effects regression says 30% and the memo shows why that is not

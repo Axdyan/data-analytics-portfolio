@@ -63,7 +63,7 @@ Known defects, measured on this pull:
   asserted to sit entirely inside the published data.
 - **A real event that looks like an error.** From 15:00 on 2003-08-14 to 02:00 on
   2003-08-15, 12 hours read below half of the same hour a week earlier, the lowest 2,270 MW
-  against 21,894. Kept; fifteen years before the earliest training window.
+  against 22,380. Kept; fifteen years before the earliest training window.
 - **No weather, no price, no forecast of the publisher's own.** The report is actuals only.
   Nothing in it says what the operator forecast for the same hours, so no comparison with
   the operator's forecast is made here.
@@ -99,10 +99,11 @@ Known defects, with the assertion that guards each and the count on this pull:
 - **The published difference is not always zone total minus Ontario demand.** On 29,814 rows,
   by at most 75 MW (B12). The zonal data is not used for anything the difference would
   affect.
-- **Three hours with every zone at zero.** On 2016-05-29 at hours 12 to 14 every zone and the
-  zone total read 0 while Ontario demand reads 17,799 to 18,416 MW, so the published
-  difference is minus the whole province. These are the extreme rows the notebook prints;
-  they sit outside the exported window.
+- **Thirty-five hours with every zone at zero.** On 2016-05-29 at hours 5 to 15, and on
+  2016-10-31 at every hour, every zone and the zone total read 0 while Ontario demand reads
+  12,301 to 18,416 MW, so the published difference is minus the whole province. The three
+  largest, hours 13 to 15 of 2016-05-29, are the extreme rows the notebook prints; all 35
+  sit outside the exported window.
 
 ## 3. What travels with the repo
 

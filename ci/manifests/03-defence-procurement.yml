@@ -1516,12 +1516,11 @@ numbers:
     expected: 290
     sources: [canadabuys_history]
   - id: legacy_defence_value
-    quote: "worth $10,889.4M"
+    quote: "worth $10,889.5M"
     where: [findings]
     kind: money
     query: SELECT ROUND(SUM(contract_value_cad) / 1e6, 1) FROM fct_contract WHERE is_dnd AND contract_value_cad >= 0 AND NOT is_cw_reference
     expected: 10889.5
-    note: the memo prints 10,889.4; the two legacy rows of the notebook's table sum to 10,889.46, so the memo truncated rather than rounded
     sources: [canadabuys_history]
   - id: legacy_defence_share
     quote: "54.8% of the value"

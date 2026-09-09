@@ -281,8 +281,8 @@ and the count above 5 MW so the reader can see it is rounding.
 
 **Measured.** 129 of 204,695 rows carry the separator, all in the difference column. The
 zones miss the total on 72,152 rows, 4 of them by more than 5 MW, the largest by 531 MW on
-2012-05-06; the published difference misses on 29,814 rows by at most 75 MW; three hours on
-2016-05-29 have every zone at zero. Toronto is 35.7% of 2025 zonal demand, Southwest 19.3%,
+2012-05-06; the published difference misses on 29,814 rows by at most 75 MW; 35 hours on two days
+in 2016 have every zone at zero. Toronto is 35.7% of 2025 zonal demand, Southwest 19.3%,
 West 11.3%, Bruce 0.7%.
 
 **What would reverse it.** A user whose decision is regional.

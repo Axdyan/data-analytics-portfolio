@@ -63,12 +63,12 @@ numbers:
     expected: 3.4
     sources: [cosmetics_kaggle]
   - id: view_without_cart_pct
-    quote: "two-thirds of sessions that view a product never add anything to a cart"
+    quote: "three in four sessions that view a product never add anything to a cart"
     where: [README, findings]
     kind: pct
     query: SELECT ROUND(100.0 * (1 - sessions_with_cart * 1.0 / sessions_with_view), 1) FROM session_funnel_counts
     expected: 77.0
-    note: the README says two-thirds and the memo says close to three out of four; the table says 77.0% of viewing sessions never cart
+    note: 77.0% of viewing sessions never cart; the memo says close to three out of four and the READMEs say three in four
     sources: [cosmetics_kaggle]
   - id: cart_to_purchase
     quote: "about 1 in 6 carting sessions converting"

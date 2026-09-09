@@ -1,14 +1,16 @@
 # Findings: what repowering did to generation
 
 Measured on the 2026-09-03 pull of the US Wind Turbine Database and the 2013 to 2025
-EIA-923 generation files. Every number below has a row in `mart_estimates` or
+EIA-923 generation files, re-pulled byte-identical on 2026-09-09, when the notebook was run
+top to bottom again and every interval, standard error and test statistic below was
+re-measured from that run. Every number below has a row in `mart_estimates` or
 `mart_event_study` behind it, and the notebook produces all of them top to bottom.
 
 ## The one-paragraph version
 
 From the first full year after repowering, a repowered plant generates about 48% more
 electricity than it did the year before the work, relative to never-repowered plants of the
-same vintage over the same years. The 95% interval runs from 37% to 61%. The design could
+same vintage over the same years. The 95% interval runs from 36% to 61%. The design could
 have detected an uplift of 14% with 80% power, so this is not a marginal result. About nine
 points of it is more nameplate capacity rather than better performance, the plants that were
 repowered were already running slightly better than their controls beforehand, and four of
@@ -111,18 +113,18 @@ repowering, and the version including the transition year is reported beside it.
 
 | Quantity | Log points | As generation | 95% interval |
 |---|---|---|---|
-| **From the first full year after repowering, the headline** | 0.395 | **+48.4%** | +36.6% to +61.2% |
-| Including the repowering year | 0.289 | +33.5% | +24.0% to +43.8% |
-| The repowering year alone | minus 0.069 | minus 6.7% | minus 14.7% to +0.9% |
+| **From the first full year after repowering, the headline** | 0.395 | **+48.4%** | +36.3% to +61.4% |
+| Including the repowering year | 0.289 | +33.5% | +23.4% to +44.5% |
+| The repowering year alone | minus 0.069 | minus 6.7% | minus 14.2% to +1.5% |
 | Naive regression, every post year averaged | 0.266 | +30.4% | +23.7% to +37.5% |
 
 Standard errors come from redrawing plants with replacement 999 times, separately within
 the treated and control groups, so that a plant's twelve years travel together. The
-interval is pointwise.
+headline's standard error is 0.043 log points. The interval is pointwise.
 
 **The pre-trend check.** The three placebo years before repowering, measured the same way as
 the effect, come out at +3.9%, +2.3% and minus 4.5%, each inside its own interval. A joint test
-that all three are zero gives a Wald statistic of 5.06 on 3 degrees of freedom, p = 0.167.
+that all three are zero gives a Wald statistic of 3.94 on 3 degrees of freedom, p = 0.268.
 Treated and control plants were not drifting apart before treatment, which is the assumption
 the whole comparison rests on. The cohort-level placebos are noisier than the aggregate: the
 2020 cohort ran 12 to 17 points above its base year in 2013 to 2017, and the 2022 cohort 20
@@ -135,15 +137,15 @@ repowering, so the right-hand end rests on fewer plants.
 
 | Years since repowering | Effect | 95% interval | Cohorts, plants |
 |---|---|---|---|
-| +1 | +33.9% | +21.2% to +48.0% | 7, 80 |
-| +2 | +46.6% | +35.0% to +59.4% | 6, 73 |
-| +3 | +54.7% | +40.9% to +69.9% | 5, 67 |
-| +4 | +59.4% | +44.3% to +75.9% | 4, 61 |
-| +5 | +61.6% | +42.8% to +82.9% | 3, 38 |
+| +1 | +33.9% | +20.9% to +48.1% | 7, 80 |
+| +2 | +46.6% | +34.4% to +59.8% | 6, 73 |
+| +3 | +54.7% | +40.2% to +70.6% | 5, 67 |
+| +4 | +59.4% | +43.5% to +77.0% | 4, 61 |
+| +5 | +61.6% | +41.6% to +84.4% | 3, 38 |
 
 Part of the rise is composition: the plants that reach +4 and +5 are the 2017 to 2020
 cohorts, and the 2019 and 2020 cohorts show the largest effects of any (62.7% and 53.4%
-against 36% for 2017 and 2018). Part of it looks real within cohort. I cannot separate the two
+against 36.4% and 36.6% for 2017 and 2018). Part of it looks real within cohort. I cannot separate the two
 with seven cohorts.
 
 **Minimum detectable effect.** Before looking at any treated plant, the question is how large
@@ -152,7 +154,7 @@ control plants' own changes from the year before each cohort's repowering to the
 it, which is what a treated cohort would look like if repowering did nothing, and pooling it
 across cohorts by size, the design's standard error is 0.0475. At 80% power and a two-sided
 5% test that is a minimum detectable effect of 0.133 in logs, or 14.2% more generation. The
-same calculation after the fact, from the bootstrap spread, gives 12.5%. The observed effect is
+same calculation after the fact, from the bootstrap spread, gives 12.9%. The observed effect is
 about three times the smallest one this design could have found, so the result does not
 depend on a lucky draw. Had the effect been 10%, this study would have missed it more often
 than not, and that is worth saying because 10% is a number that gets quoted for repowering.
@@ -168,9 +170,9 @@ up noise.
 
 | Rotor class | Plants | Effect from the first full year | 95% interval |
 |---|---|---|---|
-| Rotor grew (median +18%) | 66 | +44.3% | +34.0% to +55.4% |
-| Rotor unchanged or smaller | 10 | +34.5% | +27.9% to +41.3% |
-| No 2018 record | 4 | +198.6% | +114.6% to +315.2% |
+| Rotor grew (median +18%) | 66 | +44.3% | +34.0% to +55.6% |
+| Rotor unchanged or smaller | 10 | +34.5% | +27.1% to +42.2% |
+| No 2018 record | 4 | +198.6% | +35.7% to +556.7% |
 
 The bigger-rotor plants gained about ten points more than the others, and the two intervals
 overlap. With ten plants in the second class I would not build anything on that gap. What I
@@ -178,7 +180,7 @@ can say is that the plants that did not grow the rotor still gained a third, so 
 not mainly a blade story, or at least not one this data can see.
 
 The four plants with no 2018 record are a different matter. Three of them carry no project id
-at all in the current release, two have their build year rewritten to the repowering year, and
+at all in the current release, three have their build year rewritten to the repowering year, and
 one went from 75 GWh a year to 262. Those are not repowerings in the sense of new blades on
 old towers; they are rebuilds that the retrofit flag does not distinguish. They meet the
 treatment definition I set before looking at any outcome, so they stay in the headline, and
@@ -190,13 +192,13 @@ Every alternative is estimated the same way as the headline, with its own bootst
 
 | Design | Treated | Controls | Effect | 95% interval |
 |---|---|---|---|---|
-| Headline: balanced panel, logs, never-repowered controls in the vintage window | 80 | 498 | +48.4% | +36.6% to +61.2% |
-| Drop the four plants with no 2018 turbine record | 76 | 498 | +43.0% | +33.5% to +53.3% |
-| Mixed plants counted as treated from their first retrofit | 105 | 498 | +52.8% | +41.3% to +65.4% |
-| Levels instead of logs, GWh per plant-year | 80 | 498 | +108 GWh, or +31.1% of the 348 GWh treated plants averaged the year before | +85 to +132 GWh |
-| Controls limited to the 15 states holding a treated plant | 80 | 292 | +56.8% | +43.5% to +71.4% |
-| Unbalanced panel, every plant contributes the years it has | 80 | 550 | +49.9% | +37.9% to +63.1% |
-| Base is the mean of the three years before repowering | 80 | 498 | +49.6% | +40.0% to +59.9% |
+| Headline: balanced panel, logs, never-repowered controls in the vintage window | 80 | 498 | +48.4% | +36.3% to +61.4% |
+| Drop the four plants with no 2018 turbine record | 76 | 498 | +43.0% | +33.2% to +53.4% |
+| Mixed plants counted as treated from their first retrofit | 105 | 498 | +52.8% | +40.6% to +66.0% |
+| Levels instead of logs, GWh per plant-year | 80 | 498 | +108 GWh, or +31.1% of the 348 GWh treated plants averaged the year before | +84 to +133 GWh |
+| Controls limited to the 15 states holding a treated plant | 80 | 292 | +56.8% | +43.6% to +71.3% |
+| Unbalanced panel, every plant contributes the years it has | 80 | 550 | +49.9% | +37.6% to +63.4% |
+| Base is the mean of the three years before repowering | 80 | 498 | +49.6% | +39.7% to +60.0% |
 
 Nothing moves the answer outside the headline's interval except the choice of scale. In
 levels the uplift is 31% of the pre-repowering mean rather than 48%, because levels weight

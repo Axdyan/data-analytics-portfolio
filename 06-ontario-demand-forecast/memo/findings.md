@@ -41,14 +41,14 @@ difference between the zone total and Ontario demand reaches four digits it is w
 splits that value on its comma, and fails the load on a row with sixteen fields. It happens
 on 129 of 204,695 rows, all in that one column, which is few enough to be missed in any sample
 a sniffer takes. The quote character is set explicitly and the separator stripped before the
-cast. The same report has three hours on 2016-05-29 where every zone reads zero and the
-published difference is minus the whole province, and 72,152 rows where the ten zones do not
+cast. The same report has 35 hours where every zone reads zero and the published difference
+is minus the whole province, 11 on 2016-05-29 and all 24 of 2016-10-31, and 72,152 rows where the ten zones do not
 sum to the published total, all but four of them by 5 MW or less, which is rounding.
 
 **An outlier check finds an event.** Hours below half of the same hour one week earlier
 should be data errors. There are 12 of them, from 15:00 on 14 August 2003 to 02:00 the next
 morning, the afternoon Ontario lost most of its load in the Northeast blackout: 2,270 MW at
-hour 17 against 21,894 a week before. They are real and they stay. They also sit fifteen years
+hour 17 against 22,380 a week before. They are real and they stay. They also sit fifteen years
 before the earliest training window, so they touch no forecast.
 
 Two smaller facts about the clock and the copies. Every date in 24 years carries exactly 24
@@ -87,7 +87,7 @@ has already seen.
 
 Two things about the province being forecast, from the yearly table. Mean demand fell from
 17,919 MW in 2005 to 15,053 MW in 2020 and has risen every year since, to 16,621 MW in 2025
-and 17,086 MW over the first eight months of 2026, which is why the model trains on a trailing
+and 17,086 MW over 2026 to the day of the pull, 6 September, which is why the model trains on a trailing
 five years rather than on everything. And the day type matters more than a model with no
 calendar would guess: in 2025 the average weekday ran 16,903 MW against 16,006 on a Sunday and
 15,703 on a holiday, and at hour 8 the gap between a weekday and a Sunday is 2,144 MW.

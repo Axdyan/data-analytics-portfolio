@@ -143,20 +143,34 @@ numbers:
     expected: 129
     sources: [ieso_zonal_closed, ieso_zonal_current]
   - id: zero_zone_hours
-    quote: "three hours on 2016-05-29 where every zone reads zero"
+    quote: "35 hours where every zone reads zero"
     where: [README, findings]
     kind: count
-    query: SELECT COUNT(*) FROM (SELECT date, zone_total FROM stg_zonal_hourly ORDER BY ABS(diff) DESC LIMIT 3) WHERE date = DATE '2016-05-29' AND zone_total = 0
-    expected: 3
-    note: the three are the largest published differences the notebook prints, all on that date with every zone zero. The table holds 11 such hours on 2016-05-29 and 24 on 2016-10-31, so the memo's count is the display, not the table
+    query: SELECT COUNT(*) FROM stg_zonal_hourly WHERE zone_total = 0
+    expected: 35
+    note: every one of the 35 rows has all ten zones at zero and a published difference of minus the whole province; the three the notebook prints are the largest of them
+    sources: [ieso_zonal_closed]
+  - id: zero_zone_hours_may
+    quote: "11 on 2016-05-29"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_zonal_hourly WHERE zone_total = 0 AND date = DATE '2016-05-29'
+    expected: 11
+    sources: [ieso_zonal_closed]
+  - id: zero_zone_hours_oct
+    quote: "all 24 of 2016-10-31"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_zonal_hourly WHERE zone_total = 0 AND date = DATE '2016-10-31'
+    expected: 24
     sources: [ieso_zonal_closed]
   - id: zero_zone_date
-    quote: "2016-05-29"
+    quote: "11 on 2016-05-29 and all 24 of 2016-10-31"
     where: [findings]
     kind: text
-    query: SELECT CAST(MIN(date) AS VARCHAR) || CASE WHEN MIN(date) = MAX(date) THEN '' ELSE ' to ' || CAST(MAX(date) AS VARCHAR) END FROM (SELECT date FROM stg_zonal_hourly ORDER BY ABS(diff) DESC LIMIT 3)
-    expected: "2016-05-29"
-    note: the date of the three largest published differences
+    query: SELECT CAST(MIN(date) AS VARCHAR) || ' to ' || CAST(MAX(date) AS VARCHAR) FROM stg_zonal_hourly WHERE zone_total = 0
+    expected: "2016-05-29 to 2016-10-31"
+    note: the two days that hold every zero-zone hour
     sources: [ieso_zonal_closed]
   - id: zone_sum_mismatch
     quote: "72,152 rows where the ten zones do not sum to the published total"
@@ -194,12 +208,11 @@ numbers:
     expected: 2270
     sources: [ieso_demand_closed]
   - id: blackout_week_before
-    quote: "against 21,894 a week before"
+    quote: "against 22,380 a week before"
     where: [findings]
     kind: mw
-    query: SELECT ontario_mw FROM fct_demand_hourly WHERE date = DATE '2003-08-07' AND hour_ending = 18
-    expected: 21894
-    note: 21,894 is hour ending 18 a week before, the row under 2,366 in the notebook's print; hour ending 17 a week before reads 22,380. The memo pairs 2,270 (hour 17) with the hour 18 figure
+    query: SELECT ontario_mw FROM fct_demand_hourly WHERE date = DATE '2003-08-07' AND hour_ending = 17
+    expected: 22380
     sources: [ieso_demand_closed]
   - id: rows_per_date_24
     quote: "Every date in 24 years carries exactly 24 rows"
@@ -327,12 +340,12 @@ numbers:
     expected: 16621
     sources: [ieso_demand_closed, ieso_demand_current]
   - id: mean_2026_to_aug
-    quote: "17,086 MW over the first eight months of 2026"
+    quote: "17,086 MW over 2026 to the day of the pull, 6 September"
     where: [findings]
     kind: mw
     query: SELECT ROUND(AVG(ontario_mw)) FROM fct_demand_hourly WHERE year = 2026
     expected: 17086
-    note: the yearly table's 2026 row, which at the memo's pull held 5,953 hours to 6 September; January to August alone averages 17,067. The row grows with the year
+    note: the yearly table's 2026 row, which grows with the year; at the memo's pull it held 5,953 hours to 6 September
     sources: [ieso_demand_current]
   - id: weekday_2025
     quote: "in 2025 the average weekday ran 16,903 MW"

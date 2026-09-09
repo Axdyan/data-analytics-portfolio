@@ -49,7 +49,7 @@ the gap in 23 of 24 periods, so the forecast cannot pick the five days that set 
 with no marker, which a lag of 168 hours would turn into a missing lead a week later; it is
 filled and flagged. The zonal report writes its difference column with a quoted thousands
 separator when it reaches four digits, on 129 of 204,695 rows, which a sniffed CSV dialect
-splits into two fields and fails the load on; three hours in May 2016 have every zone at zero.
+splits into two fields and fails the load on; 35 hours across two days in 2016 have every zone at zero.
 And an outlier check written for data errors finds the twelve hours of the August 2003
 blackout, which is an event, not an error, and stays in. Details in `memo/findings.md`.
 

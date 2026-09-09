@@ -188,3 +188,18 @@ from the notebook's printed output; the one declared figure is the cell count.
    reproduces on every run, as the two clean runs here already did against each other.
 3. Correct the sentences in Finding 3, each a few words, and update the matching manifest
    entries in the same commit.
+
+## Closed on 2026-09-09
+
+Items 2 and 3 above were done on 2026-09-09. The repowering notebook was run by hand top to
+bottom on a re-pull of every source that came back byte-identical to the committed
+fingerprints, and the 42 uncertainty figures in its memo were re-measured from that run with
+the manifest's own queries: the headline interval now reads +36.3% to +61.4%, the standard
+error 0.043, the pre-trend Wald test 3.94 on 3 degrees of freedom with p = 0.268, and the
+after-the-fact minimum detectable effect 12.9%. The `not_reproducible` lines came off those
+42 entries, so the manifest now checks 215 of its 220 figures and declares only the five
+design constants. The eight sentences in Finding 3 were corrected in their memos and READMEs
+and their manifest entries updated with them; the zero-zone count gained two entries, one per
+day, so the demand-forecast manifest lists 284 figures and the five manifests 919. The
+double-rounded figures in Finding 4 stay as they were, since the manifest already checks the
+one-decimal table value behind each. Item 1 had been done earlier the same day.
