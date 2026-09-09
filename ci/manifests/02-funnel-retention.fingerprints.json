@@ -1,0 +1,11 @@
+{
+  "project": "02-funnel-retention",
+  "recorded_at_utc": "2026-09-07T07:46:42+00:00",
+  "cosmetics_kaggle": {
+    "2019-Oct.csv": 482542278,
+    "2019-Nov.csv": 545839412,
+    "2019-Dec.csv": 415302972,
+    "2020-Jan.csv": 501792804,
+    "2020-Feb.csv": 488799986
+  }
+}

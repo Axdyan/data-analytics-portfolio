@@ -1,0 +1,952 @@
+{
+  "project": "01-seller-risk",
+  "label": "01: Seller Risk Scoring",
+  "notebook_name": "01_load_explore.ipynb",
+  "measured_on": "2026-08-25",
+  "run_date": "2026-09-07",
+  "run_at_utc": "2026-09-07 14:47:49",
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.14.5",
+    "duckdb": "1.5.5",
+    "git_sha": null,
+    "github_run_id": null
+  },
+  "sources": [
+    {
+      "id": "olist_kaggle",
+      "refresh": "a static Kaggle dataset, unchanged since 2021",
+      "policy": "static_dataset",
+      "observed": {
+        "olist_customers_dataset.csv": 9033957,
+        "olist_geolocation_dataset.csv": 61273883,
+        "olist_order_items_dataset.csv": 15438671,
+        "olist_order_payments_dataset.csv": 5777138,
+        "olist_order_reviews_dataset.csv": 14451670,
+        "olist_orders_dataset.csv": 17654914,
+        "olist_products_dataset.csv": 2379446,
+        "olist_sellers_dataset.csv": 174703,
+        "product_category_name_translation.csv": 2613
+      },
+      "status": "unchanged",
+      "detail": "identical to the committed fingerprint (9 entries)"
+    }
+  ],
+  "notebook": {
+    "cells": 24,
+    "code_cells": 20,
+    "executed": 20,
+    "elapsed_s": 7.6,
+    "error": null,
+    "cell_times": [
+      {
+        "position": 1,
+        "seconds": 0.0,
+        "opening": "DuckDB: an in-process SQL engine, good for querying CSVs directly without a separate datab"
+      },
+      {
+        "position": 2,
+        "seconds": 0.0,
+        "opening": "Opens (or creates) a local database file to hold the loaded tables"
+      },
+      {
+        "position": 3,
+        "seconds": 0.0,
+        "opening": "Names of the raw Olist CSVs to load, one table per file"
+      },
+      {
+        "position": 4,
+        "seconds": 1.7,
+        "opening": "Load each CSV into its own table, replacing it if it already exists"
+      },
+      {
+        "position": 5,
+        "seconds": 0.0,
+        "opening": "Confirm all 9 tables loaded successfully"
+      },
+      {
+        "position": 6,
+        "seconds": 0.0,
+        "opening": "Row counts per table, a quick sanity check against the known Olist dataset sizes"
+      },
+      {
+        "position": 7,
+        "seconds": 0.0,
+        "opening": "Check column names and types before writing queries against this table"
+      },
+      {
+        "position": 8,
+        "seconds": 0.0,
+        "opening": "Get a quick picture of the orders table: total rows, how many are missing"
+      },
+      {
+        "position": 9,
+        "seconds": 0.0,
+        "opening": "Naive math predicted only ~2 mismatched rows, but that assumed status and"
+      },
+      {
+        "position": 10,
+        "seconds": 0.0,
+        "opening": "Check the flip side: orders not marked delivered that still have a"
+      },
+      {
+        "position": 12,
+        "seconds": 0.0,
+        "opening": "Build a clean view of delivered orders with a valid delivery date, plus how"
+      },
+      {
+        "position": 13,
+        "seconds": 0.0,
+        "opening": "Sanity check: row count should be 96,478 delivered orders minus the 8 with"
+      },
+      {
+        "position": 14,
+        "seconds": 0.1,
+        "opening": "Attach seller_id to each order via order_items. DISTINCT avoids counting the"
+      },
+      {
+        "position": 15,
+        "seconds": 0.1,
+        "opening": "Aggregate order-level lateness up to one row per seller: order volume,"
+      },
+      {
+        "position": 16,
+        "seconds": 0.1,
+        "opening": "Look at the spread of order volume per seller before deciding on a"
+      },
+      {
+        "position": 17,
+        "seconds": 0.1,
+        "opening": "Restrict to sellers with at least the median order count (7), so the late"
+      },
+      {
+        "position": 19,
+        "seconds": 0.1,
+        "opening": "Final Stage 3 output: sellers with enough order volume to trust the rate,"
+      },
+      {
+        "position": 21,
+        "seconds": 3.7,
+        "opening": "Histogram: how late rate is distributed across the 1,514 sellers with"
+      },
+      {
+        "position": 23,
+        "seconds": 0.2,
+        "opening": "Horizontal bar chart: the 15 sellers with the highest late rate (7+ orders)"
+      },
+      {
+        "position": 24,
+        "seconds": 0.0,
+        "opening": ""
+      }
+    ],
+    "retried_after": null
+  },
+  "numbers": [
+    {
+      "id": "orders",
+      "quote": "about 99,441 orders",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 99441,
+      "measured": 99441,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "delivered_no_date",
+      "quote": "8 orders are marked delivered with no delivery date on file",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8,
+      "measured": 8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "canceled_with_date",
+      "quote": "6 orders marked canceled still have a real delivery date logged",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6,
+      "measured": 6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "canceled_delivered_after_purchase",
+      "quote": "all of them were purchased, delivered weeks later, then canceled",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6,
+      "measured": 6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "orders_clean",
+      "quote": "That leaves 96,470 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 96470,
+      "measured": 96470,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "orders_dropped",
+      "quote": "The 8 delivered-but-dateless ones are dropped from the clean view",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8,
+      "measured": 8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "the clean view holds delivered orders with a date; the 6 canceled orders were never in it",
+      "round": 0
+    },
+    {
+      "id": "days_early",
+      "quote": "on average they show up about 12 days before the estimated delivery date",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 12,
+      "measured": 12.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sellers",
+      "quote": "the 3,095 sellers",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3095,
+      "measured": 3095,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sellers_with_orders",
+      "quote": "sellers with at least one delivered order",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2970,
+      "measured": 2970,
+      "status": "reproduced",
+      "reason": "",
+      "note": "not quoted; the population the median below is taken over",
+      "round": 0
+    },
+    {
+      "id": "median_orders",
+      "quote": "half have 7 or fewer orders total",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": 7.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "quartile_orders",
+      "quote": "a quarter have 2 or fewer",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2,
+      "measured": 2.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cutoff",
+      "quote": "sellers with at least 7 orders, the median",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": 7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "ranked_sellers",
+      "quote": "which leaves 1,514 sellers",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1514,
+      "measured": 1514,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "majority_under_10",
+      "quote": "late rate sits under 10% for the majority of the 1,514 sellers",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 50,
+      "measured": 74.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "the share is 74.8%; the memo says majority, so the check is that it exceeds 50%",
+      "round": 0
+    },
+    {
+      "id": "tail_top",
+      "quote": "a small tail runs late rates from 30% up to 64%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 64,
+      "measured": 64.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "tail_from_30",
+      "quote": "from 30% up",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 21,
+      "measured": 21,
+      "status": "reproduced",
+      "reason": "",
+      "note": "not quoted as a count; the memo calls it a small group",
+      "round": 0
+    },
+    {
+      "id": "worst_1_seller",
+      "quote": "Rank 1: seller b1b39487",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "b1b39487",
+      "measured": "b1b39487",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_1_orders",
+      "quote": "Rank 1: 14 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 14,
+      "measured": 14,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_1_late",
+      "quote": "Rank 1: 9 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 9,
+      "measured": 9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_1_rate",
+      "quote": "Rank 1: 64.3% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 64.3,
+      "measured": 64.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_2_seller",
+      "quote": "Rank 2: seller 312ba1d7",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "312ba1d7",
+      "measured": "312ba1d7",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_2_orders",
+      "quote": "Rank 2: 7 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": 7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_2_late",
+      "quote": "Rank 2: 4 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_2_rate",
+      "quote": "Rank 2: 57.1% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 57.1,
+      "measured": 57.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_3_seller",
+      "quote": "Rank 3: seller 973f2178",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "973f2178",
+      "measured": "973f2178",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_3_orders",
+      "quote": "Rank 3: 9 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 9,
+      "measured": 9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_3_late",
+      "quote": "Rank 3: 5 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 5,
+      "measured": 5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_3_rate",
+      "quote": "Rank 3: 55.6% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 55.6,
+      "measured": 55.6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_4_seller",
+      "quote": "Rank 4: seller 95b29386",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "95b29386",
+      "measured": "95b29386",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_4_orders",
+      "quote": "Rank 4: 9 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 9,
+      "measured": 9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_4_late",
+      "quote": "Rank 4: 4 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_4_rate",
+      "quote": "Rank 4: 44.4% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 44.4,
+      "measured": 44.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_5_seller",
+      "quote": "Rank 5: seller 5acd070d",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "5acd070d",
+      "measured": "5acd070d",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_5_orders",
+      "quote": "Rank 5: 7 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": 7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_5_late",
+      "quote": "Rank 5: 3 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": 3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_5_rate",
+      "quote": "Rank 5: 42.9% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 42.9,
+      "measured": 42.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_6_seller",
+      "quote": "Rank 6: seller 26e2c91e",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "26e2c91e",
+      "measured": "26e2c91e",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_6_orders",
+      "quote": "Rank 6: 12 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 12,
+      "measured": 12,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_6_late",
+      "quote": "Rank 6: 5 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 5,
+      "measured": 5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_6_rate",
+      "quote": "Rank 6: 41.7% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 41.7,
+      "measured": 41.7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_7_seller",
+      "quote": "Rank 7: seller 538caafd",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "538caafd",
+      "measured": "538caafd",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_7_orders",
+      "quote": "Rank 7: 8 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8,
+      "measured": 8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_7_late",
+      "quote": "Rank 7: 3 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": 3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_7_rate",
+      "quote": "Rank 7: 37.5% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 37.5,
+      "measured": 37.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_8_seller",
+      "quote": "Rank 8: seller c990d6cf",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "c990d6cf",
+      "measured": "c990d6cf",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_8_orders",
+      "quote": "Rank 8: 8 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8,
+      "measured": 8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_8_late",
+      "quote": "Rank 8: 3 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": 3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_8_rate",
+      "quote": "Rank 8: 37.5% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 37.5,
+      "measured": 37.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_9_seller",
+      "quote": "Rank 9: seller cb41bfbc",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "cb41bfbc",
+      "measured": "cb41bfbc",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_9_orders",
+      "quote": "Rank 9: 11 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 11,
+      "measured": 11,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_9_late",
+      "quote": "Rank 9: 4 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_9_rate",
+      "quote": "Rank 9: 36.4% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 36.4,
+      "measured": 36.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "worst_10_seller",
+      "quote": "Rank 10: seller 821fb029",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "821fb029",
+      "measured": "821fb029",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_10_orders",
+      "quote": "Rank 10: 24 orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 24,
+      "measured": 24,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_10_late",
+      "quote": "Rank 10: 8 late orders",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8,
+      "measured": 8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "worst_10_rate",
+      "quote": "Rank 10: 33.3% late",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 33.3,
+      "measured": 33.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    }
+  ],
+  "printed_from": "the executed copy of this run",
+  "has_print_matches": false,
+  "counts": {
+    "reproduced": 56,
+    "drift": 0,
+    "drift_outside_band": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_reproducible": 0
+  },
+  "verdict": "56 of 56 listed figures reproduced on 2026-09-07.",
+  "blocked_rule": null,
+  "any_source_changed": false,
+  "expected_change": false,
+  "job_failed": false,
+  "failure_reason": "",
+  "working_tree": null
+}

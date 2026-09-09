@@ -1,0 +1,191 @@
+# Re-run every number the shipped projects quote, on a fresh pull of their sources.
+#
+# One job per project runs the project's notebook top to bottom in a clean checkout,
+# which re-pulls the data and rebuilds the tables, then ci/reproduce.py re-measures every
+# figure listed in ci/manifests/<project>.yml and classifies it under ci/policy.yml.
+# A publish job gathers the reports onto the ci-reports branch, where every project's
+# latest report lives, writes the summary and the badge from all of them, and commits,
+# so main stays hand-committed and a one-project dispatch never narrows the badge.
+#
+# A job fails when a figure differs on unchanged source bytes, or when a notebook stops
+# without a change the contract expects. Publisher drift is reported, never failed.
+
+name: reproduce
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      project:
+        description: a project folder name from ci/manifests, or all
+        type: string
+        default: all
+
+concurrency:
+  group: reproduce
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.pick.outputs.projects }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: pick
+        shell: bash
+        env:
+          CHOICE: ${{ github.event.inputs.project }}
+        run: |
+          # every manifest is a project; the dispatch input can narrow it to one
+          all=$(ls ci/manifests/*.yml | xargs -n1 basename | sed 's/\.yml$//' | jq -R . | jq -sc .)
+          if [ -z "$CHOICE" ] || [ "$CHOICE" = "all" ]; then
+            echo "projects=$all" >> "$GITHUB_OUTPUT"
+          elif [ -f "ci/manifests/$CHOICE.yml" ]; then
+            echo "projects=[\"$CHOICE\"]" >> "$GITHUB_OUTPUT"
+          else
+            echo "no manifest for $CHOICE; the projects are $all" >&2
+            exit 1
+          fi
+
+  reproduce:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJSON(needs.plan.outputs.projects) }}
+    env:
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      PYTHONUTF8: "1"
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: install what the notebooks and the runner import
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r ci/requirements-ci.txt
+          python -m ipykernel install --user --name python3
+          python -c "import duckdb, pandas, numpy; print('duckdb', duckdb.__version__, 'pandas', pandas.__version__, 'numpy', numpy.__version__)"
+
+      - name: check the manifests and the policy before anything runs
+        run: python ci/reproduce.py --check
+
+      # The two Kaggle datasets are static by contract (ci/policy.yml, static_dataset), so
+      # they are kept between runs keyed on the committed fingerprints; the runner still
+      # compares every file's size to the fingerprint on every run, and a pinned new
+      # version changes the key. Every other source is re-pulled by its notebook.
+      - name: keep the Olist files between runs
+        if: matrix.project == '01-seller-risk'
+        uses: actions/cache@v4
+        with:
+          path: data/olist
+          key: kaggle-olist-${{ hashFiles('ci/manifests/01-seller-risk.fingerprints.json') }}
+
+      - name: keep the cosmetics files between runs
+        if: matrix.project == '02-funnel-retention'
+        uses: actions/cache@v4
+        with:
+          path: data/cosmetics
+          key: kaggle-cosmetics-${{ hashFiles('ci/manifests/02-funnel-retention.fingerprints.json') }}
+
+      - name: run the notebook and re-measure every listed figure
+        run: python ci/reproduce.py --project "${{ matrix.project }}" --out ci/reports
+
+      - name: keep the report, the log and the executed notebook
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-${{ matrix.project }}
+          path: ci/reports/${{ matrix.project }}/
+          if-no-files-found: warn
+          retention-days: 90
+
+  publish:
+    needs: reproduce
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: install the runner's own dependencies
+        run: python -m pip install PyYAML==6.0.3 duckdb==1.5.5
+
+      - name: open the ci-reports branch in a worktree, creating it on the first run
+        shell: bash
+        run: |
+          set -e
+          if git fetch origin ci-reports:ci-reports 2>/dev/null; then
+            git worktree add /tmp/pub ci-reports
+          else
+            git worktree add --detach /tmp/pub HEAD
+            ( cd /tmp/pub && git checkout --orphan ci-reports && git rm -rfq . )
+            printf '# Reproducibility reports\n\nWritten by the reproduce workflow. One folder per project, one dated report per run, latest.json per project, badge.json for the README, summary.md for the latest run.\n' > /tmp/pub/README.md
+          fi
+
+      - name: gather this run's reports
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/artifacts
+          pattern: report-*
+
+      - name: place each report under its project on the branch
+        shell: bash
+        run: |
+          set -e
+          shopt -s nullglob
+          for d in /tmp/artifacts/report-*; do
+            p="$(basename "$d")"; p="${p#report-}"
+            rm -rf "/tmp/pub/$p"
+            mkdir -p "/tmp/pub/$p"
+            cp -r "$d"/. "/tmp/pub/$p/"
+          done
+          find /tmp/pub -name '*.executed.ipynb' -delete
+          ls /tmp/pub
+
+      - name: write the summary and the badge from every project's latest report
+        id: aggregate
+        shell: bash
+        run: |
+          set +e
+          python ci/reproduce.py --aggregate --out /tmp/pub
+          echo "exit=$?" >> "$GITHUB_OUTPUT"
+
+      - name: commit the branch
+        shell: bash
+        run: |
+          set -e
+          cd /tmp/pub
+          git config user.name "reproduce workflow"
+          git config user.email "reproduce-workflow@users.noreply.github.com"
+          git add -A
+          git commit -m "reproducibility reports, $(date -u +%Y-%m-%d), run ${GITHUB_RUN_ID}" || echo "nothing new to commit"
+          git push origin HEAD:ci-reports
+
+      - name: fail the run if any figure failed to reproduce
+        if: steps.aggregate.outputs.exit != '0'
+        run: |
+          echo "a figure differed on unchanged source bytes, or a notebook stopped without an expected change; see the summary above"
+          exit 1

@@ -1,0 +1,419 @@
+# Every figure quoted in 01-seller-risk/README.md and memo/findings.md, with the query
+# that reads it back from the views the notebook builds over the Olist CSVs.
+project: 01-seller-risk
+label: "01: Seller Risk Scoring"
+notebook: 01_load_explore.ipynb
+database: olist.duckdb
+measured_on: 2026-08-25
+cell_timeout_s: 1800
+
+sources:
+  - id: olist_kaggle
+    kind: kaggle
+    dataset: olistbr/brazilian-ecommerce
+    folder: ../data/olist
+    files: [olist_customers_dataset.csv, olist_geolocation_dataset.csv, olist_order_items_dataset.csv, olist_order_payments_dataset.csv, olist_order_reviews_dataset.csv, olist_orders_dataset.csv, olist_products_dataset.csv, olist_sellers_dataset.csv, product_category_name_translation.csv]
+    refresh: a static Kaggle dataset, unchanged since 2021
+    policy: static_dataset
+    fingerprint: {kind: file_sizes, folder: ../data/olist, files: [olist_customers_dataset.csv, olist_geolocation_dataset.csv, olist_order_items_dataset.csv, olist_order_payments_dataset.csv, olist_order_reviews_dataset.csv, olist_orders_dataset.csv, olist_products_dataset.csv, olist_sellers_dataset.csv, product_category_name_translation.csv]}
+
+numbers:
+  # ---- the orders table
+  - id: orders
+    quote: "about 99,441 orders"
+    where: [README]
+    kind: count
+    query: SELECT COUNT(*) FROM olist_orders_dataset
+    expected: 99441
+    sources: [olist_kaggle]
+  - id: delivered_no_date
+    quote: "8 orders are marked delivered with no delivery date on file"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM olist_orders_dataset WHERE order_status = 'delivered' AND order_delivered_customer_date IS NULL
+    expected: 8
+    sources: [olist_kaggle]
+  - id: canceled_with_date
+    quote: "6 orders marked canceled still have a real delivery date logged"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM olist_orders_dataset WHERE order_status = 'canceled' AND order_delivered_customer_date IS NOT NULL
+    expected: 6
+    sources: [olist_kaggle]
+  - id: canceled_delivered_after_purchase
+    quote: "all of them were purchased, delivered weeks later, then canceled"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM olist_orders_dataset WHERE order_status = 'canceled' AND order_delivered_customer_date IS NOT NULL AND order_delivered_customer_date > order_purchase_timestamp
+    expected: 6
+    sources: [olist_kaggle]
+  - id: orders_clean
+    quote: "That leaves 96,470 orders"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM orders_clean
+    expected: 96470
+    sources: [olist_kaggle]
+  - id: orders_dropped
+    quote: "The 8 delivered-but-dateless ones are dropped from the clean view"
+    where: [findings]
+    kind: count
+    query: SELECT (SELECT COUNT(*) FROM olist_orders_dataset WHERE order_status = 'delivered') - (SELECT COUNT(*) FROM orders_clean)
+    expected: 8
+    note: the clean view holds delivered orders with a date; the 6 canceled orders were never in it
+    sources: [olist_kaggle]
+  - id: days_early
+    quote: "on average they show up about 12 days before the estimated delivery date"
+    where: [findings]
+    kind: count
+    query: SELECT ROUND(-AVG(days_late)) FROM orders_clean
+    expected: 12
+    sources: [olist_kaggle]
+  # ---- ranking sellers
+  - id: sellers
+    quote: "the 3,095 sellers"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM olist_sellers_dataset
+    expected: 3095
+    sources: [olist_kaggle]
+  - id: sellers_with_orders
+    quote: "sellers with at least one delivered order"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM seller_risk_features
+    expected: 2970
+    note: not quoted; the population the median below is taken over
+    sources: [olist_kaggle]
+  - id: median_orders
+    quote: "half have 7 or fewer orders total"
+    where: [findings]
+    kind: count
+    query: SELECT MEDIAN(total_orders) FROM seller_risk_features
+    expected: 7
+    sources: [olist_kaggle]
+  - id: quartile_orders
+    quote: "a quarter have 2 or fewer"
+    where: [findings]
+    kind: count
+    query: SELECT QUANTILE_CONT(total_orders, 0.25) FROM seller_risk_features
+    expected: 2
+    sources: [olist_kaggle]
+  - id: cutoff
+    quote: "sellers with at least 7 orders, the median"
+    where: [findings]
+    kind: count
+    query: SELECT MIN(total_orders) FROM seller_risk_ranked
+    expected: 7
+    sources: [olist_kaggle]
+  - id: ranked_sellers
+    quote: "which leaves 1,514 sellers"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM seller_risk_ranked
+    expected: 1514
+    sources: [olist_kaggle]
+  - id: majority_under_10
+    quote: "late rate sits under 10% for the majority of the 1,514 sellers"
+    where: [README, findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE late_rate_pct < 10) / COUNT(*), 1) FROM seller_risk_ranked
+    expected: 50
+    compare: gt
+    note: the share is 74.8%; the memo says majority, so the check is that it exceeds 50%
+    sources: [olist_kaggle]
+  - id: tail_top
+    quote: "a small tail runs late rates from 30% up to 64%"
+    where: [README, findings]
+    kind: pct
+    query: SELECT ROUND(MAX(late_rate_pct)) FROM seller_risk_ranked
+    expected: 64
+    sources: [olist_kaggle]
+  - id: tail_from_30
+    quote: "from 30% up"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM seller_risk_ranked WHERE late_rate_pct >= 30
+    expected: 21
+    note: not quoted as a count; the memo calls it a small group
+    sources: [olist_kaggle]
+  - id: worst_1_seller
+    quote: "Rank 1: seller b1b39487"
+    where: [findings]
+    kind: text
+    query: SELECT LEFT(seller_id, 8) FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 0
+    expected: "b1b39487"
+    sources: [olist_kaggle]
+  - id: worst_1_orders
+    quote: "Rank 1: 14 orders"
+    where: [findings]
+    kind: count
+    query: SELECT total_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 0
+    expected: 14
+    sources: [olist_kaggle]
+  - id: worst_1_late
+    quote: "Rank 1: 9 late orders"
+    where: [findings]
+    kind: count
+    query: SELECT late_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 0
+    expected: 9
+    sources: [olist_kaggle]
+  - id: worst_1_rate
+    quote: "Rank 1: 64.3% late"
+    where: [findings]
+    kind: pct
+    query: SELECT late_rate_pct FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 0
+    expected: 64.3
+    sources: [olist_kaggle]
+  - id: worst_2_seller
+    quote: "Rank 2: seller 312ba1d7"
+    where: [findings]
+    kind: text
+    query: SELECT LEFT(seller_id, 8) FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 1
+    expected: "312ba1d7"
+    sources: [olist_kaggle]
+  - id: worst_2_orders
+    quote: "Rank 2: 7 orders"
+    where: [findings]
+    kind: count
+    query: SELECT total_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 1
+    expected: 7
+    sources: [olist_kaggle]
+  - id: worst_2_late
+    quote: "Rank 2: 4 late orders"
+    where: [findings]
+    kind: count
+    query: SELECT late_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 1
+    expected: 4
+    sources: [olist_kaggle]
+  - id: worst_2_rate
+    quote: "Rank 2: 57.1% late"
+    where: [findings]
+    kind: pct
+    query: SELECT late_rate_pct FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 1
+    expected: 57.1
+    sources: [olist_kaggle]
+  - id: worst_3_seller
+    quote: "Rank 3: seller 973f2178"
+    where: [findings]
+    kind: text
+    query: SELECT LEFT(seller_id, 8) FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 2
+    expected: "973f2178"
+    sources: [olist_kaggle]
+  - id: worst_3_orders
+    quote: "Rank 3: 9 orders"
+    where: [findings]
+    kind: count
+    query: SELECT total_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 2
+    expected: 9
+    sources: [olist_kaggle]
+  - id: worst_3_late
+    quote: "Rank 3: 5 late orders"
+    where: [findings]
+    kind: count
+    query: SELECT late_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 2
+    expected: 5
+    sources: [olist_kaggle]
+  - id: worst_3_rate
+    quote: "Rank 3: 55.6% late"
+    where: [findings]
+    kind: pct
+    query: SELECT late_rate_pct FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 2
+    expected: 55.6
+    sources: [olist_kaggle]
+  - id: worst_4_seller
+    quote: "Rank 4: seller 95b29386"
+    where: [findings]
+    kind: text
+    query: SELECT LEFT(seller_id, 8) FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 3
+    expected: "95b29386"
+    sources: [olist_kaggle]
+  - id: worst_4_orders
+    quote: "Rank 4: 9 orders"
+    where: [findings]
+    kind: count
+    query: SELECT total_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 3
+    expected: 9
+    sources: [olist_kaggle]
+  - id: worst_4_late
+    quote: "Rank 4: 4 late orders"
+    where: [findings]
+    kind: count
+    query: SELECT late_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 3
+    expected: 4
+    sources: [olist_kaggle]
+  - id: worst_4_rate
+    quote: "Rank 4: 44.4% late"
+    where: [findings]
+    kind: pct
+    query: SELECT late_rate_pct FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 3
+    expected: 44.4
+    sources: [olist_kaggle]
+  - id: worst_5_seller
+    quote: "Rank 5: seller 5acd070d"
+    where: [findings]
+    kind: text
+    query: SELECT LEFT(seller_id, 8) FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 4
+    expected: "5acd070d"
+    sources: [olist_kaggle]
+  - id: worst_5_orders
+    quote: "Rank 5: 7 orders"
+    where: [findings]
+    kind: count
+    query: SELECT total_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 4
+    expected: 7
+    sources: [olist_kaggle]
+  - id: worst_5_late
+    quote: "Rank 5: 3 late orders"
+    where: [findings]
+    kind: count
+    query: SELECT late_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 4
+    expected: 3
+    sources: [olist_kaggle]
+  - id: worst_5_rate
+    quote: "Rank 5: 42.9% late"
+    where: [findings]
+    kind: pct
+    query: SELECT late_rate_pct FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 4
+    expected: 42.9
+    sources: [olist_kaggle]
+  - id: worst_6_seller
+    quote: "Rank 6: seller 26e2c91e"
+    where: [findings]
+    kind: text
+    query: SELECT LEFT(seller_id, 8) FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 5
+    expected: "26e2c91e"
+    sources: [olist_kaggle]
+  - id: worst_6_orders
+    quote: "Rank 6: 12 orders"
+    where: [findings]
+    kind: count
+    query: SELECT total_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 5
+    expected: 12
+    sources: [olist_kaggle]
+  - id: worst_6_late
+    quote: "Rank 6: 5 late orders"
+    where: [findings]
+    kind: count
+    query: SELECT late_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 5
+    expected: 5
+    sources: [olist_kaggle]
+  - id: worst_6_rate
+    quote: "Rank 6: 41.7% late"
+    where: [findings]
+    kind: pct
+    query: SELECT late_rate_pct FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 5
+    expected: 41.7
+    sources: [olist_kaggle]
+  - id: worst_7_seller
+    quote: "Rank 7: seller 538caafd"
+    where: [findings]
+    kind: text
+    query: SELECT LEFT(seller_id, 8) FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 6
+    expected: "538caafd"
+    sources: [olist_kaggle]
+  - id: worst_7_orders
+    quote: "Rank 7: 8 orders"
+    where: [findings]
+    kind: count
+    query: SELECT total_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 6
+    expected: 8
+    sources: [olist_kaggle]
+  - id: worst_7_late
+    quote: "Rank 7: 3 late orders"
+    where: [findings]
+    kind: count
+    query: SELECT late_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 6
+    expected: 3
+    sources: [olist_kaggle]
+  - id: worst_7_rate
+    quote: "Rank 7: 37.5% late"
+    where: [findings]
+    kind: pct
+    query: SELECT late_rate_pct FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 6
+    expected: 37.5
+    sources: [olist_kaggle]
+  - id: worst_8_seller
+    quote: "Rank 8: seller c990d6cf"
+    where: [findings]
+    kind: text
+    query: SELECT LEFT(seller_id, 8) FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 7
+    expected: "c990d6cf"
+    sources: [olist_kaggle]
+  - id: worst_8_orders
+    quote: "Rank 8: 8 orders"
+    where: [findings]
+    kind: count
+    query: SELECT total_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 7
+    expected: 8
+    sources: [olist_kaggle]
+  - id: worst_8_late
+    quote: "Rank 8: 3 late orders"
+    where: [findings]
+    kind: count
+    query: SELECT late_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 7
+    expected: 3
+    sources: [olist_kaggle]
+  - id: worst_8_rate
+    quote: "Rank 8: 37.5% late"
+    where: [findings]
+    kind: pct
+    query: SELECT late_rate_pct FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 7
+    expected: 37.5
+    sources: [olist_kaggle]
+  - id: worst_9_seller
+    quote: "Rank 9: seller cb41bfbc"
+    where: [findings]
+    kind: text
+    query: SELECT LEFT(seller_id, 8) FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 8
+    expected: "cb41bfbc"
+    sources: [olist_kaggle]
+  - id: worst_9_orders
+    quote: "Rank 9: 11 orders"
+    where: [findings]
+    kind: count
+    query: SELECT total_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 8
+    expected: 11
+    sources: [olist_kaggle]
+  - id: worst_9_late
+    quote: "Rank 9: 4 late orders"
+    where: [findings]
+    kind: count
+    query: SELECT late_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 8
+    expected: 4
+    sources: [olist_kaggle]
+  - id: worst_9_rate
+    quote: "Rank 9: 36.4% late"
+    where: [findings]
+    kind: pct
+    query: SELECT late_rate_pct FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 8
+    expected: 36.4
+    sources: [olist_kaggle]
+  - id: worst_10_seller
+    quote: "Rank 10: seller 821fb029"
+    where: [findings]
+    kind: text
+    query: SELECT LEFT(seller_id, 8) FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 9
+    expected: "821fb029"
+    sources: [olist_kaggle]
+  - id: worst_10_orders
+    quote: "Rank 10: 24 orders"
+    where: [findings]
+    kind: count
+    query: SELECT total_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 9
+    expected: 24
+    sources: [olist_kaggle]
+  - id: worst_10_late
+    quote: "Rank 10: 8 late orders"
+    where: [findings]
+    kind: count
+    query: SELECT late_orders FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 9
+    expected: 8
+    sources: [olist_kaggle]
+  - id: worst_10_rate
+    quote: "Rank 10: 33.3% late"
+    where: [findings]
+    kind: pct
+    query: SELECT late_rate_pct FROM seller_risk_ranked ORDER BY late_rate_pct DESC, total_orders DESC, seller_id LIMIT 1 OFFSET 9
+    expected: 33.3
+    sources: [olist_kaggle]

@@ -1,0 +1,2424 @@
+# Every figure quoted in 03-defence-procurement/README.md and memo/findings.md, with
+# the query that reads it back from the tables the notebook builds, or the printed
+# output it comes from. Measured on the 2026-09-03 pull, unchanged on 2026-09-04.
+project: 03-defence-procurement
+label: "03: Defence Procurement Intelligence"
+notebook: 03_load_explore.ipynb
+database: canadabuys.duckdb
+measured_on: 2026-09-04
+cell_timeout_s: 3600
+
+sources:
+  - id: canadabuys_history
+    refresh: monthly by the publisher's statement, weekly observed
+    policy: canadabuys_history
+    fingerprint: {kind: manifest_json, path: memo/pull_manifest.json, value: sha256}
+
+numbers:
+  # ---- the file and its grain
+  - id: rows
+    quote: "21,890 rows"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM raw_contract_history
+    expected: 21890
+    sources: [canadabuys_history]
+  - id: columns
+    quote: "91 columns"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM information_schema.columns WHERE table_name = 'raw_contract_history'
+    expected: 91
+    sources: [canadabuys_history]
+  - id: contracts
+    quote: "13,296 contracts sit across 21,890 rows"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_contract
+    expected: 13296
+    sources: [canadabuys_history]
+  - id: amended_contracts
+    quote: "4,314 of them have been amended at least once"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_contract WHERE amendment_rows > 1
+    expected: 4314
+    sources: [canadabuys_history]
+  - id: pct_goods_empty
+    quote: "populated on 0 of 21,890 rows (A15)"
+    where: [README, findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A15'
+    expected: 21890
+    sources: [canadabuys_history]
+  - id: total_varies
+    quote: "A21 finds 0 that do"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A21'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: naive_sum
+    quote: "Naive sum over every row $132,853,897,948.13"
+    where: [README, findings]
+    kind: money
+    query: SELECT SUM(contract_value_cad) FROM stg_contract_history WHERE contract_value_cad >= 0
+    expected: 132853897948.13
+    note: the one negative contract is excluded from both sums, as the memo's definitions say
+    sources: [canadabuys_history]
+  - id: keyed_sum
+    quote: "Keyed sum, one row per contract at its latest amendment $66,363,740,301.42"
+    where: [README, findings]
+    kind: money
+    query: SELECT SUM(contract_value_cad) FROM fct_contract WHERE contract_value_cad >= 0
+    expected: 66363740301.42
+    sources: [canadabuys_history]
+  - id: overstatement
+    quote: "Overstatement $66,490,157,646.71"
+    where: [findings]
+    kind: money
+    query: SELECT (SELECT SUM(contract_value_cad) FROM stg_contract_history WHERE contract_value_cad >= 0) - (SELECT SUM(contract_value_cad) FROM fct_contract WHERE contract_value_cad >= 0)
+    expected: 66490157646.71
+    sources: [canadabuys_history]
+  - id: overstatement_pct
+    quote: "or 100.2%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * ((SELECT SUM(contract_value_cad) FROM stg_contract_history WHERE contract_value_cad >= 0) / (SELECT SUM(contract_value_cad) FROM fct_contract WHERE contract_value_cad >= 0) - 1), 1)
+    expected: 100.2
+    sources: [canadabuys_history]
+  - id: max_per_contract_same
+    quote: "Taking the maximum per contract happens to return the same $66,363,740,301.42"
+    where: [findings]
+    kind: money
+    query: SELECT SUM(m) FROM (SELECT MAX(contract_value_cad) AS m FROM stg_contract_history GROUP BY reference_number) WHERE m >= 0
+    expected: 66363740301.42
+    sources: [canadabuys_history]
+  - id: cw2340003_rows
+    quote: "CW2340003 is the largest award in the defence subset, and its total appears three times"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE reference_number = 'CW2340003'
+    expected: 3
+    sources: [canadabuys_history]
+  - id: cw2340003_largest
+    quote: "the largest award in the defence subset"
+    where: [findings]
+    kind: text
+    query: SELECT reference_number FROM fct_contract WHERE is_dnd ORDER BY contract_value_cad DESC LIMIT 1
+    expected: "CW2340003"
+    sources: [canadabuys_history]
+  - id: cw2340003_value
+    quote: "$2,283,021,216.00 on every amendment row"
+    where: [findings]
+    kind: money
+    query: SELECT MAX(contract_value_cad) FROM stg_contract_history WHERE reference_number = 'CW2340003'
+    expected: 2283021216.0
+    sources: [canadabuys_history]
+  - id: cw2340003_constant
+    quote: "printed unchanged on every amendment row"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(DISTINCT contract_value_cad) FROM stg_contract_history WHERE reference_number = 'CW2340003'
+    expected: 1
+    sources: [canadabuys_history]
+  - id: cw2340003_naive
+    quote: "this one contract contributes $6.8B to a total it is worth $2.3B in"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(SUM(contract_value_cad) / 1e9, 1) FROM stg_contract_history WHERE reference_number = 'CW2340003'
+    expected: 6.8
+    sources: [canadabuys_history]
+  - id: cw2340003_dates
+    quote: "Award date 2023-12-15 on all three rows"
+    where: [findings]
+    kind: text
+    query: SELECT CAST(MIN(award_date) AS VARCHAR) || CASE WHEN MIN(award_date) = MAX(award_date) THEN '' ELSE ' to ' || CAST(MAX(award_date) AS VARCHAR) END FROM stg_contract_history WHERE reference_number = 'CW2340003'
+    expected: "2023-12-15"
+    sources: [canadabuys_history]
+  # ---- the country field
+  - id: country_ca_rows
+    quote: "written as CA on 18,315 rows"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE supplier_country_raw = 'CA'
+    expected: 18315
+    sources: [canadabuys_history]
+  - id: country_canada_rows
+    quote: "and as Canada on 1,488"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE supplier_country_raw = 'Canada'
+    expected: 1488
+    sources: [canadabuys_history]
+  - id: literal_canada_pct
+    quote: "Filtering on the literal Canada gives 15.36% of value"
+    where: [README, findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * SUM(contract_value_cad) FILTER (WHERE supplier_country_raw = 'Canada') / SUM(contract_value_cad), 2) FROM fct_contract WHERE contract_value_cad > 0
+    expected: 15.36
+    sources: [canadabuys_history]
+  - id: either_spelling_pct
+    quote: "Accepting either spelling gives 89.13%"
+    where: [README, findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * SUM(contract_value_cad) FILTER (WHERE supplier_country_raw IN ('CA', 'Canada')) / SUM(contract_value_cad), 2) FROM fct_contract WHERE contract_value_cad > 0
+    expected: 89.13
+    sources: [canadabuys_history]
+  - id: crosswalk_pct
+    quote: "Resolving all 49 distinct raw values through a published crosswalk also gives 89.13%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_a FROM mart_sensitivity WHERE scope = 'all_pspc' AND measure = 'value'
+    expected: 89.13
+    sources: [canadabuys_history]
+  - id: distinct_raw_countries
+    quote: "all 49 distinct raw values"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM country_crosswalk
+    expected: 49
+    sources: [canadabuys_history]
+  - id: other_values
+    quote: "the other 47 values are resolved the same way"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM country_crosswalk WHERE raw_value NOT IN ('CA', 'Canada')
+    expected: 47
+    sources: [canadabuys_history]
+  - id: canada_rows_2023
+    quote: "Rows written Canada in 2023: 801"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE supplier_country_raw = 'Canada' AND YEAR(award_date) = 2023
+    expected: 801
+    sources: [canadabuys_history]
+  - id: ca_rows_2023
+    quote: "Rows written CA in 2023: 4,706"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE supplier_country_raw = 'CA' AND YEAR(award_date) = 2023
+    expected: 4706
+    sources: [canadabuys_history]
+  - id: canada_rows_2024
+    quote: "Rows written Canada in 2024: 329"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE supplier_country_raw = 'Canada' AND YEAR(award_date) = 2024
+    expected: 329
+    sources: [canadabuys_history]
+  - id: ca_rows_2024
+    quote: "Rows written CA in 2024: 6,165"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE supplier_country_raw = 'CA' AND YEAR(award_date) = 2024
+    expected: 6165
+    sources: [canadabuys_history]
+  - id: canada_rows_2025
+    quote: "Rows written Canada in 2025: 87"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE supplier_country_raw = 'Canada' AND YEAR(award_date) = 2025
+    expected: 87
+    sources: [canadabuys_history]
+  - id: ca_rows_2025
+    quote: "Rows written CA in 2025: 4,905"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE supplier_country_raw = 'CA' AND YEAR(award_date) = 2025
+    expected: 4905
+    sources: [canadabuys_history]
+  - id: canada_rows_2026
+    quote: "Rows written Canada in 2026: 0"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE supplier_country_raw = 'Canada' AND YEAR(award_date) = 2026
+    expected: 0
+    sources: [canadabuys_history]
+  - id: ca_rows_2026
+    quote: "Rows written CA in 2026: 2,539"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE supplier_country_raw = 'CA' AND YEAR(award_date) = 2026
+    expected: 2539
+    sources: [canadabuys_history]
+  - id: undated_rows
+    quote: "Of the 305 undated rows"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE award_date IS NULL
+    expected: 305
+    sources: [canadabuys_history]
+  - id: undated_canada
+    quote: "271 are written Canada"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE award_date IS NULL AND supplier_country_raw = 'Canada'
+    expected: 271
+    sources: [canadabuys_history]
+  - id: undated_ca
+    quote: "and none is written CA"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE award_date IS NULL AND supplier_country_raw = 'CA'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: na_row
+    quote: "One row is the literal string N/A"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A10'
+    expected: 1
+    sources: [canadabuys_history]
+  - id: na_supplier_countries
+    quote: "Its supplier appears under exactly one real country elsewhere"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM country_na_resolution WHERE borrowed_iso2 IS NOT NULL
+    expected: 1
+    sources: [canadabuys_history]
+  - id: na_recovered
+    quote: "recovering $654.9M for one German supplier"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(CAST(value_recovered AS DOUBLE) / 1e6, 1) FROM country_na_resolution
+    expected: 654.9
+    sources: [canadabuys_history]
+  - id: na_german
+    quote: "one German supplier"
+    where: [findings]
+    kind: text
+    query: SELECT borrowed_iso2 FROM country_na_resolution
+    expected: "DE"
+    sources: [canadabuys_history]
+  - id: blank_country_rows
+    quote: "Three rows are blank and stay unknown"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE supplier_country_raw IS NULL OR TRIM(supplier_country_raw) = ''
+    expected: 3
+    sources: [canadabuys_history]
+  # ---- the amendment-grain value column
+  - id: amount_tested
+    quote: "Tested on every amended contract where every row carries an amount and the total is non-zero, 2,168 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM (SELECT reference_number FROM fct_contract_amendment GROUP BY 1 HAVING COUNT(*) > 1 AND COUNT(*) = COUNT(contract_amount_cad) AND MAX(contract_value_cad) <> 0)
+    expected: 2168
+    sources: [canadabuys_history]
+  - id: reading_neither
+    quote: "neither: 866 contracts"
+    where: [findings]
+    kind: count
+    print_match: {pattern: 'neither\s+│\s+(\d+)\s+│\s+([0-9.]+)\s+│\s+([0-9.]+)', cell: 70}
+    expected: 866
+    sources: [canadabuys_history]
+  - id: reading_neither_pct
+    quote: "neither: 39.9%"
+    where: [findings]
+    kind: pct
+    print_match: {pattern: 'neither\s+│\s+(\d+)\s+│\s+([0-9.]+)\s+│\s+([0-9.]+)', cell: 70, group: 2}
+    expected: 39.9
+    sources: [canadabuys_history]
+  - id: reading_neither_value
+    quote: "neither: $11,972.5M"
+    where: [findings]
+    kind: money
+    print_match: {pattern: 'neither\s+│\s+(\d+)\s+│\s+([0-9.]+)\s+│\s+([0-9.]+)', cell: 70, group: 3}
+    expected: 11972.5
+    scale: 1e-06
+    sources: [canadabuys_history]
+  - id: reading_increment
+    quote: "increment per amendment: 855 contracts"
+    where: [findings]
+    kind: count
+    print_match: {pattern: 'increment per amendment\s+│\s+(\d+)\s+│\s+([0-9.]+)\s+│\s+([0-9.]+)', cell: 70}
+    expected: 855
+    sources: [canadabuys_history]
+  - id: reading_increment_pct
+    quote: "increment per amendment: 39.4%"
+    where: [findings]
+    kind: pct
+    print_match: {pattern: 'increment per amendment\s+│\s+(\d+)\s+│\s+([0-9.]+)\s+│\s+([0-9.]+)', cell: 70, group: 2}
+    expected: 39.4
+    sources: [canadabuys_history]
+  - id: reading_increment_value
+    quote: "increment per amendment: $4,067.1M"
+    where: [findings]
+    kind: money
+    print_match: {pattern: 'increment per amendment\s+│\s+(\d+)\s+│\s+([0-9.]+)\s+│\s+([0-9.]+)', cell: 70, group: 3}
+    expected: 4067.1
+    scale: 1e-06
+    sources: [canadabuys_history]
+  - id: reading_both
+    quote: "both, one row carries the whole total: 353 contracts"
+    where: [findings]
+    kind: count
+    print_match: {pattern: 'both, one row carries the whole total\s+│\s+(\d+)\s+│\s+([0-9.]+)\s+│\s+([0-9.]+)', cell: 70}
+    expected: 353
+    sources: [canadabuys_history]
+  - id: reading_both_pct
+    quote: "both: 16.3%"
+    where: [findings]
+    kind: pct
+    print_match: {pattern: 'both, one row carries the whole total\s+│\s+(\d+)\s+│\s+([0-9.]+)\s+│\s+([0-9.]+)', cell: 70, group: 2}
+    expected: 16.3
+    sources: [canadabuys_history]
+  - id: reading_both_value
+    quote: "both: $998.0M"
+    where: [findings]
+    kind: money
+    print_match: {pattern: 'both, one row carries the whole total\s+│\s+(\d+)\s+│\s+([0-9.]+)\s+│\s+([0-9.]+)', cell: 70, group: 3}
+    expected: 998.0
+    scale: 1e-06
+    sources: [canadabuys_history]
+  - id: reading_restatement
+    quote: "restatement of the contract: 94 contracts"
+    where: [findings]
+    kind: count
+    print_match: {pattern: 'restatement of the contract\s+│\s+(\d+)\s+│\s+([0-9.]+)\s+│\s+([0-9.]+)', cell: 70}
+    expected: 94
+    sources: [canadabuys_history]
+  - id: reading_restatement_pct
+    quote: "restatement: 4.3%"
+    where: [findings]
+    kind: pct
+    print_match: {pattern: 'restatement of the contract\s+│\s+(\d+)\s+│\s+([0-9.]+)\s+│\s+([0-9.]+)', cell: 70, group: 2}
+    expected: 4.3
+    sources: [canadabuys_history]
+  - id: reading_restatement_value
+    quote: "restatement: $88.9M"
+    where: [findings]
+    kind: money
+    print_match: {pattern: 'restatement of the contract\s+│\s+(\d+)\s+│\s+([0-9.]+)\s+│\s+([0-9.]+)', cell: 70, group: 3}
+    expected: 88.9
+    scale: 1e-06
+    sources: [canadabuys_history]
+  - id: no_original_contracts
+    quote: "2,686 contracts have no row typed Original"
+    where: [README, findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A25'
+    expected: 2686
+    sources: [canadabuys_history]
+  - id: no_original_neither_value
+    quote: "$10,400.0M of the $11,972.5M in the neither group sits on those contracts"
+    where: [findings]
+    kind: money
+    print_match: {pattern: 'neither\s+False\s+(\d+)\s+([0-9.e+]+)', cell: 72, group: 2}
+    expected: 10400.0
+    scale: 1e-06
+    sources: [canadabuys_history]
+  - id: neither_with_original
+    quote: "568 of 1,568 testable contracts fit neither reading"
+    where: [findings]
+    kind: count
+    print_match: {pattern: 'neither\s+True\s+(\d+)', cell: 72}
+    expected: 568
+    sources: [canadabuys_history]
+  - id: testable_with_original
+    quote: "1,568 testable contracts with every row present"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM (SELECT a.reference_number FROM fct_contract_amendment a JOIN fct_contract c USING (reference_number) WHERE c.has_original_row GROUP BY 1 HAVING COUNT(*) > 1 AND COUNT(*) = COUNT(a.contract_amount_cad) AND MAX(a.contract_value_cad) <> 0)
+    expected: 1568
+    sources: [canadabuys_history]
+  # ---- the sensitivity table
+  - id: sens_all_value_a
+    quote: "All PSPC, value: reading A 89.13%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_a FROM mart_sensitivity WHERE scope = 'all_pspc' AND measure = 'value'
+    expected: 89.13
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_all_value_b_low
+    quote: "All PSPC, value: reading B lower 8.43%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_lower FROM mart_sensitivity WHERE scope = 'all_pspc' AND measure = 'value'
+    expected: 8.43
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_all_value_b_high
+    quote: "All PSPC, value: reading B upper 77.87%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_upper FROM mart_sensitivity WHERE scope = 'all_pspc' AND measure = 'value'
+    expected: 77.87
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_all_value_coverage
+    quote: "All PSPC, value: control coverage 22.08%"
+    where: [findings]
+    kind: pct
+    query: SELECT control_coverage_pct FROM mart_sensitivity WHERE scope = 'all_pspc' AND measure = 'value'
+    expected: 22.08
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_all_count_a
+    quote: "All PSPC, count: reading A 89.31%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_a FROM mart_sensitivity WHERE scope = 'all_pspc' AND measure = 'count'
+    expected: 89.31
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_all_count_b_low
+    quote: "All PSPC, count: reading B lower 0.50%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_lower FROM mart_sensitivity WHERE scope = 'all_pspc' AND measure = 'count'
+    expected: 0.5
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_all_count_b_high
+    quote: "All PSPC, count: reading B upper 88.22%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_upper FROM mart_sensitivity WHERE scope = 'all_pspc' AND measure = 'count'
+    expected: 88.22
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_all_count_coverage
+    quote: "All PSPC, count: control coverage 1.78%"
+    where: [findings]
+    kind: pct
+    query: SELECT control_coverage_pct FROM mart_sensitivity WHERE scope = 'all_pspc' AND measure = 'count'
+    expected: 1.78
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_dnd_value_a
+    quote: "Defence subset, value: reading A 78.17%"
+    where: [README, findings]
+    kind: pct
+    query: SELECT reading_a FROM mart_sensitivity WHERE scope = 'dnd_end_user' AND measure = 'value'
+    expected: 78.17
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_dnd_value_b_low
+    quote: "Defence subset, value: reading B lower 24.16%"
+    where: [README, findings]
+    kind: pct
+    query: SELECT reading_b_lower FROM mart_sensitivity WHERE scope = 'dnd_end_user' AND measure = 'value'
+    expected: 24.16
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_dnd_value_b_high
+    quote: "Defence subset, value: reading B upper 41.04%"
+    where: [README, findings]
+    kind: pct
+    query: SELECT reading_b_upper FROM mart_sensitivity WHERE scope = 'dnd_end_user' AND measure = 'value'
+    expected: 41.04
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_dnd_value_coverage
+    quote: "Defence subset, value: control coverage 78.41%"
+    where: [findings]
+    kind: pct
+    query: SELECT control_coverage_pct FROM mart_sensitivity WHERE scope = 'dnd_end_user' AND measure = 'value'
+    expected: 78.41
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_dnd_count_a
+    quote: "Defence subset, count: reading A 86.39%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_a FROM mart_sensitivity WHERE scope = 'dnd_end_user' AND measure = 'count'
+    expected: 86.39
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_dnd_count_b_low
+    quote: "Defence subset, count: reading B lower 1.56%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_lower FROM mart_sensitivity WHERE scope = 'dnd_end_user' AND measure = 'count'
+    expected: 1.56
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_dnd_count_b_high
+    quote: "Defence subset, count: reading B upper 82.44%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_upper FROM mart_sensitivity WHERE scope = 'dnd_end_user' AND measure = 'count'
+    expected: 82.44
+    round: 2
+    sources: [canadabuys_history]
+  - id: sens_dnd_count_coverage
+    quote: "Defence subset, count: control coverage 6.38%"
+    where: [findings]
+    kind: pct
+    query: SELECT control_coverage_pct FROM mart_sensitivity WHERE scope = 'dnd_end_user' AND measure = 'count'
+    expected: 6.38
+    round: 2
+    sources: [canadabuys_history]
+  - id: reading_c_empty
+    quote: "Reading C: empty on every row"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM mart_sensitivity WHERE reading_c IS NULL
+    expected: 4
+    sources: [canadabuys_history]
+  - id: readable_rows
+    quote: "The one readable row is the defence value row (coverage above 50%)"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM mart_sensitivity WHERE control_coverage_pct > 50
+    expected: 1
+    sources: [canadabuys_history]
+  - id: a_over_target
+    quote: "reading A clears the 70% target by eight points"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(reading_a - 70) FROM mart_sensitivity WHERE scope = 'dnd_end_user' AND measure = 'value'
+    expected: 8
+    sources: [canadabuys_history]
+  - id: b_short_of_target
+    quote: "its upper bound 29 points short"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(70 - reading_b_upper) FROM mart_sensitivity WHERE scope = 'dnd_end_user' AND measure = 'value'
+    expected: 29
+    sources: [canadabuys_history]
+  - id: readings_apart_low
+    quote: "37 to 54 points apart: the narrow end"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(reading_a - reading_b_upper) FROM mart_sensitivity WHERE scope = 'dnd_end_user' AND measure = 'value'
+    expected: 37
+    sources: [canadabuys_history]
+  - id: readings_apart_high
+    quote: "37 to 54 points apart: the wide end"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(reading_a - reading_b_lower) FROM mart_sensitivity WHERE scope = 'dnd_end_user' AND measure = 'value'
+    expected: 54
+    sources: [canadabuys_history]
+  # ---- what the defence subset is
+  - id: pspc_only
+    quote: "PSPC is the contracting entity on every row (A11)"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A11'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: defence_exact_rows
+    quote: "an exact match catches only the 374 rows where defence appears alone"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE end_user_entity = 'Department of National Defence'
+    expected: 374
+    note: the string without the (DND) suffix; the suffixed spelling has 3,240 rows
+    sources: [canadabuys_history]
+  - id: defence_substring_rows
+    quote: "against 4,229 for the substring"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history s JOIN dim_end_user d ON d.name = s.end_user_entity WHERE d.is_dnd
+    expected: 4229
+    sources: [canadabuys_history]
+  - id: end_user_strings
+    quote: "341 distinct end-user strings"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM dim_end_user
+    expected: 341
+    sources: [canadabuys_history]
+  - id: end_user_defence
+    quote: "155 of the 341 distinct end-user strings qualify"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM dim_end_user WHERE is_dnd
+    expected: 155
+    sources: [canadabuys_history]
+  - id: end_user_max_bodies
+    quote: "one cell can list up to 25 bodies separated by slashes"
+    where: [findings]
+    kind: count
+    query: SELECT MAX(LENGTH(name) - LENGTH(REPLACE(name, '/', '')) + 1) FROM dim_end_user
+    expected: 25
+    sources: [canadabuys_history]
+  - id: end_user_multi
+    quote: "217 of the end-user strings name more than one body"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM dim_end_user WHERE name LIKE '%/%'
+    expected: 217
+    sources: [canadabuys_history]
+  - id: defence_contracts
+    quote: "That gives 2,756 contracts"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_contract WHERE is_dnd AND contract_value_cad >= 0
+    expected: 2756
+    note: the one negative contract is quarantined, as the definitions table says
+    sources: [canadabuys_history]
+  - id: defence_value
+    quote: "worth $19,878,465,949.91"
+    where: [README, findings]
+    kind: money
+    query: SELECT SUM(contract_value_cad) FROM fct_contract WHERE is_dnd AND contract_value_cad >= 0
+    expected: 19878465949.91
+    sources: [canadabuys_history]
+  # ---- offers to supply
+  - id: offers_contracts
+    quote: "4,239 of the 13,296 contracts are standing offers or supply arrangements"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_contract WHERE instrument_type IN ('Standing Offer', 'Supply Arrangement')
+    expected: 4239
+    sources: [canadabuys_history]
+  - id: supply_arrangement_zero_pct
+    quote: "95.2% of supply arrangements carry a $0 total"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE contract_value_cad = 0) / COUNT(*), 1) FROM fct_contract WHERE instrument_type = 'Supply Arrangement'
+    expected: 95.2
+    sources: [canadabuys_history]
+  - id: standing_offer_zero_pct
+    quote: "and 65.2% of standing offers"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE contract_value_cad = 0) / COUNT(*), 1) FROM fct_contract WHERE instrument_type = 'Standing Offer'
+    expected: 65.2
+    sources: [canadabuys_history]
+  - id: offers_zero
+    quote: "3,360 of the 3,665 zero-value contracts between them (A24)"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_contract WHERE instrument_type IN ('Standing Offer', 'Supply Arrangement') AND contract_value_cad = 0
+    expected: 3360
+    sources: [canadabuys_history]
+  - id: zero_contracts
+    quote: "3,665 zero-value contracts"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_contract WHERE contract_value_cad = 0
+    expected: 3665
+    sources: [canadabuys_history]
+  - id: inst_all_instruments_contracts
+    quote: "Defence subset, all instruments: 2,280 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'all instruments'
+    expected: 2280
+    sources: [canadabuys_history]
+  - id: inst_all_instruments_value
+    quote: "Defence subset, all instruments: $19,878.5M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'all instruments'
+    expected: 19878.5
+    sources: [canadabuys_history]
+  - id: inst_all_instruments_a
+    quote: "Defence subset, all instruments: reading A 78.17%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_a FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'all instruments'
+    expected: 78.17
+    round: 2
+    sources: [canadabuys_history]
+  - id: inst_all_instruments_b_low
+    quote: "Defence subset, all instruments: reading B lower 24.16%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_lower FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'all instruments'
+    expected: 24.16
+    round: 2
+    sources: [canadabuys_history]
+  - id: inst_all_instruments_b_high
+    quote: "Defence subset, all instruments: reading B upper 41.04%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_upper FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'all instruments'
+    expected: 41.04
+    round: 2
+    sources: [canadabuys_history]
+  - id: inst_all_instruments_coverage
+    quote: "Defence subset, all instruments: coverage 78.41%"
+    where: [findings]
+    kind: pct
+    query: SELECT control_coverage_pct FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'all instruments'
+    expected: 78.41
+    round: 2
+    sources: [canadabuys_history]
+  - id: inst_without_offers_contracts
+    quote: "Defence subset, without offers: 1,897 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'without offers'
+    expected: 1897
+    sources: [canadabuys_history]
+  - id: inst_without_offers_value
+    quote: "Defence subset, without offers: $18,346.1M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'without offers'
+    expected: 18346.1
+    sources: [canadabuys_history]
+  - id: inst_without_offers_a
+    quote: "Defence subset, without offers: reading A 76.42%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_a FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'without offers'
+    expected: 76.42
+    round: 2
+    sources: [canadabuys_history]
+  - id: inst_without_offers_b_low
+    quote: "Defence subset, without offers: reading B lower 24.31%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_lower FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'without offers'
+    expected: 24.31
+    round: 2
+    sources: [canadabuys_history]
+  - id: inst_without_offers_b_high
+    quote: "Defence subset, without offers: reading B upper 37.79%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_upper FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'without offers'
+    expected: 37.79
+    round: 2
+    sources: [canadabuys_history]
+  - id: inst_without_offers_coverage
+    quote: "Defence subset, without offers: coverage 82.36%"
+    where: [findings]
+    kind: pct
+    query: SELECT control_coverage_pct FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'without offers'
+    expected: 82.36
+    round: 2
+    sources: [canadabuys_history]
+  - id: inst_offers_only_contracts
+    quote: "Defence subset, offers only: 383 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'offers only'
+    expected: 383
+    sources: [canadabuys_history]
+  - id: inst_offers_only_value
+    quote: "Defence subset, offers only: $1,532.4M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'offers only'
+    expected: 1532.4
+    sources: [canadabuys_history]
+  - id: inst_offers_only_a
+    quote: "Defence subset, offers only: reading A 99.09%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_a FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'offers only'
+    expected: 99.09
+    round: 2
+    sources: [canadabuys_history]
+  - id: inst_offers_only_b_low
+    quote: "Defence subset, offers only: reading B lower 22.37%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_lower FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'offers only'
+    expected: 22.37
+    round: 2
+    sources: [canadabuys_history]
+  - id: inst_offers_only_b_high
+    quote: "Defence subset, offers only: reading B upper 79.96%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_upper FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'offers only'
+    expected: 79.96
+    round: 2
+    sources: [canadabuys_history]
+  - id: inst_offers_only_coverage
+    quote: "Defence subset, offers only: coverage 41.88%"
+    where: [findings]
+    kind: pct
+    query: SELECT control_coverage_pct FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'offers only'
+    expected: 41.88
+    round: 2
+    sources: [canadabuys_history]
+  - id: offers_share_of_defence
+    quote: "The offers are 7.7% of defence value"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * (SELECT keyed_value FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'offers only') / (SELECT keyed_value FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'all instruments'), 1)
+    expected: 7.7
+    sources: [canadabuys_history]
+  - id: offers_effect_on_a
+    quote: "excluding them takes 1.75 points off reading A"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND((SELECT reading_a FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'all instruments') - (SELECT reading_a FROM mart_instrument_sensitivity WHERE scope = 'dnd_end_user' AND instruments = 'without offers'), 2)
+    expected: 1.75
+    sources: [canadabuys_history]
+  # ---- who the Canadian-address defence suppliers are
+  - id: crosswalk_suppliers
+    quote: "which landed at 28 suppliers on this pull"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM supplier_control_crosswalk
+    expected: 28
+    sources: [canadabuys_history]
+  - id: crosswalk_coverage
+    quote: "covers 80.06% of that value (A19)"
+    where: [findings]
+    kind: pct
+    query: SELECT pct_of_rows FROM dq_assertions WHERE id = 'A19'
+    expected: 80.06
+    sources: [canadabuys_history]
+  - id: crosswalk_outside
+    quote: "The other 1,059 suppliers default to unresolved"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A19'
+    expected: 1059
+    sources: [canadabuys_history]
+  - id: control_foreign_controlled_subsidiary_n
+    quote: "foreign controlled subsidiary: 15 suppliers"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM supplier_control_crosswalk WHERE control_class = 'foreign_controlled_subsidiary'
+    expected: 15
+    sources: [canadabuys_history]
+  - id: control_foreign_controlled_subsidiary_value
+    quote: "foreign controlled subsidiary: $6,802.4M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(SUM(CAST(keyed_value AS DOUBLE)) / 1e6, 1) FROM supplier_control_crosswalk WHERE control_class = 'foreign_controlled_subsidiary'
+    expected: 6802.4
+    sources: [canadabuys_history]
+  - id: control_canadian_controlled_n
+    quote: "canadian controlled: 10 suppliers"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM supplier_control_crosswalk WHERE control_class = 'canadian_controlled'
+    expected: 10
+    sources: [canadabuys_history]
+  - id: control_canadian_controlled_value
+    quote: "canadian controlled: $4,802.0M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(SUM(CAST(keyed_value AS DOUBLE)) / 1e6, 1) FROM supplier_control_crosswalk WHERE control_class = 'canadian_controlled'
+    expected: 4802.0
+    sources: [canadabuys_history]
+  - id: control_joint_venture_foreign_n
+    quote: "joint venture foreign: 2 suppliers"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM supplier_control_crosswalk WHERE control_class = 'joint_venture_foreign'
+    expected: 2
+    sources: [canadabuys_history]
+  - id: control_joint_venture_foreign_value
+    quote: "joint venture foreign: $579.4M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(SUM(CAST(keyed_value AS DOUBLE)) / 1e6, 1) FROM supplier_control_crosswalk WHERE control_class = 'joint_venture_foreign'
+    expected: 579.4
+    sources: [canadabuys_history]
+  - id: control_unresolved_n
+    quote: "unresolved: 1 suppliers"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM supplier_control_crosswalk WHERE control_class = 'unresolved'
+    expected: 1
+    sources: [canadabuys_history]
+  - id: control_unresolved_value
+    quote: "unresolved: $257.0M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(SUM(CAST(keyed_value AS DOUBLE)) / 1e6, 1) FROM supplier_control_crosswalk WHERE control_class = 'unresolved'
+    expected: 257.0
+    sources: [canadabuys_history]
+  - id: control_medium
+    quote: "five are graded medium"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM supplier_control_crosswalk WHERE confidence = 'medium'
+    expected: 5
+    sources: [canadabuys_history]
+  - id: control_dated
+    quote: "Every row carries its source, its check date and a confidence grade"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM supplier_control_crosswalk WHERE source_url IS NULL OR checked_on IS NULL OR confidence IS NULL
+    expected: 0
+    sources: [canadabuys_history]
+  - id: top_entity_1_contracts
+    quote: "Rank 1 legal entity, Bell Textron Canada Limited: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 1
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_entity_1_value
+    quote: "Rank 1 legal entity, Bell Textron Canada Limited: $2,283.0M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 1
+    expected: 2283.0
+    sources: [canadabuys_history]
+  - id: top_entity_2_contracts
+    quote: "Rank 2 legal entity, Allied Wings Limited Partnership: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 2
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_entity_2_value
+    quote: "Rank 2 legal entity, Allied Wings Limited Partnership: $1,772.4M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 2
+    expected: 1772.4
+    sources: [canadabuys_history]
+  - id: top_entity_3_contracts
+    quote: "Rank 3 legal entity, Lockheed Martin Canada Inc.: 6 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 3
+    expected: 6
+    sources: [canadabuys_history]
+  - id: top_entity_3_value
+    quote: "Rank 3 legal entity, Lockheed Martin Canada Inc.: $1,311.9M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 3
+    expected: 1311.9
+    sources: [canadabuys_history]
+  - id: top_entity_4_contracts
+    quote: "Rank 4 legal entity, Cascade Aerospace Inc: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 4
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_entity_4_value
+    quote: "Rank 4 legal entity, Cascade Aerospace Inc: $1,245.2M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 4
+    expected: 1245.2
+    sources: [canadabuys_history]
+  - id: top_entity_5_contracts
+    quote: "Rank 5 legal entity, Victoria Shipyards Company Limited: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 5
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_entity_5_value
+    quote: "Rank 5 legal entity, Victoria Shipyards Company Limited: $786.1M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 5
+    expected: 786.1
+    sources: [canadabuys_history]
+  - id: top_entity_6_contracts
+    quote: "Rank 6 legal entity, Weir Canada, Inc.: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 6
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_entity_6_value
+    quote: "Rank 6 legal entity, Weir Canada, Inc.: $643.9M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 6
+    expected: 643.9
+    sources: [canadabuys_history]
+  - id: top_entity_7_contracts
+    quote: "Rank 7 legal entity, Bombardier Inc.: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 7
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_entity_7_value
+    quote: "Rank 7 legal entity, Bombardier Inc.: $634.0M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 7
+    expected: 634.0
+    sources: [canadabuys_history]
+  - id: top_entity_8_contracts
+    quote: "Rank 8 legal entity, Thales Canada and Thales Australia in joint venture: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 8
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_entity_8_value
+    quote: "Rank 8 legal entity, Thales Canada and Thales Australia in joint venture: $517.5M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 8
+    expected: 517.5
+    sources: [canadabuys_history]
+  - id: top_entity_9_contracts
+    quote: "Rank 9 legal entity, MDA Systems Ltd: 7 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 9
+    expected: 7
+    sources: [canadabuys_history]
+  - id: top_entity_9_value
+    quote: "Rank 9 legal entity, MDA Systems Ltd: $490.4M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 9
+    expected: 490.4
+    sources: [canadabuys_history]
+  - id: top_entity_10_contracts
+    quote: "Rank 10 legal entity, General Dynamics Ordnance and Tactical Systems - Canada Inc.: 33 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 10
+    expected: 33
+    sources: [canadabuys_history]
+  - id: top_entity_10_value
+    quote: "Rank 10 legal entity, General Dynamics Ordnance and Tactical Systems - Canada Inc.: $356.0M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 10
+    expected: 356.0
+    sources: [canadabuys_history]
+  - id: top_entity_11_contracts
+    quote: "Rank 11 legal entity, Colt Canada Corporation: 20 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 11
+    expected: 20
+    sources: [canadabuys_history]
+  - id: top_entity_11_value
+    quote: "Rank 11 legal entity, Colt Canada Corporation: $336.1M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 11
+    expected: 336.1
+    sources: [canadabuys_history]
+  - id: top_entity_12_contracts
+    quote: "Rank 12 legal entity, General Dynamics-OTS Canada Inc.: 19 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 12
+    expected: 19
+    sources: [canadabuys_history]
+  - id: top_entity_12_value
+    quote: "Rank 12 legal entity, General Dynamics-OTS Canada Inc.: $323.1M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 12
+    expected: 323.1
+    sources: [canadabuys_history]
+  - id: top_entity_13_contracts
+    quote: "Rank 13 legal entity, C3 Fuel Nunavik Inc.: 3 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 13
+    expected: 3
+    sources: [canadabuys_history]
+  - id: top_entity_13_value
+    quote: "Rank 13 legal entity, C3 Fuel Nunavik Inc.: $257.0M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 13
+    expected: 257.0
+    sources: [canadabuys_history]
+  - id: top_entity_14_contracts
+    quote: "Rank 14 legal entity, CAE: 5 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 14
+    expected: 5
+    sources: [canadabuys_history]
+  - id: top_entity_14_value
+    quote: "Rank 14 legal entity, CAE: $172.5M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 14
+    expected: 172.5
+    sources: [canadabuys_history]
+  - id: top_entity_15_contracts
+    quote: "Rank 15 legal entity, Magellan Aerospace Limited: 4 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_suppliers WHERE rank = 15
+    expected: 4
+    sources: [canadabuys_history]
+  - id: top_entity_15_value
+    quote: "Rank 15 legal entity, Magellan Aerospace Limited: $139.2M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_suppliers WHERE rank = 15
+    expected: 139.2
+    sources: [canadabuys_history]
+  - id: top_parent_1_keys
+    quote: "Rank 1 parent, Textron Inc.: 1 name keys"
+    where: [findings]
+    kind: count
+    query: SELECT name_keys FROM mart_top_parents WHERE rank = 1
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_1_contracts
+    quote: "Rank 1 parent, Textron Inc.: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_parents WHERE rank = 1
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_1_value
+    quote: "Rank 1 parent, Textron Inc.: $2,283.0M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_parents WHERE rank = 1
+    expected: 2283.0
+    sources: [canadabuys_history]
+  - id: top_parent_2_keys
+    quote: "Rank 2 parent, KF Aerospace (Barry Lapointe Holdings): 1 name keys"
+    where: [findings]
+    kind: count
+    query: SELECT name_keys FROM mart_top_parents WHERE rank = 2
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_2_contracts
+    quote: "Rank 2 parent, KF Aerospace (Barry Lapointe Holdings): 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_parents WHERE rank = 2
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_2_value
+    quote: "Rank 2 parent, KF Aerospace (Barry Lapointe Holdings): $1,772.4M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_parents WHERE rank = 2
+    expected: 1772.4
+    sources: [canadabuys_history]
+  - id: top_parent_3_keys
+    quote: "Rank 3 parent, Lockheed Martin Corporation: 1 name keys"
+    where: [findings]
+    kind: count
+    query: SELECT name_keys FROM mart_top_parents WHERE rank = 3
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_3_contracts
+    quote: "Rank 3 parent, Lockheed Martin Corporation: 6 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_parents WHERE rank = 3
+    expected: 6
+    sources: [canadabuys_history]
+  - id: top_parent_3_value
+    quote: "Rank 3 parent, Lockheed Martin Corporation: $1,311.9M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_parents WHERE rank = 3
+    expected: 1311.9
+    sources: [canadabuys_history]
+  - id: top_parent_4_keys
+    quote: "Rank 4 parent, IMP Group International Inc.: 1 name keys"
+    where: [findings]
+    kind: count
+    query: SELECT name_keys FROM mart_top_parents WHERE rank = 4
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_4_contracts
+    quote: "Rank 4 parent, IMP Group International Inc.: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_parents WHERE rank = 4
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_4_value
+    quote: "Rank 4 parent, IMP Group International Inc.: $1,245.2M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_parents WHERE rank = 4
+    expected: 1245.2
+    sources: [canadabuys_history]
+  - id: top_parent_5_keys
+    quote: "Rank 5 parent, General Dynamics Corporation: 4 name keys"
+    where: [findings]
+    kind: count
+    query: SELECT name_keys FROM mart_top_parents WHERE rank = 5
+    expected: 4
+    sources: [canadabuys_history]
+  - id: top_parent_5_contracts
+    quote: "Rank 5 parent, General Dynamics Corporation: 57 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_parents WHERE rank = 5
+    expected: 57
+    sources: [canadabuys_history]
+  - id: top_parent_5_value
+    quote: "Rank 5 parent, General Dynamics Corporation: $837.6M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_parents WHERE rank = 5
+    expected: 837.6
+    sources: [canadabuys_history]
+  - id: top_parent_6_keys
+    quote: "Rank 6 parent, The Washington Companies: 1 name keys"
+    where: [findings]
+    kind: count
+    query: SELECT name_keys FROM mart_top_parents WHERE rank = 6
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_6_contracts
+    quote: "Rank 6 parent, The Washington Companies: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_parents WHERE rank = 6
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_6_value
+    quote: "Rank 6 parent, The Washington Companies: $786.1M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_parents WHERE rank = 6
+    expected: 786.1
+    sources: [canadabuys_history]
+  - id: top_parent_7_keys
+    quote: "Rank 7 parent, The Weir Group PLC: 1 name keys"
+    where: [findings]
+    kind: count
+    query: SELECT name_keys FROM mart_top_parents WHERE rank = 7
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_7_contracts
+    quote: "Rank 7 parent, The Weir Group PLC: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_parents WHERE rank = 7
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_7_value
+    quote: "Rank 7 parent, The Weir Group PLC: $643.9M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_parents WHERE rank = 7
+    expected: 643.9
+    sources: [canadabuys_history]
+  - id: top_parent_8_keys
+    quote: "Rank 8 parent, Bombardier Inc.: 1 name keys"
+    where: [findings]
+    kind: count
+    query: SELECT name_keys FROM mart_top_parents WHERE rank = 8
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_8_contracts
+    quote: "Rank 8 parent, Bombardier Inc.: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_parents WHERE rank = 8
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_8_value
+    quote: "Rank 8 parent, Bombardier Inc.: $634.0M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_parents WHERE rank = 8
+    expected: 634.0
+    sources: [canadabuys_history]
+  - id: top_parent_9_keys
+    quote: "Rank 9 parent, Thales S.A.: 1 name keys"
+    where: [findings]
+    kind: count
+    query: SELECT name_keys FROM mart_top_parents WHERE rank = 9
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_9_contracts
+    quote: "Rank 9 parent, Thales S.A.: 1 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_parents WHERE rank = 9
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_9_value
+    quote: "Rank 9 parent, Thales S.A.: $517.5M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_parents WHERE rank = 9
+    expected: 517.5
+    sources: [canadabuys_history]
+  - id: top_parent_10_keys
+    quote: "Rank 10 parent, MDA Space Ltd.: 1 name keys"
+    where: [findings]
+    kind: count
+    query: SELECT name_keys FROM mart_top_parents WHERE rank = 10
+    expected: 1
+    sources: [canadabuys_history]
+  - id: top_parent_10_contracts
+    quote: "Rank 10 parent, MDA Space Ltd.: 7 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_top_parents WHERE rank = 10
+    expected: 7
+    sources: [canadabuys_history]
+  - id: top_parent_10_value
+    quote: "Rank 10 parent, MDA Space Ltd.: $490.4M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_top_parents WHERE rank = 10
+    expected: 490.4
+    sources: [canadabuys_history]
+  - id: gd_names
+    quote: "Its awards arrived under four separate legal names"
+    where: [findings]
+    kind: count
+    query: SELECT name_keys FROM mart_top_parents WHERE ultimate_parent = 'General Dynamics Corporation'
+    expected: 4
+    sources: [canadabuys_history]
+  - id: gd_parent_rank
+    quote: "Grouped by owner it is the fifth-largest supplier of the subset"
+    where: [findings]
+    kind: count
+    query: SELECT rank FROM mart_top_parents WHERE ultimate_parent = 'General Dynamics Corporation'
+    expected: 5
+    sources: [canadabuys_history]
+  - id: allied_wings_medium
+    quote: "Allied Wings is graded medium confidence"
+    where: [findings]
+    kind: text
+    query: SELECT confidence FROM supplier_control_crosswalk WHERE supplier_name_key = 'ALLIEDWINGSPARTNERSHIP'
+    expected: "medium"
+    sources: [canadabuys_history]
+  - id: allied_wings_undated
+    quote: "the one large contract in the subset with no award date"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_contract WHERE supplier_name_key = 'ALLIEDWINGSPARTNERSHIP' AND award_date IS NULL
+    expected: 1
+    sources: [canadabuys_history]
+  # ---- spend analysis by capability segment
+  - id: kw_carbon_fibre
+    quote: "carbon fib matches 0 rows"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE title_en ILIKE '%carbon fib%' OR description_en ILIKE '%carbon fib%'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: kw_composite
+    quote: "composite 20"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE title_en ILIKE '%composite%' OR description_en ILIKE '%composite%'
+    expected: 20
+    sources: [canadabuys_history]
+  - id: kw_aerospace
+    quote: "aerospace or aircraft 252"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE title_en ILIKE '%aerospace%' OR description_en ILIKE '%aerospace%' OR title_en ILIKE '%aircraft%' OR description_en ILIKE '%aircraft%'
+    expected: 252
+    sources: [canadabuys_history]
+  - id: kw_uncrewed
+    quote: "and the uncrewed vocabulary 75"
+    where: [findings]
+    kind: count
+    print_match: {pattern: 'uav, drone, rpas, uncrewed, unmanned\s+│\s+(\d+)', cell: 58}
+    expected: 75
+    sources: [canadabuys_history]
+  - id: segment_prefixes
+    quote: "a published crosswalk of 350 code prefixes"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM unspsc_segment_crosswalk
+    expected: 350
+    sources: [canadabuys_history]
+  - id: segment_families
+    quote: "238 at family grain"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM unspsc_segment_crosswalk WHERE prefix_level = 'family'
+    expected: 238
+    sources: [canadabuys_history]
+  - id: segment_classes
+    quote: "and 112 at class grain"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM unspsc_segment_crosswalk WHERE prefix_level = 'class'
+    expected: 112
+    sources: [canadabuys_history]
+  - id: unclassified_share
+    quote: "45.1% of defence value carries no UNSPSC code at all"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * (SELECT keyed_value FROM mart_segments WHERE segment = 'unclassified') / (SELECT SUM(contract_value_cad) FROM fct_contract WHERE is_dnd AND contract_value_cad >= 0), 1)
+    expected: 45.1
+    sources: [canadabuys_history]
+  - id: unclassified_value
+    quote: "$8,968.5M on 260 contracts"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_segments WHERE segment = 'unclassified'
+    expected: 8968.5
+    sources: [canadabuys_history]
+  - id: unclassified_contracts
+    quote: "260 contracts carry no UNSPSC code"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_segments WHERE segment = 'unclassified'
+    expected: 260
+    sources: [canadabuys_history]
+  - id: unclassified_avg
+    quote: "Those 260 contracts average $34.5M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / contracts / 1e6, 1) FROM mart_segments WHERE segment = 'unclassified'
+    expected: 34.5
+    sources: [canadabuys_history]
+  - id: classified_avg
+    quote: "against $4.4M for the ones that do carry a code"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(SUM(keyed_value) / SUM(contracts) / 1e6, 1) FROM mart_segments WHERE segment <> 'unclassified'
+    expected: 4.4
+    sources: [canadabuys_history]
+  - id: classified_value
+    quote: "the segment shares below describe $10,909.9M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(SUM(keyed_value) / 1e6, 1) FROM mart_segments WHERE segment <> 'unclassified'
+    expected: 10909.9
+    sources: [canadabuys_history]
+  - id: legacy_rows
+    quote: "The rows with no UNSPSC code, no instrument type and no amendment type are the same 1,762 rows"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE unspsc_code IS NULL AND instrument_type IS NULL AND amendment_type IS NULL
+    expected: 1762
+    sources: [canadabuys_history]
+  - id: legacy_rows_same_set
+    quote: "the same 1,762 rows as the rows with no UNSPSC code (A13)"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A13'
+    expected: 1762
+    sources: [canadabuys_history]
+  - id: legacy_rows_no_cw
+    quote: "none of them carries a CanadaBuys CW reference number"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE unspsc_code IS NULL AND reference_number LIKE 'CW%'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: legacy_undated
+    quote: "every undated row in the file is one of them (A26)"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE award_date IS NULL AND NOT (unspsc_code IS NULL AND instrument_type IS NULL AND amendment_type IS NULL)
+    expected: 0
+    sources: [canadabuys_history]
+  - id: legacy_defence_contracts
+    quote: "In the defence subset they are 290 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_contract WHERE is_dnd AND contract_value_cad >= 0 AND NOT is_cw_reference
+    expected: 290
+    sources: [canadabuys_history]
+  - id: legacy_defence_value
+    quote: "worth $10,889.4M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(SUM(contract_value_cad) / 1e6, 1) FROM fct_contract WHERE is_dnd AND contract_value_cad >= 0 AND NOT is_cw_reference
+    expected: 10889.5
+    note: the memo prints 10,889.4; the two legacy rows of the notebook's table sum to 10,889.46, so the memo truncated rather than rounded
+    sources: [canadabuys_history]
+  - id: legacy_defence_share
+    quote: "54.8% of the value"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * SUM(contract_value_cad) FILTER (WHERE NOT is_cw_reference) / SUM(contract_value_cad), 1) FROM fct_contract WHERE is_dnd AND contract_value_cad >= 0
+    expected: 54.8
+    sources: [canadabuys_history]
+  - id: unclassified_all_legacy
+    quote: "all 260 unclassified contracts are among them"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_contract WHERE is_dnd AND contract_value_cad >= 0 AND unspsc_code IS NULL AND is_cw_reference
+    expected: 0
+    sources: [canadabuys_history]
+  - id: seg_aerospace_contracts
+    quote: "aerospace: 49 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_segments WHERE segment = 'aerospace'
+    expected: 49
+    sources: [canadabuys_history]
+  - id: seg_aerospace_value
+    quote: "aerospace: $4,308.2M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_segments WHERE segment = 'aerospace'
+    expected: 4308.2
+    sources: [canadabuys_history]
+  - id: seg_aerospace_share
+    quote: "aerospace: 39.49% of classified value"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * keyed_value / (SELECT SUM(keyed_value) FROM mart_segments WHERE segment <> 'unclassified'), 2) FROM mart_segments WHERE segment = 'aerospace'
+    expected: 39.49
+    sources: [canadabuys_history]
+  - id: seg_aerospace_a
+    quote: "aerospace: reading A 97.5%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_a_pct FROM mart_segments WHERE segment = 'aerospace'
+    expected: 97.5
+    sources: [canadabuys_history]
+  - id: seg_aerospace_b_low
+    quote: "aerospace: reading B lower 43.6%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_lower_pct FROM mart_segments WHERE segment = 'aerospace'
+    expected: 43.6
+    sources: [canadabuys_history]
+  - id: seg_aerospace_b_high
+    quote: "aerospace: reading B upper 44.5%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_upper_pct FROM mart_segments WHERE segment = 'aerospace'
+    expected: 44.5
+    sources: [canadabuys_history]
+  - id: seg_aerospace_coverage
+    quote: "aerospace: coverage 99.1%"
+    where: [findings]
+    kind: pct
+    query: SELECT control_coverage_pct FROM mart_segments WHERE segment = 'aerospace'
+    expected: 99.1
+    sources: [canadabuys_history]
+  - id: seg_specialized_manufacturing_contracts
+    quote: "specialized manufacturing: 80 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 80
+    sources: [canadabuys_history]
+  - id: seg_specialized_manufacturing_value
+    quote: "specialized manufacturing: $1,826.4M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 1826.4
+    sources: [canadabuys_history]
+  - id: seg_specialized_manufacturing_share
+    quote: "specialized manufacturing: 16.74% of classified value"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * keyed_value / (SELECT SUM(keyed_value) FROM mart_segments WHERE segment <> 'unclassified'), 2) FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 16.74
+    sources: [canadabuys_history]
+  - id: seg_specialized_manufacturing_a
+    quote: "specialized manufacturing: reading A 53.1%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_a_pct FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 53.1
+    sources: [canadabuys_history]
+  - id: seg_specialized_manufacturing_b_low
+    quote: "specialized manufacturing: reading B lower 1.6%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_lower_pct FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 1.6
+    sources: [canadabuys_history]
+  - id: seg_specialized_manufacturing_b_high
+    quote: "specialized manufacturing: reading B upper 4.6%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_upper_pct FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 4.6
+    sources: [canadabuys_history]
+  - id: seg_specialized_manufacturing_coverage
+    quote: "specialized manufacturing: coverage 94.3%"
+    where: [findings]
+    kind: pct
+    query: SELECT control_coverage_pct FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 94.3
+    sources: [canadabuys_history]
+  - id: seg_uncrewed_autonomous_contracts
+    quote: "uncrewed autonomous: 20 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 20
+    sources: [canadabuys_history]
+  - id: seg_uncrewed_autonomous_value
+    quote: "uncrewed autonomous: $2.1M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 2.1
+    sources: [canadabuys_history]
+  - id: seg_uncrewed_autonomous_share
+    quote: "uncrewed autonomous: 0.02% of classified value"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * keyed_value / (SELECT SUM(keyed_value) FROM mart_segments WHERE segment <> 'unclassified'), 2) FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 0.02
+    sources: [canadabuys_history]
+  - id: seg_uncrewed_autonomous_a
+    quote: "uncrewed autonomous: reading A 35.3%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_a_pct FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 35.3
+    sources: [canadabuys_history]
+  - id: seg_uncrewed_autonomous_b_uninterpretable
+    quote: "uncrewed autonomous: reading B not interpretable"
+    where: [findings]
+    kind: count
+    query: SELECT CAST(NOT reading_b_interpretable AS INTEGER) FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 1
+    sources: [canadabuys_history]
+  - id: seg_uncrewed_autonomous_coverage
+    quote: "uncrewed autonomous: coverage 0.0%"
+    where: [findings]
+    kind: pct
+    query: SELECT control_coverage_pct FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 0.0
+    sources: [canadabuys_history]
+  - id: seg_other_contracts
+    quote: "other: 2,347 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_segments WHERE segment = 'other'
+    expected: 2347
+    sources: [canadabuys_history]
+  - id: seg_other_value
+    quote: "other: $4,773.2M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_segments WHERE segment = 'other'
+    expected: 4773.2
+    sources: [canadabuys_history]
+  - id: seg_other_share
+    quote: "other: 43.75% of classified value"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * keyed_value / (SELECT SUM(keyed_value) FROM mart_segments WHERE segment <> 'unclassified'), 2) FROM mart_segments WHERE segment = 'other'
+    expected: 43.75
+    sources: [canadabuys_history]
+  - id: seg_other_a
+    quote: "other: reading A 96.1%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_a_pct FROM mart_segments WHERE segment = 'other'
+    expected: 96.1
+    sources: [canadabuys_history]
+  - id: seg_other_b_uninterpretable
+    quote: "other: reading B not interpretable"
+    where: [findings]
+    kind: count
+    query: SELECT CAST(NOT reading_b_interpretable AS INTEGER) FROM mart_segments WHERE segment = 'other'
+    expected: 1
+    sources: [canadabuys_history]
+  - id: seg_other_coverage
+    quote: "other: coverage 34.8%"
+    where: [findings]
+    kind: pct
+    query: SELECT control_coverage_pct FROM mart_segments WHERE segment = 'other'
+    expected: 34.8
+    sources: [canadabuys_history]
+  - id: seg_unclassified_contracts
+    quote: "unclassified: 260 contracts"
+    where: [findings]
+    kind: count
+    query: SELECT contracts FROM mart_segments WHERE segment = 'unclassified'
+    expected: 260
+    sources: [canadabuys_history]
+  - id: seg_unclassified_value
+    quote: "unclassified: $8,968.5M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(keyed_value / 1e6, 1) FROM mart_segments WHERE segment = 'unclassified'
+    expected: 8968.5
+    sources: [canadabuys_history]
+  - id: seg_unclassified_a
+    quote: "unclassified: reading A 64.4%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_a_pct FROM mart_segments WHERE segment = 'unclassified'
+    expected: 64.4
+    sources: [canadabuys_history]
+  - id: seg_unclassified_b_low
+    quote: "unclassified: reading B lower 25.9%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_lower_pct FROM mart_segments WHERE segment = 'unclassified'
+    expected: 25.9
+    sources: [canadabuys_history]
+  - id: seg_unclassified_b_high
+    quote: "unclassified: reading B upper 28.9%"
+    where: [findings]
+    kind: pct
+    query: SELECT reading_b_upper_pct FROM mart_segments WHERE segment = 'unclassified'
+    expected: 28.9
+    sources: [canadabuys_history]
+  - id: seg_unclassified_coverage
+    quote: "unclassified: coverage 95.3%"
+    where: [findings]
+    kind: pct
+    query: SELECT control_coverage_pct FROM mart_segments WHERE segment = 'unclassified'
+    expected: 95.3
+    sources: [canadabuys_history]
+  - id: bell_share_aerospace
+    quote: "Bell Textron's contract is 53.0% of the aerospace segment on its own"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * (SELECT keyed_value FROM mart_top_suppliers WHERE rank = 1) / keyed_value, 1) FROM mart_segments WHERE segment = 'aerospace'
+    expected: 53.0
+    sources: [canadabuys_history]
+  - id: bell_share_classified
+    quote: "20.9% of all classified defence value"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * (SELECT keyed_value FROM mart_top_suppliers WHERE rank = 1) / SUM(keyed_value), 1) FROM mart_segments WHERE segment <> 'unclassified'
+    expected: 20.9
+    sources: [canadabuys_history]
+  - id: bell_share_subset
+    quote: "and 11.5% of the whole subset"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * (SELECT keyed_value FROM mart_top_suppliers WHERE rank = 1) / (SELECT SUM(contract_value_cad) FROM fct_contract WHERE is_dnd AND contract_value_cad >= 0), 1)
+    expected: 11.5
+    sources: [canadabuys_history]
+  - id: fuel_family_value
+    quote: "The fuels family is $1,208.2M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(CAST(keyed_value AS DOUBLE) / 1e6, 1) FROM unspsc_segment_crosswalk WHERE unspsc_prefix = '1510' AND prefix_level = 'family'
+    expected: 1208.2
+    sources: [canadabuys_history]
+  - id: fuel_family_share
+    quote: "11.1% of classified value"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * (SELECT CAST(keyed_value AS DOUBLE) FROM unspsc_segment_crosswalk WHERE unspsc_prefix = '1510' AND prefix_level = 'family') / (SELECT SUM(keyed_value) FROM mart_segments WHERE segment <> 'unclassified'), 1)
+    expected: 11.1
+    sources: [canadabuys_history]
+  - id: fuel_family_other
+    quote: "it is tagged other"
+    where: [findings]
+    kind: text
+    query: SELECT segment FROM unspsc_segment_crosswalk WHERE unspsc_prefix = '1510' AND prefix_level = 'family'
+    expected: "other"
+    sources: [canadabuys_history]
+  - id: multi_code_rows
+    quote: "Where a contract carries several UNSPSC codes, and 6,866 rows do"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A22'
+    expected: 6866
+    sources: [canadabuys_history]
+  - id: multi_code_max
+    quote: "up to 29 on one row"
+    where: [findings]
+    kind: count
+    query: SELECT MAX(codes_on_contract) FROM dim_unspsc
+    expected: 29
+    sources: [canadabuys_history]
+  - id: single_code_share
+    quote: "90.3% of classified defence value sits on single-code contracts"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * SUM(c.contract_value_cad) FILTER (WHERE u.codes_on_contract = 1) / SUM(c.contract_value_cad), 1) FROM fct_contract c JOIN dim_unspsc u ON u.unspsc_code = c.unspsc_code WHERE c.is_dnd AND c.contract_value_cad > 0
+    expected: 90.3
+    sources: [canadabuys_history]
+  - id: multi_code_share
+    quote: "so the approximation touches the remaining 9.7%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * SUM(c.contract_value_cad) FILTER (WHERE u.codes_on_contract > 1) / SUM(c.contract_value_cad), 1) FROM fct_contract c JOIN dim_unspsc u ON u.unspsc_code = c.unspsc_code WHERE c.is_dnd AND c.contract_value_cad > 0
+    expected: 9.7
+    sources: [canadabuys_history]
+  - id: class_rows_carved
+    quote: "seven class rows are carved back to other"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM unspsc_segment_crosswalk WHERE prefix_level = 'class' AND segment = 'other'
+    expected: 7
+    sources: [canadabuys_history]
+  - id: class_rows_value
+    quote: "reassigning $37.91M"
+    where: [findings]
+    kind: money
+    query: SELECT ROUND(SUM(CAST(keyed_value AS DOUBLE)) / 1e6, 2) FROM unspsc_segment_crosswalk WHERE prefix_level = 'class' AND segment = 'other'
+    expected: 37.91
+    sources: [canadabuys_history]
+  - id: conc_aerospace_entities
+    quote: "aerospace: 41 entities"
+    where: [findings]
+    kind: count
+    query: SELECT legal_entities FROM mart_segments WHERE segment = 'aerospace'
+    expected: 41
+    sources: [canadabuys_history]
+  - id: conc_aerospace_hhi_entity
+    quote: "aerospace: HHI entity 3,864"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_entity FROM mart_segments WHERE segment = 'aerospace'
+    expected: 3864
+    sources: [canadabuys_history]
+  - id: conc_aerospace_top1
+    quote: "aerospace: top 1 53.0%"
+    where: [findings]
+    kind: pct
+    query: SELECT top1_entity FROM mart_segments WHERE segment = 'aerospace'
+    expected: 53.0
+    sources: [canadabuys_history]
+  - id: conc_aerospace_top3_entity
+    quote: "aerospace: top 3 96.6%"
+    where: [findings]
+    kind: pct
+    query: SELECT top3_entity FROM mart_segments WHERE segment = 'aerospace'
+    expected: 96.6
+    sources: [canadabuys_history]
+  - id: conc_aerospace_parents
+    quote: "aerospace: 41 parents"
+    where: [findings]
+    kind: count
+    query: SELECT parents FROM mart_segments WHERE segment = 'aerospace'
+    expected: 41
+    sources: [canadabuys_history]
+  - id: conc_aerospace_hhi_parent
+    quote: "aerospace: HHI parent 3,864"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_parent FROM mart_segments WHERE segment = 'aerospace'
+    expected: 3864
+    sources: [canadabuys_history]
+  - id: conc_aerospace_top3_parent
+    quote: "aerospace: top 3 at parent grain 96.6%"
+    where: [findings]
+    kind: pct
+    query: SELECT top3_parent FROM mart_segments WHERE segment = 'aerospace'
+    expected: 96.6
+    sources: [canadabuys_history]
+  - id: conc_aerospace_gap
+    quote: "aerospace: gap 0"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_gap FROM mart_segments WHERE segment = 'aerospace'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: conc_specialized_manufacturing_entities
+    quote: "specialized manufacturing: 36 entities"
+    where: [findings]
+    kind: count
+    query: SELECT legal_entities FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 36
+    sources: [canadabuys_history]
+  - id: conc_specialized_manufacturing_hhi_entity
+    quote: "specialized manufacturing: HHI entity 2,138"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_entity FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 2138
+    sources: [canadabuys_history]
+  - id: conc_specialized_manufacturing_top1
+    quote: "specialized manufacturing: top 1 37.9%"
+    where: [findings]
+    kind: pct
+    query: SELECT top1_entity FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 37.9
+    sources: [canadabuys_history]
+  - id: conc_specialized_manufacturing_top3_entity
+    quote: "specialized manufacturing: top 3 71.3%"
+    where: [findings]
+    kind: pct
+    query: SELECT top3_entity FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 71.3
+    sources: [canadabuys_history]
+  - id: conc_specialized_manufacturing_parents
+    quote: "specialized manufacturing: 34 parents"
+    where: [findings]
+    kind: count
+    query: SELECT parents FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 34
+    sources: [canadabuys_history]
+  - id: conc_specialized_manufacturing_hhi_parent
+    quote: "specialized manufacturing: HHI parent 2,446"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_parent FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 2446
+    sources: [canadabuys_history]
+  - id: conc_specialized_manufacturing_top3_parent
+    quote: "specialized manufacturing: top 3 at parent grain 79.9%"
+    where: [findings]
+    kind: pct
+    query: SELECT top3_parent FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 79.9
+    sources: [canadabuys_history]
+  - id: conc_specialized_manufacturing_gap
+    quote: "specialized manufacturing: gap 308"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_gap FROM mart_segments WHERE segment = 'specialized_manufacturing'
+    expected: 308
+    sources: [canadabuys_history]
+  - id: conc_unclassified_entities
+    quote: "unclassified: 78 entities"
+    where: [findings]
+    kind: count
+    query: SELECT legal_entities FROM mart_segments WHERE segment = 'unclassified'
+    expected: 78
+    sources: [canadabuys_history]
+  - id: conc_unclassified_hhi_entity
+    quote: "unclassified: HHI entity 1,051"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_entity FROM mart_segments WHERE segment = 'unclassified'
+    expected: 1051
+    sources: [canadabuys_history]
+  - id: conc_unclassified_top1
+    quote: "unclassified: top 1 19.8%"
+    where: [findings]
+    kind: pct
+    query: SELECT top1_entity FROM mart_segments WHERE segment = 'unclassified'
+    expected: 19.8
+    sources: [canadabuys_history]
+  - id: conc_unclassified_top3_entity
+    quote: "unclassified: top 3 49.1%"
+    where: [findings]
+    kind: pct
+    query: SELECT top3_entity FROM mart_segments WHERE segment = 'unclassified'
+    expected: 49.1
+    sources: [canadabuys_history]
+  - id: conc_unclassified_parents
+    quote: "unclassified: 78 parents"
+    where: [findings]
+    kind: count
+    query: SELECT parents FROM mart_segments WHERE segment = 'unclassified'
+    expected: 78
+    sources: [canadabuys_history]
+  - id: conc_unclassified_hhi_parent
+    quote: "unclassified: HHI parent 1,051"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_parent FROM mart_segments WHERE segment = 'unclassified'
+    expected: 1051
+    sources: [canadabuys_history]
+  - id: conc_unclassified_top3_parent
+    quote: "unclassified: top 3 at parent grain 49.1%"
+    where: [findings]
+    kind: pct
+    query: SELECT top3_parent FROM mart_segments WHERE segment = 'unclassified'
+    expected: 49.1
+    sources: [canadabuys_history]
+  - id: conc_unclassified_gap
+    quote: "unclassified: gap 0"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_gap FROM mart_segments WHERE segment = 'unclassified'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: conc_other_entities
+    quote: "other: 1,169 entities"
+    where: [findings]
+    kind: count
+    query: SELECT legal_entities FROM mart_segments WHERE segment = 'other'
+    expected: 1169
+    sources: [canadabuys_history]
+  - id: conc_other_hhi_entity
+    quote: "other: HHI entity 219"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_entity FROM mart_segments WHERE segment = 'other'
+    expected: 219
+    sources: [canadabuys_history]
+  - id: conc_other_top1
+    quote: "other: top 1 10.8%"
+    where: [findings]
+    kind: pct
+    query: SELECT top1_entity FROM mart_segments WHERE segment = 'other'
+    expected: 10.8
+    sources: [canadabuys_history]
+  - id: conc_other_top3_entity
+    quote: "other: top 3 19.8%"
+    where: [findings]
+    kind: pct
+    query: SELECT top3_entity FROM mart_segments WHERE segment = 'other'
+    expected: 19.8
+    sources: [canadabuys_history]
+  - id: conc_other_parents
+    quote: "other: 1,169 parents"
+    where: [findings]
+    kind: count
+    query: SELECT parents FROM mart_segments WHERE segment = 'other'
+    expected: 1169
+    sources: [canadabuys_history]
+  - id: conc_other_hhi_parent
+    quote: "other: HHI parent 219"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_parent FROM mart_segments WHERE segment = 'other'
+    expected: 219
+    sources: [canadabuys_history]
+  - id: conc_other_top3_parent
+    quote: "other: top 3 at parent grain 19.8%"
+    where: [findings]
+    kind: pct
+    query: SELECT top3_parent FROM mart_segments WHERE segment = 'other'
+    expected: 19.8
+    sources: [canadabuys_history]
+  - id: conc_other_gap
+    quote: "other: gap 0"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_gap FROM mart_segments WHERE segment = 'other'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: conc_uncrewed_autonomous_entities
+    quote: "uncrewed autonomous: 18 entities"
+    where: [findings]
+    kind: count
+    query: SELECT legal_entities FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 18
+    sources: [canadabuys_history]
+  - id: conc_uncrewed_autonomous_hhi_entity
+    quote: "uncrewed autonomous: HHI entity 4,921"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_entity FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 4921
+    sources: [canadabuys_history]
+  - id: conc_uncrewed_autonomous_top1
+    quote: "uncrewed autonomous: top 1 64.7%"
+    where: [findings]
+    kind: pct
+    query: SELECT top1_entity FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 64.7
+    sources: [canadabuys_history]
+  - id: conc_uncrewed_autonomous_top3_entity
+    quote: "uncrewed autonomous: top 3 100.0%"
+    where: [findings]
+    kind: pct
+    query: SELECT top3_entity FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 100.0
+    sources: [canadabuys_history]
+  - id: conc_uncrewed_autonomous_parents
+    quote: "uncrewed autonomous: 18 parents"
+    where: [findings]
+    kind: count
+    query: SELECT parents FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 18
+    sources: [canadabuys_history]
+  - id: conc_uncrewed_autonomous_hhi_parent
+    quote: "uncrewed autonomous: HHI parent 4,921"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_parent FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 4921
+    sources: [canadabuys_history]
+  - id: conc_uncrewed_autonomous_top3_parent
+    quote: "uncrewed autonomous: top 3 at parent grain 100.0%"
+    where: [findings]
+    kind: pct
+    query: SELECT top3_parent FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 100.0
+    sources: [canadabuys_history]
+  - id: conc_uncrewed_autonomous_gap
+    quote: "uncrewed autonomous: gap 0"
+    where: [findings]
+    kind: stat
+    query: SELECT hhi_gap FROM mart_segments WHERE segment = 'uncrewed_autonomous'
+    expected: 0
+    sources: [canadabuys_history]
+  # ---- definitions and limits
+  - id: nonnumeric_amendments
+    quote: "The 55 non-numeric amendment codes sort first"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A3'
+    expected: 55
+    sources: [canadabuys_history]
+  - id: negative_contracts
+    quote: "The one negative contract, quarantined at A6"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A6'
+    expected: 1
+    sources: [canadabuys_history]
+  - id: zero_rows
+    quote: "contract value is $0 on 5,502 rows"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A5'
+    expected: 5502
+    sources: [canadabuys_history]
+  - id: undated_contracts
+    quote: "285 undated contracts, all legacy-format records"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_contract WHERE award_date IS NULL
+    expected: 285
+    sources: [canadabuys_history]
+  - id: undated_contracts_legacy
+    quote: "all legacy-format records"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_contract WHERE award_date IS NULL AND is_cw_reference
+    expected: 0
+    sources: [canadabuys_history]
+  - id: terminated_rows
+    quote: "Contracts are terminated, 38 rows here"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_contract_history WHERE amendment_type = 'Termination'
+    expected: 38
+    sources: [canadabuys_history]
+  - id: over_100m
+    quote: "contract value above $100M: 115 rows"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A7'
+    expected: 115
+    sources: [canadabuys_history]
+  # ---- the assertion suite
+  - id: dq_rules
+    quote: "25 data quality rules"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM dq_assertions
+    expected: 25
+    sources: []
+  - id: dq_block
+    quote: "four of them block the notebook"
+    where: [README]
+    kind: count
+    query: SELECT COUNT(*) FROM dq_assertions WHERE severity = 'BLOCK'
+    expected: 4
+    sources: []
+  - id: dq_A1
+    quote: "A1: 0 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A1'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: dq_A2
+    quote: "A2: 0 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A2'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: dq_A3
+    quote: "A3: 55 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A3'
+    expected: 55
+    sources: [canadabuys_history]
+  - id: dq_A4
+    quote: "A4: 0 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A4'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: dq_A5
+    quote: "A5: 5,502 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A5'
+    expected: 5502
+    sources: [canadabuys_history]
+  - id: dq_A6
+    quote: "A6: 1 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A6'
+    expected: 1
+    sources: [canadabuys_history]
+  - id: dq_A7
+    quote: "A7: 115 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A7'
+    expected: 115
+    sources: [canadabuys_history]
+  - id: dq_A8
+    quote: "A8: 0 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A8'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: dq_A9
+    quote: "A9: 0 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A9'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: dq_A10
+    quote: "A10: 1 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A10'
+    expected: 1
+    sources: [canadabuys_history]
+  - id: dq_A11
+    quote: "A11: 0 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A11'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: dq_A13
+    quote: "A13: 1,762 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A13'
+    expected: 1762
+    sources: [canadabuys_history]
+  - id: dq_A14
+    quote: "A14: 20,082 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A14'
+    expected: 20082
+    sources: [canadabuys_history]
+  - id: dq_A15
+    quote: "A15: 21,890 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A15'
+    expected: 21890
+    sources: [canadabuys_history]
+  - id: dq_A16
+    quote: "A16: 16,814 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A16'
+    expected: 16814
+    sources: [canadabuys_history]
+  - id: dq_A17
+    quote: "A17: 0 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A17'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: dq_A18
+    quote: "A18: 0 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A18'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: dq_A19
+    quote: "A19: 1,059 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A19'
+    expected: 1059
+    sources: [canadabuys_history]
+  - id: dq_A20
+    quote: "A20: 305 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A20'
+    expected: 305
+    sources: [canadabuys_history]
+  - id: dq_A21
+    quote: "A21: 0 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A21'
+    expected: 0
+    sources: [canadabuys_history]
+  - id: dq_A22
+    quote: "A22: 6,866 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A22'
+    expected: 6866
+    sources: [canadabuys_history]
+  - id: dq_A23
+    quote: "A23: 1 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A23'
+    expected: 1
+    sources: [canadabuys_history]
+  - id: dq_A24
+    quote: "A24: 6,519 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A24'
+    expected: 6519
+    sources: [canadabuys_history]
+  - id: dq_A25
+    quote: "A25: 2,686 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A25'
+    expected: 2686
+    sources: [canadabuys_history]
+  - id: dq_A26
+    quote: "A26: 2,343 failing"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'A26'
+    expected: 2343
+    sources: [canadabuys_history]
+  # ---- the crosswalks and the notebook
+  - id: xw_country_rows
+    quote: "country_crosswalk.csv: 49 rows"
+    where: [README]
+    kind: count
+    query: SELECT COUNT(*) FROM read_csv('crosswalks/country_crosswalk.csv', header = true, all_varchar = true)
+    expected: 49
+    sources: [canadabuys_history]
+  - id: xw_na_rows
+    quote: "country_na_resolution.csv: 1 row"
+    where: [README]
+    kind: count
+    query: SELECT COUNT(*) FROM read_csv('crosswalks/country_na_resolution.csv', header = true, all_varchar = true)
+    expected: 1
+    sources: [canadabuys_history]
+  - id: xw_control_rows
+    quote: "supplier_control_crosswalk.csv: 28 rows"
+    where: [README]
+    kind: count
+    query: SELECT COUNT(*) FROM read_csv('crosswalks/supplier_control_crosswalk.csv', header = true, all_varchar = true)
+    expected: 28
+    sources: [canadabuys_history]
+  - id: xw_name_groups_rows
+    quote: "supplier_name_groups.csv: 303 rows"
+    where: [README]
+    kind: count
+    query: SELECT COUNT(*) FROM read_csv('crosswalks/supplier_name_groups.csv', header = true, all_varchar = true)
+    expected: 303
+    sources: [canadabuys_history]
+  - id: xw_segment_rows
+    quote: "unspsc_segment_crosswalk.csv: 350 rows"
+    where: [README]
+    kind: count
+    query: SELECT COUNT(*) FROM read_csv('crosswalks/unspsc_segment_crosswalk.csv', header = true, all_varchar = true)
+    expected: 350
+    sources: [canadabuys_history]
+  - id: file_bytes
+    quote: "The first cell downloads the 57.7 MB source"
+    where: [README]
+    kind: count
+    not_reproducible: the byte count is read from the pull manifest by the fingerprint step, not from a table; a changed size shows there as a changed source
+    expected: 57.7
+    sources: [canadabuys_history]
+  - id: notebook_cells
+    quote: "77 cells, two charts"
+    where: [README]
+    kind: constant
+    not_reproducible: a property of the notebook file rather than of the data; the Notebook section of this report says how many code cells ran
+    expected: 77
+    sources: []
+  - id: six_pulls
+    quote: "it had not changed on six pulls through 2026-09-04"
+    where: [findings]
+    kind: constant
+    not_reproducible: a history of hand pulls recorded in memo/data_contract.md; each CI run adds one more pull to the fingerprint record
+    expected: 6
+    sources: [canadabuys_history]

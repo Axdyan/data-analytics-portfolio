@@ -1,0 +1,2055 @@
+# Every figure quoted in 06-ontario-demand-forecast/README.md and memo/findings.md, with
+# the query that reads it back from the tables the notebook builds. Measured on the
+# 2026-09-06 pull. Column names with spaces are quoted as the notebook wrote them.
+project: 06-ontario-demand-forecast
+label: "06: Ontario Demand Forecast"
+notebook: 06_load_explore.ipynb
+database: ieso.duckdb
+measured_on: 2026-09-06
+cell_timeout_s: 7200
+
+sources:
+  - id: ieso_demand_closed
+    refresh: closed years stamped once, reissued rarely
+    policy: ieso_closed_years
+    fingerprint: {kind: manifest_json, path: memo/pull_manifest.json, list: demand, key: file, value: sha256, exclude: [PUB_Demand_2026.csv]}
+  - id: ieso_demand_current
+    refresh: rewritten every morning
+    policy: ieso_current_year
+    fingerprint: {kind: manifest_json, path: memo/pull_manifest.json, list: demand, key: file, value: sha256, include: [PUB_Demand_2026.csv]}
+  - id: ieso_zonal_closed
+    refresh: closed years stamped once, reissued rarely
+    policy: ieso_closed_years
+    fingerprint: {kind: manifest_json, path: memo/pull_manifest.json, list: zonal, key: file, value: sha256, exclude: [PUB_DemandZonal_2026.csv]}
+  - id: ieso_zonal_current
+    refresh: rewritten every morning
+    policy: ieso_current_year
+    fingerprint: {kind: manifest_json, path: memo/pull_manifest.json, list: zonal, key: file, value: sha256, include: [PUB_DemandZonal_2026.csv]}
+
+numbers:
+  # ---- the pull and the series
+  - id: demand_files
+    quote: "25 yearly files 2002 to 2026"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(DISTINCT source_file) FROM raw_demand
+    expected: 25
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: demand_hours
+    quote: "213,456 hours"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM raw_demand
+    expected: 213456
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: years_span
+    quote: "2002 to 2026"
+    where: [README, findings]
+    kind: text
+    query: SELECT MIN(year) || ' to ' || MAX(year) FROM fct_demand_hourly
+    expected: "2002 to 2026"
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: series_start
+    quote: "runs from 2002-05-01, the day Ontario's wholesale market opened"
+    where: [findings]
+    kind: text
+    query: SELECT CAST(MIN(date) AS VARCHAR) FROM fct_demand_hourly
+    expected: "2002-05-01"
+    sources: [ieso_demand_closed]
+  - id: matrix_days
+    quote: "the analysis matrix holds 8,889 days to 2026-08-31"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(DISTINCT date) FROM fct_demand_hourly WHERE date <= DATE '2026-08-31'
+    expected: 8889
+    sources: [ieso_demand_closed]
+  - id: zonal_files
+    quote: "24 zonal files 2003 to 2026"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(DISTINCT source_file) FROM raw_zonal
+    expected: 24
+    sources: [ieso_zonal_closed, ieso_zonal_current]
+  - id: zonal_hours
+    quote: "204,695 rows"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM raw_zonal
+    expected: 204695
+    sources: [ieso_zonal_closed, ieso_zonal_current]
+  - id: holiday_rows
+    quote: "254 rows 2002 to 2027 in the holiday crosswalk"
+    where: [README]
+    kind: count
+    query: SELECT COUNT(*) FROM read_csv('crosswalks/ontario_holidays.csv')
+    expected: 254
+    sources: []
+
+  # ---- what the source did
+  - id: file_2025_rows
+    quote: "the 2025 file carries 8,759 rows"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM raw_demand WHERE source_file LIKE '%_2025.csv'
+    expected: 8759
+    sources: [ieso_demand_closed]
+  - id: missing_hour_date
+    quote: "the day with 23 rows is 2025-05-01"
+    where: [README, findings]
+    kind: text
+    query: SELECT CAST(date AS VARCHAR) FROM fct_demand_hourly WHERE filled LIMIT 1
+    expected: "2025-05-01"
+    sources: [ieso_demand_closed]
+  - id: missing_hour_ending
+    quote: "the absent hour is hour 1"
+    where: [README, findings]
+    kind: count
+    query: SELECT hour_ending FROM fct_demand_hourly WHERE filled LIMIT 1
+    expected: 1
+    sources: [ieso_demand_closed]
+  - id: missing_hour_before
+    quote: "hour 24 of April 30 reads 13,795 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT ontario_mw FROM fct_demand_hourly WHERE date = DATE '2025-04-30' AND hour_ending = 24
+    expected: 13795
+    sources: [ieso_demand_closed]
+  - id: missing_hour_after
+    quote: "hour 2 of May 1 reads 12,352"
+    where: [findings]
+    kind: mw
+    query: SELECT ontario_mw FROM fct_demand_hourly WHERE date = DATE '2025-05-01' AND hour_ending = 2
+    expected: 12352
+    sources: [ieso_demand_closed]
+  - id: missing_hour_fill
+    quote: "filled with the mean of its neighbours, 13,074 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT ontario_mw FROM fct_demand_hourly WHERE filled LIMIT 1
+    expected: 13074
+    sources: [ieso_demand_closed]
+  - id: gaps_total
+    quote: "the only gap in 213,456 hours"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_demand_hourly WHERE filled
+    expected: 1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: separator_rows
+    quote: "129 of 204,695 rows carry a quoted thousands separator"
+    where: [README, findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B17'
+    expected: 129
+    sources: [ieso_zonal_closed, ieso_zonal_current]
+  - id: zero_zone_hours
+    quote: "three hours on 2016-05-29 where every zone reads zero"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM (SELECT date, zone_total FROM stg_zonal_hourly ORDER BY ABS(diff) DESC LIMIT 3) WHERE date = DATE '2016-05-29' AND zone_total = 0
+    expected: 3
+    note: the three are the largest published differences the notebook prints, all on that date with every zone zero. The table holds 11 such hours on 2016-05-29 and 24 on 2016-10-31, so the memo's count is the display, not the table
+    sources: [ieso_zonal_closed]
+  - id: zero_zone_date
+    quote: "2016-05-29"
+    where: [findings]
+    kind: text
+    query: SELECT CAST(MIN(date) AS VARCHAR) || CASE WHEN MIN(date) = MAX(date) THEN '' ELSE ' to ' || CAST(MAX(date) AS VARCHAR) END FROM (SELECT date FROM stg_zonal_hourly ORDER BY ABS(diff) DESC LIMIT 3)
+    expected: "2016-05-29"
+    note: the date of the three largest published differences
+    sources: [ieso_zonal_closed]
+  - id: zone_sum_mismatch
+    quote: "72,152 rows where the ten zones do not sum to the published total"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B11'
+    expected: 72152
+    sources: [ieso_zonal_closed, ieso_zonal_current]
+  - id: zone_sum_over_5mw
+    quote: "all but four of them by 5 MW or less"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM stg_zonal_hourly WHERE ABS((northwest + northeast + ottawa + east + toronto + essa + bruce + southwest + niagara + west) - zone_total) > 5
+    expected: 4
+    sources: [ieso_zonal_closed, ieso_zonal_current]
+  - id: zone_diff_mismatch
+    quote: "29,814 rows where the published difference is not zone total minus Ontario demand"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B12'
+    expected: 29814
+    sources: [ieso_zonal_closed, ieso_zonal_current]
+  - id: blackout_hours
+    quote: "There are 12 of them, from 15:00 on 14 August 2003"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B8'
+    expected: 12
+    sources: [ieso_demand_closed]
+  - id: blackout_low
+    quote: "2,270 MW at hour 17"
+    where: [findings]
+    kind: mw
+    query: SELECT ontario_mw FROM fct_demand_hourly WHERE date = DATE '2003-08-14' AND hour_ending = 17
+    expected: 2270
+    sources: [ieso_demand_closed]
+  - id: blackout_week_before
+    quote: "against 21,894 a week before"
+    where: [findings]
+    kind: mw
+    query: SELECT ontario_mw FROM fct_demand_hourly WHERE date = DATE '2003-08-07' AND hour_ending = 18
+    expected: 21894
+    note: 21,894 is hour ending 18 a week before, the row under 2,366 in the notebook's print; hour ending 17 a week before reads 22,380. The memo pairs 2,270 (hour 17) with the hour 18 figure
+    sources: [ieso_demand_closed]
+  - id: rows_per_date_24
+    quote: "Every date in 24 years carries exactly 24 rows"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM (SELECT date FROM stg_demand_hourly WHERE date < DATE '2026-09-01' GROUP BY date HAVING COUNT(*) <> 24) WHERE date <> DATE '2025-05-01'
+    expected: 0
+    sources: [ieso_demand_closed]
+  - id: versioned_identical
+    quote: "the two hash identical for all 25 years"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B13'
+    expected: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+
+  # ---- the backtest design
+  - id: test_origins
+    quote: "602 test origins"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(DISTINCT origin_date) FROM fct_forecast WHERE model = 'linear model'
+    expected: 602
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: first_origin
+    quote: "Every day from 2024-12-31 to 2026-08-24 is a test origin"
+    where: [findings]
+    kind: text
+    query: SELECT CAST(MIN(origin_date) AS VARCHAR) || ' to ' || CAST(MAX(origin_date) AS VARCHAR) FROM fct_forecast
+    expected: "2024-12-31 to 2026-08-24"
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: target_window
+    quote: "scored on every day from 2025-01-01 to 2026-08-31"
+    where: [findings]
+    kind: text
+    query: SELECT CAST(MIN(target_date) AS VARCHAR) || ' to ' || CAST(MAX(target_date) AS VARCHAR) FROM fct_forecast
+    expected: "2025-01-01 to 2026-08-31"
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: leads
+    quote: "the next 168 hours"
+    where: [README, findings]
+    kind: constant
+    query: SELECT COUNT(*) FROM dim_lead
+    expected: 168
+    sources: []
+  - id: leads_scored_equally
+    quote: "every lead is scored the same number of times"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(DISTINCT n) FROM (SELECT lead_hours, COUNT(*) AS n FROM fct_forecast WHERE model = 'linear model' GROUP BY lead_hours)
+    expected: 1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: calibration_origins
+    quote: "The year before the test window, 372 origins, is scored and never reported"
+    where: [findings]
+    kind: constant
+    print_match: {pattern: 'calibration origins: (\d+)', cell: 22}
+    expected: 372
+    sources: []
+  - id: refit_train_origins
+    quote: "1,825 origins per fit"
+    where: [findings]
+    kind: constant
+    print_match: {pattern: 'training origins in the final refit: (\d+)', cell: 24}
+    expected: 1825
+    sources: []
+  - id: refit_count
+    quote: "35 refits"
+    where: [findings]
+    kind: constant
+    print_match: {pattern: 'least squares fits: (\d+)', cell: 24}
+    expected: 35
+    scale: 0.005952380952380952
+    note: the notebook prints the fits, 5,880, which is 168 leads times 35 refits; the scale divides by 168
+    sources: []
+  - id: refit_fits
+    quote: "5,880 fits in all"
+    where: [findings]
+    kind: constant
+    print_match: {pattern: 'least squares fits: (\d+)', cell: 24}
+    expected: 5880
+    sources: []
+  - id: sixteen_inputs
+    quote: "sixteen things known at the origin"
+    where: [README, findings]
+    kind: constant
+    print_match: {pattern: 'features: (\d+)', cell: 23}
+    expected: 16
+    sources: []
+  - id: mean_demand_window
+    quote: "Mean demand over the window is 16,800 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT ROUND(AVG(actual_mw)) FROM fct_forecast WHERE model = 'linear model'
+    expected: 16800
+    note: the mean of the actuals across every test origin's 168 target hours, as the notebook prints it
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: hour_to_hour_change
+    quote: "the mean absolute change from one hour to the next is 444 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT ROUND(AVG(ABS(d))) FROM (SELECT actual_mw - LAG(actual_mw) OVER (PARTITION BY origin_date ORDER BY lead_hours) AS d FROM fct_forecast WHERE model = 'linear model')
+    expected: 444
+    note: the mean absolute step between consecutive target hours inside each test origin's window, as the notebook computes it; over the plain hourly series it is 445
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: mean_2005
+    quote: "Mean demand fell from 17,919 MW in 2005"
+    where: [findings]
+    kind: mw
+    query: SELECT AVG(ontario_mw) FROM fct_demand_hourly WHERE year = 2005
+    expected: 17919
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: mean_2020
+    quote: "to 15,053 MW in 2020"
+    where: [findings]
+    kind: mw
+    query: SELECT AVG(ontario_mw) FROM fct_demand_hourly WHERE year = 2020
+    expected: 15053
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: mean_2025
+    quote: "16,621 MW in 2025"
+    where: [findings]
+    kind: mw
+    query: SELECT AVG(ontario_mw) FROM fct_demand_hourly WHERE year = 2025
+    expected: 16621
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: mean_2026_to_aug
+    quote: "17,086 MW over the first eight months of 2026"
+    where: [findings]
+    kind: mw
+    query: SELECT ROUND(AVG(ontario_mw)) FROM fct_demand_hourly WHERE year = 2026
+    expected: 17086
+    note: the yearly table's 2026 row, which at the memo's pull held 5,953 hours to 6 September; January to August alone averages 17,067. The row grows with the year
+    sources: [ieso_demand_current]
+  - id: weekday_2025
+    quote: "in 2025 the average weekday ran 16,903 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT AVG(ontario_mw) FROM fct_demand_hourly WHERE year = 2025 AND day_type = 'weekday'
+    expected: 16903
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: sunday_2025
+    quote: "against 16,006 on a Sunday"
+    where: [findings]
+    kind: mw
+    query: SELECT AVG(ontario_mw) FROM fct_demand_hourly WHERE year = 2025 AND day_type = 'sunday'
+    expected: 16006
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: holiday_2025
+    quote: "and 15,703 on a holiday"
+    where: [findings]
+    kind: mw
+    query: SELECT AVG(ontario_mw) FROM fct_demand_hourly WHERE year = 2025 AND day_type = 'holiday'
+    expected: 15703
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: hour8_gap_2025
+    quote: "at hour 8 the gap between a weekday and a Sunday is 2,144 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT AVG(ontario_mw) FILTER (WHERE day_type = 'weekday') - AVG(ontario_mw) FILTER (WHERE day_type = 'sunday') FROM fct_demand_hourly WHERE year = 2025 AND hour_ending = 8
+    expected: 2144
+    sources: [ieso_demand_closed, ieso_demand_current]
+
+  # ---- the score table
+  - id: score_day_naive
+    quote: "Day ahead, 1 to 24: seasonal naive 1,221"
+    where: [README, findings]
+    kind: mw
+    query: SELECT "seasonal naive MAE" FROM mart_score WHERE leads = 'day ahead, lead 1 to 24'
+    expected: 1221
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_day_lastday
+    quote: "Day ahead, 1 to 24: last-day naive 792"
+    where: [findings]
+    kind: mw
+    query: SELECT "last-day naive MAE" FROM mart_score WHERE leads = 'day ahead, lead 1 to 24'
+    expected: 791.5
+    note: the memo prints 792, rounded from the table's 791.5; the table value is what is checked
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_day_model
+    quote: "Day ahead, 1 to 24: model 523 MW"
+    where: [README, findings]
+    kind: mw
+    query: SELECT "linear model MAE" FROM mart_score WHERE leads = 'day ahead, lead 1 to 24'
+    expected: 523
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_day_rmse
+    quote: "Day ahead, 1 to 24: model RMSE 737"
+    where: [findings]
+    kind: mw
+    query: SELECT "model RMSE" FROM mart_score WHERE leads = 'day ahead, lead 1 to 24'
+    expected: 737
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_day_mape
+    quote: "Day ahead, 1 to 24: MAPE 3.0%"
+    where: [README, findings]
+    kind: pct
+    query: SELECT "model MAPE %" FROM mart_score WHERE leads = 'day ahead, lead 1 to 24'
+    expected: 3.0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_day_skill
+    quote: "Day ahead, 1 to 24: skill 57.2% (57% in the README)"
+    where: [README, findings]
+    kind: pct
+    query: SELECT "skill vs naive %" FROM mart_score WHERE leads = 'day ahead, lead 1 to 24'
+    expected: 57.2
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_11_naive
+    quote: "Day ahead as issued at 11:00, 13 to 36: seasonal naive 1,221"
+    where: [findings]
+    kind: mw
+    query: SELECT "seasonal naive MAE" FROM mart_score WHERE leads = 'day ahead as issued at 11:00, lead 13 to 36'
+    expected: 1221
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_11_lastday
+    quote: "13 to 36: last-day naive 958"
+    where: [findings]
+    kind: mw
+    query: SELECT "last-day naive MAE" FROM mart_score WHERE leads = 'day ahead as issued at 11:00, lead 13 to 36'
+    expected: 958
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_11_model
+    quote: "13 to 36: model 669"
+    where: [findings]
+    kind: mw
+    query: SELECT "linear model MAE" FROM mart_score WHERE leads = 'day ahead as issued at 11:00, lead 13 to 36'
+    expected: 669
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_11_rmse
+    quote: "13 to 36: RMSE 895"
+    where: [findings]
+    kind: mw
+    query: SELECT "model RMSE" FROM mart_score WHERE leads = 'day ahead as issued at 11:00, lead 13 to 36'
+    expected: 895
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_11_mape
+    quote: "13 to 36: MAPE 3.9%"
+    where: [findings]
+    kind: pct
+    query: SELECT "model MAPE %" FROM mart_score WHERE leads = 'day ahead as issued at 11:00, lead 13 to 36'
+    expected: 3.9
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_11_skill
+    quote: "13 to 36: skill 45.2%"
+    where: [findings]
+    kind: pct
+    query: SELECT "skill vs naive %" FROM mart_score WHERE leads = 'day ahead as issued at 11:00, lead 13 to 36'
+    expected: 45.2
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_2d_naive
+    quote: "Two days ahead, 25 to 48: seasonal naive 1,221"
+    where: [findings]
+    kind: mw
+    query: SELECT "seasonal naive MAE" FROM mart_score WHERE leads = 'two days ahead, lead 25 to 48'
+    expected: 1221
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_2d_lastday
+    quote: "25 to 48: last-day naive 1,128"
+    where: [findings]
+    kind: mw
+    query: SELECT "last-day naive MAE" FROM mart_score WHERE leads = 'two days ahead, lead 25 to 48'
+    expected: 1128
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_2d_model
+    quote: "25 to 48: model 780"
+    where: [findings]
+    kind: mw
+    query: SELECT "linear model MAE" FROM mart_score WHERE leads = 'two days ahead, lead 25 to 48'
+    expected: 780
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_2d_rmse
+    quote: "25 to 48: RMSE 1,055"
+    where: [findings]
+    kind: mw
+    query: SELECT "model RMSE" FROM mart_score WHERE leads = 'two days ahead, lead 25 to 48'
+    expected: 1055
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_2d_mape
+    quote: "25 to 48: MAPE 4.5%"
+    where: [findings]
+    kind: pct
+    query: SELECT "model MAPE %" FROM mart_score WHERE leads = 'two days ahead, lead 25 to 48'
+    expected: 4.5
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_2d_skill
+    quote: "25 to 48: skill 36.1%"
+    where: [findings]
+    kind: pct
+    query: SELECT "skill vs naive %" FROM mart_score WHERE leads = 'two days ahead, lead 25 to 48'
+    expected: 36.1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_36_naive
+    quote: "Days 3 to 6, 49 to 144: seasonal naive 1,219"
+    where: [findings]
+    kind: mw
+    query: SELECT "seasonal naive MAE" FROM mart_score WHERE leads = 'days 3 to 6, lead 49 to 144'
+    expected: 1219
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_36_lastday
+    quote: "49 to 144: last-day naive 1,266"
+    where: [findings]
+    kind: mw
+    query: SELECT "last-day naive MAE" FROM mart_score WHERE leads = 'days 3 to 6, lead 49 to 144'
+    expected: 1266
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_36_model
+    quote: "49 to 144: model 954"
+    where: [findings]
+    kind: mw
+    query: SELECT "linear model MAE" FROM mart_score WHERE leads = 'days 3 to 6, lead 49 to 144'
+    expected: 954
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_36_rmse
+    quote: "49 to 144: RMSE 1,266"
+    where: [findings]
+    kind: mw
+    query: SELECT "model RMSE" FROM mart_score WHERE leads = 'days 3 to 6, lead 49 to 144'
+    expected: 1266
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_36_mape
+    quote: "49 to 144: MAPE 5.5%"
+    where: [findings]
+    kind: pct
+    query: SELECT "model MAPE %" FROM mart_score WHERE leads = 'days 3 to 6, lead 49 to 144'
+    expected: 5.5
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_36_skill
+    quote: "49 to 144: skill 21.8%"
+    where: [findings]
+    kind: pct
+    query: SELECT "skill vs naive %" FROM mart_score WHERE leads = 'days 3 to 6, lead 49 to 144'
+    expected: 21.8
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_week_naive
+    quote: "Week ahead, 145 to 168: seasonal naive 1,214"
+    where: [README, findings]
+    kind: mw
+    query: SELECT "seasonal naive MAE" FROM mart_score WHERE leads = 'week ahead, lead 145 to 168'
+    expected: 1214
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_week_lastday
+    quote: "145 to 168: last-day naive 1,214"
+    where: [findings]
+    kind: mw
+    query: SELECT "last-day naive MAE" FROM mart_score WHERE leads = 'week ahead, lead 145 to 168'
+    expected: 1214
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_week_model
+    quote: "Week ahead: model 1,029"
+    where: [README, findings]
+    kind: mw
+    query: SELECT "linear model MAE" FROM mart_score WHERE leads = 'week ahead, lead 145 to 168'
+    expected: 1029
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_week_rmse
+    quote: "145 to 168: RMSE 1,350"
+    where: [findings]
+    kind: mw
+    query: SELECT "model RMSE" FROM mart_score WHERE leads = 'week ahead, lead 145 to 168'
+    expected: 1350
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_week_mape
+    quote: "145 to 168: MAPE 5.9%"
+    where: [findings]
+    kind: pct
+    query: SELECT "model MAPE %" FROM mart_score WHERE leads = 'week ahead, lead 145 to 168'
+    expected: 5.9
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_week_skill
+    quote: "Week ahead: skill 15.2% (15% in the README)"
+    where: [README, findings]
+    kind: pct
+    query: SELECT "skill vs naive %" FROM mart_score WHERE leads = 'week ahead, lead 145 to 168'
+    expected: 15.2
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_all_naive
+    quote: "All leads, 1 to 168: seasonal naive 1,219"
+    where: [findings]
+    kind: mw
+    query: SELECT "seasonal naive MAE" FROM mart_score WHERE leads = 'all leads, 1 to 168'
+    expected: 1219
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_all_lastday
+    quote: "All leads: last-day naive 1,171"
+    where: [findings]
+    kind: mw
+    query: SELECT "last-day naive MAE" FROM mart_score WHERE leads = 'all leads, 1 to 168'
+    expected: 1171
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_all_model
+    quote: "All leads: model 878"
+    where: [findings]
+    kind: mw
+    query: SELECT "linear model MAE" FROM mart_score WHERE leads = 'all leads, 1 to 168'
+    expected: 878
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_all_rmse
+    quote: "All leads: RMSE 1,189"
+    where: [findings]
+    kind: mw
+    query: SELECT "model RMSE" FROM mart_score WHERE leads = 'all leads, 1 to 168'
+    expected: 1189
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_all_mape
+    quote: "All leads: MAPE 5.0%"
+    where: [findings]
+    kind: pct
+    query: SELECT "model MAPE %" FROM mart_score WHERE leads = 'all leads, 1 to 168'
+    expected: 5.0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: score_all_skill
+    quote: "All leads: skill 28.0%"
+    where: [findings]
+    kind: pct
+    query: SELECT "skill vs naive %" FROM mart_score WHERE leads = 'all leads, 1 to 168'
+    expected: 28.0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: mae_lead_1
+    quote: "At lead 1 the error is 130 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT "linear model" FROM mart_mae_by_lead WHERE lead = 1
+    expected: 130
+    round: -1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: mae_lead_12
+    quote: "by lead 12 it is 700"
+    where: [findings]
+    kind: mw
+    query: SELECT "linear model" FROM mart_mae_by_lead WHERE lead = 12
+    expected: 700
+    round: -1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: mae_lead_24
+    quote: "by lead 24 it is 550 again"
+    where: [findings]
+    kind: mw
+    query: SELECT "linear model" FROM mart_mae_by_lead WHERE lead = 24
+    expected: 550
+    round: -1
+    sources: [ieso_demand_closed, ieso_demand_current]
+
+  # ---- Diebold-Mariano
+  - id: dm_day_gain
+    quote: "Day ahead: mean gain 698 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean gain MW" FROM mart_diebold_mariano WHERE leads = 'day ahead, lead 1 to 24'
+    expected: 698
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_day_stat
+    quote: "Day ahead: DM 12.8"
+    where: [findings]
+    kind: stat
+    query: SELECT "DM statistic" FROM mart_diebold_mariano WHERE leads = 'day ahead, lead 1 to 24'
+    expected: 12.8
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_day_p
+    quote: "Day ahead: p less than 0.0001"
+    where: [findings]
+    kind: stat
+    query: SELECT "p-value" FROM mart_diebold_mariano WHERE leads = 'day ahead, lead 1 to 24'
+    expected: 0.0001
+    compare: lt
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_11_gain
+    quote: "13 to 36: mean gain 552"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean gain MW" FROM mart_diebold_mariano WHERE leads = 'day ahead as issued at 11:00, lead 13 to 36'
+    expected: 552
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_11_stat
+    quote: "13 to 36: DM 10.1"
+    where: [findings]
+    kind: stat
+    query: SELECT "DM statistic" FROM mart_diebold_mariano WHERE leads = 'day ahead as issued at 11:00, lead 13 to 36'
+    expected: 10.1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_11_p
+    quote: "13 to 36: p less than 0.0001"
+    where: [findings]
+    kind: stat
+    query: SELECT "p-value" FROM mart_diebold_mariano WHERE leads = 'day ahead as issued at 11:00, lead 13 to 36'
+    expected: 0.0001
+    compare: lt
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_2d_gain
+    quote: "25 to 48: mean gain 441"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean gain MW" FROM mart_diebold_mariano WHERE leads = 'two days ahead, lead 25 to 48'
+    expected: 441
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_2d_stat
+    quote: "25 to 48: DM 9.0"
+    where: [findings]
+    kind: stat
+    query: SELECT "DM statistic" FROM mart_diebold_mariano WHERE leads = 'two days ahead, lead 25 to 48'
+    expected: 9.0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_2d_p
+    quote: "25 to 48: p less than 0.0001"
+    where: [findings]
+    kind: stat
+    query: SELECT "p-value" FROM mart_diebold_mariano WHERE leads = 'two days ahead, lead 25 to 48'
+    expected: 0.0001
+    compare: lt
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_36_gain
+    quote: "49 to 144: mean gain 265"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean gain MW" FROM mart_diebold_mariano WHERE leads = 'days 3 to 6, lead 49 to 144'
+    expected: 265
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_36_stat
+    quote: "49 to 144: DM 5.3"
+    where: [findings]
+    kind: stat
+    query: SELECT "DM statistic" FROM mart_diebold_mariano WHERE leads = 'days 3 to 6, lead 49 to 144'
+    expected: 5.3
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_36_p
+    quote: "49 to 144: p less than 0.0001"
+    where: [findings]
+    kind: stat
+    query: SELECT "p-value" FROM mart_diebold_mariano WHERE leads = 'days 3 to 6, lead 49 to 144'
+    expected: 0.0001
+    compare: lt
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_week_gain
+    quote: "Week ahead: mean gain 185"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean gain MW" FROM mart_diebold_mariano WHERE leads = 'week ahead, lead 145 to 168'
+    expected: 185
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_week_stat
+    quote: "Week ahead: DM 3.1"
+    where: [findings]
+    kind: stat
+    query: SELECT "DM statistic" FROM mart_diebold_mariano WHERE leads = 'week ahead, lead 145 to 168'
+    expected: 3.1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_week_p
+    quote: "Week ahead: p = 0.0017"
+    where: [findings]
+    kind: stat
+    query: SELECT "p-value" FROM mart_diebold_mariano WHERE leads = 'week ahead, lead 145 to 168'
+    expected: 0.0017
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_lead24_naive
+    quote: "Single lead 24: naive 1,080"
+    where: [findings]
+    kind: mw
+    query: SELECT "naive MAE" FROM mart_diebold_mariano WHERE leads = 'single lead 24'
+    expected: 1080
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_lead24_model
+    quote: "Single lead 24: model 552"
+    where: [findings]
+    kind: mw
+    query: SELECT "model MAE" FROM mart_diebold_mariano WHERE leads = 'single lead 24'
+    expected: 552
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_lead24_gain
+    quote: "Single lead 24: gain 528"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean gain MW" FROM mart_diebold_mariano WHERE leads = 'single lead 24'
+    expected: 528
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_lead24_stat
+    quote: "Single lead 24: DM 10.3"
+    where: [findings]
+    kind: stat
+    query: SELECT "DM statistic" FROM mart_diebold_mariano WHERE leads = 'single lead 24'
+    expected: 10.3
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_lead168_naive
+    quote: "Single lead 168: naive 1,068"
+    where: [findings]
+    kind: mw
+    query: SELECT "naive MAE" FROM mart_diebold_mariano WHERE leads = 'single lead 168'
+    expected: 1068
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_lead168_model
+    quote: "Single lead 168: model 978"
+    where: [findings]
+    kind: mw
+    query: SELECT "model MAE" FROM mart_diebold_mariano WHERE leads = 'single lead 168'
+    expected: 978
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_lead168_gain
+    quote: "Single lead 168: gain 90 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean gain MW" FROM mart_diebold_mariano WHERE leads = 'single lead 168'
+    expected: 90
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_lead168_stat
+    quote: "Single lead 168: DM 1.4"
+    where: [README, findings]
+    kind: stat
+    query: SELECT "DM statistic" FROM mart_diebold_mariano WHERE leads = 'single lead 168'
+    expected: 1.4
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dm_lead168_p
+    quote: "Single lead 168: p = 0.17"
+    where: [README, findings]
+    kind: stat
+    query: SELECT "p-value" FROM mart_diebold_mariano WHERE leads = 'single lead 168'
+    expected: 0.17
+    sources: [ieso_demand_closed, ieso_demand_current]
+
+  # ---- by day type and by month
+  - id: daytype_holiday_days
+    quote: "Holiday: 16 days"
+    where: [findings]
+    kind: count
+    query: SELECT days FROM mart_error_by_day_type WHERE day_type = 'holiday'
+    expected: 16
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_holiday_naive
+    quote: "Holiday: naive 2,251"
+    where: [findings]
+    kind: mw
+    query: SELECT naive_mae FROM mart_error_by_day_type WHERE day_type = 'holiday'
+    expected: 2251
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_holiday_model
+    quote: "Holiday: model 561"
+    where: [findings]
+    kind: mw
+    query: SELECT model_mae FROM mart_error_by_day_type WHERE day_type = 'holiday'
+    expected: 561
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_holiday_skill
+    quote: "Holiday: skill 75.1%"
+    where: [findings]
+    kind: pct
+    query: SELECT "skill %" FROM mart_error_by_day_type WHERE day_type = 'holiday'
+    expected: 75.1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_saturday_days
+    quote: "Saturday: 86 days"
+    where: [findings]
+    kind: count
+    query: SELECT days FROM mart_error_by_day_type WHERE day_type = 'saturday'
+    expected: 86
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_saturday_naive
+    quote: "Saturday: naive 1,052"
+    where: [findings]
+    kind: mw
+    query: SELECT naive_mae FROM mart_error_by_day_type WHERE day_type = 'saturday'
+    expected: 1051.5
+    note: the memo prints 1,052, rounded from the table's 1051.5; the table value is what is checked
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_saturday_model
+    quote: "Saturday: model 500"
+    where: [findings]
+    kind: mw
+    query: SELECT model_mae FROM mart_error_by_day_type WHERE day_type = 'saturday'
+    expected: 500
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_saturday_skill
+    quote: "Saturday: skill 52.4%"
+    where: [findings]
+    kind: pct
+    query: SELECT "skill %" FROM mart_error_by_day_type WHERE day_type = 'saturday'
+    expected: 52.4
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_sunday_days
+    quote: "Sunday: 86 days"
+    where: [findings]
+    kind: count
+    query: SELECT days FROM mart_error_by_day_type WHERE day_type = 'sunday'
+    expected: 86
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_sunday_naive
+    quote: "Sunday: naive 1,192"
+    where: [findings]
+    kind: mw
+    query: SELECT naive_mae FROM mart_error_by_day_type WHERE day_type = 'sunday'
+    expected: 1192
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_sunday_model
+    quote: "Sunday: model 549"
+    where: [findings]
+    kind: mw
+    query: SELECT model_mae FROM mart_error_by_day_type WHERE day_type = 'sunday'
+    expected: 549
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_sunday_skill
+    quote: "Sunday: skill 53.9%"
+    where: [findings]
+    kind: pct
+    query: SELECT "skill %" FROM mart_error_by_day_type WHERE day_type = 'sunday'
+    expected: 53.9
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_weekday_days
+    quote: "Weekday: 414 days"
+    where: [findings]
+    kind: count
+    query: SELECT days FROM mart_error_by_day_type WHERE day_type = 'weekday'
+    expected: 414
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_weekday_naive
+    quote: "Weekday: naive 1,223"
+    where: [findings]
+    kind: mw
+    query: SELECT naive_mae FROM mart_error_by_day_type WHERE day_type = 'weekday'
+    expected: 1223
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_weekday_model
+    quote: "Weekday: model 521"
+    where: [findings]
+    kind: mw
+    query: SELECT model_mae FROM mart_error_by_day_type WHERE day_type = 'weekday'
+    expected: 521
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: daytype_weekday_skill
+    quote: "Weekday: skill 57.4%"
+    where: [findings]
+    kind: pct
+    query: SELECT "skill %" FROM mart_error_by_day_type WHERE day_type = 'weekday'
+    expected: 57.4
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: month_model_2025_05
+    quote: "The model's error runs from 331 MW in May 2025"
+    where: [findings]
+    kind: mw
+    query: SELECT model_mae FROM mart_error_by_month WHERE month = '2025-05'
+    expected: 331
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: month_model_2026_01
+    quote: "and 357 MW in January 2026"
+    where: [findings]
+    kind: mw
+    query: SELECT model_mae FROM mart_error_by_month WHERE month = '2026-01'
+    expected: 357
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: month_model_2025_06
+    quote: "to 722 MW in June 2025"
+    where: [findings]
+    kind: mw
+    query: SELECT model_mae FROM mart_error_by_month WHERE month = '2025-06'
+    expected: 722
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: month_model_2025_07
+    quote: "and 771 MW in July 2025"
+    where: [findings]
+    kind: mw
+    query: SELECT model_mae FROM mart_error_by_month WHERE month = '2025-07'
+    expected: 771
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: month_model_2026_07
+    quote: "with July 2026 at 692"
+    where: [findings]
+    kind: mw
+    query: SELECT model_mae FROM mart_error_by_month WHERE month = '2026-07'
+    expected: 692
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: month_mape_2026_01
+    quote: "1.9% in January 2026"
+    where: [findings]
+    kind: pct
+    query: SELECT "model MAPE %" FROM mart_error_by_month WHERE month = '2026-01'
+    expected: 1.9
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: month_mape_2025_06
+    quote: "against 4.4% in June 2025"
+    where: [findings]
+    kind: pct
+    query: SELECT "model MAPE %" FROM mart_error_by_month WHERE month = '2025-06'
+    expected: 4.4
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: month_naive_2025_07
+    quote: "baseline 2,383 MW in July 2025"
+    where: [findings]
+    kind: mw
+    query: SELECT naive_mae FROM mart_error_by_month WHERE month = '2025-07'
+    expected: 2383
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: month_naive_2025_08
+    quote: "and 2,494 MW in August 2025"
+    where: [findings]
+    kind: mw
+    query: SELECT naive_mae FROM mart_error_by_month WHERE month = '2025-08'
+    expected: 2494
+    sources: [ieso_demand_closed, ieso_demand_current]
+
+  # ---- intervals
+  - id: cov_model_day_80
+    quote: "Model, day ahead: 80% coverage 77.5%"
+    where: [README, findings]
+    kind: pct
+    query: SELECT "coverage 80%" FROM mart_coverage WHERE model = 'linear model' AND leads = 'day ahead, lead 1 to 24'
+    expected: 77.5
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_model_day_80w
+    quote: "Model, day ahead: 80% width 1,563 MW"
+    where: [README, findings]
+    kind: mw
+    query: SELECT "width 80% MW" FROM mart_coverage WHERE model = 'linear model' AND leads = 'day ahead, lead 1 to 24'
+    expected: 1563
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_model_day_95
+    quote: "Model, day ahead: 95% coverage 93.8%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage 95%" FROM mart_coverage WHERE model = 'linear model' AND leads = 'day ahead, lead 1 to 24'
+    expected: 93.8
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_model_day_95w
+    quote: "Model, day ahead: 95% width 2,573 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT "width 95% MW" FROM mart_coverage WHERE model = 'linear model' AND leads = 'day ahead, lead 1 to 24'
+    expected: 2573
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_model_week_80
+    quote: "Model, week ahead: 78.5%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage 80%" FROM mart_coverage WHERE model = 'linear model' AND leads = 'week ahead, lead 145 to 168'
+    expected: 78.5
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_model_week_80w
+    quote: "Model, week ahead: 2,749 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT "width 80% MW" FROM mart_coverage WHERE model = 'linear model' AND leads = 'week ahead, lead 145 to 168'
+    expected: 2749
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_model_week_95
+    quote: "Model, week ahead: 93.8%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage 95%" FROM mart_coverage WHERE model = 'linear model' AND leads = 'week ahead, lead 145 to 168'
+    expected: 93.8
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_model_week_95w
+    quote: "Model, week ahead: 4,688 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT "width 95% MW" FROM mart_coverage WHERE model = 'linear model' AND leads = 'week ahead, lead 145 to 168'
+    expected: 4688
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_model_all_80
+    quote: "Model, all leads: 78.3%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage 80%" FROM mart_coverage WHERE model = 'linear model' AND leads = 'all leads, 1 to 168'
+    expected: 78.3
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_model_all_80w
+    quote: "Model, all leads: 2,446 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT "width 80% MW" FROM mart_coverage WHERE model = 'linear model' AND leads = 'all leads, 1 to 168'
+    expected: 2446
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_model_all_95
+    quote: "Model, all leads: 94.0%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage 95%" FROM mart_coverage WHERE model = 'linear model' AND leads = 'all leads, 1 to 168'
+    expected: 94.0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_model_all_95w
+    quote: "Model, all leads: 4,218 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT "width 95% MW" FROM mart_coverage WHERE model = 'linear model' AND leads = 'all leads, 1 to 168'
+    expected: 4218
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_naive_day_80
+    quote: "Seasonal naive, day ahead: 79.0%"
+    where: [README, findings]
+    kind: pct
+    query: SELECT "coverage 80%" FROM mart_coverage WHERE model = 'seasonal naive' AND leads = 'day ahead, lead 1 to 24'
+    expected: 79.0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_naive_day_80w
+    quote: "Seasonal naive, day ahead: 3,824 MW"
+    where: [README, findings]
+    kind: mw
+    query: SELECT "width 80% MW" FROM mart_coverage WHERE model = 'seasonal naive' AND leads = 'day ahead, lead 1 to 24'
+    expected: 3824
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_naive_day_95
+    quote: "Seasonal naive, day ahead: 94.7%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage 95%" FROM mart_coverage WHERE model = 'seasonal naive' AND leads = 'day ahead, lead 1 to 24'
+    expected: 94.7
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_naive_day_95w
+    quote: "Seasonal naive, day ahead: 7,257 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT "width 95% MW" FROM mart_coverage WHERE model = 'seasonal naive' AND leads = 'day ahead, lead 1 to 24'
+    expected: 7256.5
+    note: the memo prints 7,257, rounded from the table's 7256.5; the table value is what is checked
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_naive_week_80
+    quote: "Seasonal naive, week ahead: 79.3%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage 80%" FROM mart_coverage WHERE model = 'seasonal naive' AND leads = 'week ahead, lead 145 to 168'
+    expected: 79.3
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_naive_week_80w
+    quote: "Seasonal naive, week ahead: 3,820 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT "width 80% MW" FROM mart_coverage WHERE model = 'seasonal naive' AND leads = 'week ahead, lead 145 to 168'
+    expected: 3820
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_naive_week_95
+    quote: "Seasonal naive, week ahead: 94.7%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage 95%" FROM mart_coverage WHERE model = 'seasonal naive' AND leads = 'week ahead, lead 145 to 168'
+    expected: 94.7
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: cov_naive_week_95w
+    quote: "Seasonal naive, week ahead: 7,246 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT "width 95% MW" FROM mart_coverage WHERE model = 'seasonal naive' AND leads = 'week ahead, lead 145 to 168'
+    expected: 7246
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: reliability_50
+    quote: "the model's day-ahead intervals cover 48.5% at 50 nominal"
+    where: [findings]
+    kind: pct
+    query: SELECT empirical FROM mart_reliability WHERE model = 'linear model' AND horizon = 'day ahead' AND nominal = 50
+    expected: 48.5
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: reliability_80
+    quote: "77.5% at 80 nominal"
+    where: [findings]
+    kind: pct
+    query: SELECT empirical FROM mart_reliability WHERE model = 'linear model' AND horizon = 'day ahead' AND nominal = 80
+    expected: 77.5
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: reliability_90
+    quote: "88.4% at 90 nominal"
+    where: [findings]
+    kind: pct
+    query: SELECT empirical FROM mart_reliability WHERE model = 'linear model' AND horizon = 'day ahead' AND nominal = 90
+    expected: 88.4
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: reliability_95
+    quote: "93.8% at 95 nominal"
+    where: [findings]
+    kind: pct
+    query: SELECT empirical FROM mart_reliability WHERE model = 'linear model' AND horizon = 'day ahead' AND nominal = 95
+    expected: 93.8
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: reliability_98
+    quote: "97.3% at 98 nominal"
+    where: [findings]
+    kind: pct
+    query: SELECT empirical FROM mart_reliability WHERE model = 'linear model' AND horizon = 'day ahead' AND nominal = 98
+    expected: 97.3
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: band_ratio
+    quote: "the model's 80% band is 41% of the baseline's"
+    where: [findings]
+    kind: pct
+    query: SELECT 100.0 * m."width 80% MW" / b."width 80% MW" FROM mart_coverage m, mart_coverage b WHERE m.model = 'linear model' AND b.model = 'seasonal naive' AND m.leads = 'day ahead, lead 1 to 24' AND b.leads = m.leads
+    expected: 41
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: covmonth_2025_05
+    quote: "coverage of the model's 80% day-ahead band ranges from 90.9% in May 2025"
+    where: [findings]
+    kind: pct
+    query: SELECT "linear model 80%" FROM mart_coverage_by_month WHERE "target month" = '2025-05'
+    expected: 90.9
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: covmonth_2026_01
+    quote: "and 90.2% in January 2026"
+    where: [findings]
+    kind: pct
+    query: SELECT "linear model 80%" FROM mart_coverage_by_month WHERE "target month" = '2026-01'
+    expected: 90.2
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: covmonth_2025_07
+    quote: "to 58.6% in July 2025"
+    where: [findings]
+    kind: pct
+    query: SELECT "linear model 80%" FROM mart_coverage_by_month WHERE "target month" = '2025-07'
+    expected: 58.6
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: covmonth_2025_03
+    quote: "63.0% in March 2025"
+    where: [findings]
+    kind: pct
+    query: SELECT "linear model 80%" FROM mart_coverage_by_month WHERE "target month" = '2025-03'
+    expected: 63.0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: covmonth_2025_06
+    quote: "67.6% in June 2025"
+    where: [findings]
+    kind: pct
+    query: SELECT "linear model 80%" FROM mart_coverage_by_month WHERE "target month" = '2025-06'
+    expected: 67.6
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: covmonth_2026_07
+    quote: "and 68.7% in July 2026"
+    where: [findings]
+    kind: pct
+    query: SELECT "linear model 80%" FROM mart_coverage_by_month WHERE "target month" = '2026-07'
+    expected: 68.7
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: covmonth_naive_2025_07
+    quote: "The baseline's band does the same in the summer, 34.8% in July 2025"
+    where: [findings]
+    kind: pct
+    query: SELECT "seasonal naive 80%" FROM mart_coverage_by_month WHERE "target month" = '2025-07'
+    expected: 34.8
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: covmonth_naive_2025_08
+    quote: "and 41.1% in August 2025"
+    where: [findings]
+    kind: pct
+    query: SELECT "seasonal naive 80%" FROM mart_coverage_by_month WHERE "target month" = '2025-08'
+    expected: 41.1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window365_80_all
+    quote: "365 days, 80%: coverage all months 77.5%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage all months %" FROM mart_interval_window WHERE "residual window, days" = 365 AND "nominal %" = 80
+    expected: 77.5
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window365_80_summer
+    quote: "365 days, 80%: June to August 70.3%"
+    where: [README, findings]
+    kind: pct
+    query: SELECT "coverage Jun to Aug %" FROM mart_interval_window WHERE "residual window, days" = 365 AND "nominal %" = 80
+    expected: 70.3
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window365_80_other
+    quote: "365 days, 80%: other months 80.5%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage other months %" FROM mart_interval_window WHERE "residual window, days" = 365 AND "nominal %" = 80
+    expected: 80.5
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window365_80_width
+    quote: "365 days, 80%: width 1,563"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean width MW" FROM mart_interval_window WHERE "residual window, days" = 365 AND "nominal %" = 80
+    expected: 1563
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window365_80_width_summer
+    quote: "365 days, 80%: width in summer 1,572"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean width Jun to Aug MW" FROM mart_interval_window WHERE "residual window, days" = 365 AND "nominal %" = 80
+    expected: 1572
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window56_80_all
+    quote: "56 days, 80%: coverage all months 75.4%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage all months %" FROM mart_interval_window WHERE "residual window, days" = 56 AND "nominal %" = 80
+    expected: 75.4
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window56_80_summer
+    quote: "56 days, 80%: June to August 73.5%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage Jun to Aug %" FROM mart_interval_window WHERE "residual window, days" = 56 AND "nominal %" = 80
+    expected: 73.5
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window56_80_other
+    quote: "56 days, 80%: other months 76.1%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage other months %" FROM mart_interval_window WHERE "residual window, days" = 56 AND "nominal %" = 80
+    expected: 76.1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window56_80_width
+    quote: "56 days, 80%: width 1,545"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean width MW" FROM mart_interval_window WHERE "residual window, days" = 56 AND "nominal %" = 80
+    expected: 1545
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window56_80_width_summer
+    quote: "56 days, 80%: width in summer 1,771"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean width Jun to Aug MW" FROM mart_interval_window WHERE "residual window, days" = 56 AND "nominal %" = 80
+    expected: 1771
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window365_95_all
+    quote: "365 days, 95%: coverage all months 93.8%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage all months %" FROM mart_interval_window WHERE "residual window, days" = 365 AND "nominal %" = 95
+    expected: 93.8
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window365_95_summer
+    quote: "365 days, 95%: June to August 90.4%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage Jun to Aug %" FROM mart_interval_window WHERE "residual window, days" = 365 AND "nominal %" = 95
+    expected: 90.4
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window365_95_other
+    quote: "365 days, 95%: other months 95.3%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage other months %" FROM mart_interval_window WHERE "residual window, days" = 365 AND "nominal %" = 95
+    expected: 95.3
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window365_95_width
+    quote: "365 days, 95%: width 2,573"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean width MW" FROM mart_interval_window WHERE "residual window, days" = 365 AND "nominal %" = 95
+    expected: 2573
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window365_95_width_summer
+    quote: "365 days, 95%: width in summer 2,582"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean width Jun to Aug MW" FROM mart_interval_window WHERE "residual window, days" = 365 AND "nominal %" = 95
+    expected: 2581.5
+    note: the memo prints 2,582, rounded from the table's 2581.5; the table value is what is checked
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window56_95_all
+    quote: "56 days, 95%: coverage all months 90.4%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage all months %" FROM mart_interval_window WHERE "residual window, days" = 56 AND "nominal %" = 95
+    expected: 90.4
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window56_95_summer
+    quote: "56 days, 95%: June to August 89.9%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage Jun to Aug %" FROM mart_interval_window WHERE "residual window, days" = 56 AND "nominal %" = 95
+    expected: 89.9
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window56_95_other
+    quote: "56 days, 95%: other months 90.6%"
+    where: [findings]
+    kind: pct
+    query: SELECT "coverage other months %" FROM mart_interval_window WHERE "residual window, days" = 56 AND "nominal %" = 95
+    expected: 90.6
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window56_95_width
+    quote: "56 days, 95%: width 2,370"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean width MW" FROM mart_interval_window WHERE "residual window, days" = 56 AND "nominal %" = 95
+    expected: 2370
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: window56_95_width_summer
+    quote: "56 days, 95%: width in summer 2,853"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean width Jun to Aug MW" FROM mart_interval_window WHERE "residual window, days" = 56 AND "nominal %" = 95
+    expected: 2853
+    sources: [ieso_demand_closed, ieso_demand_current]
+
+  # ---- the daily peak
+  - id: peak_naive_mae
+    quote: "Seasonal naive: peak MW error 1,293"
+    where: [findings]
+    kind: mw
+    query: SELECT "peak MW MAE" FROM mart_daily_peak WHERE model = 'seasonal naive'
+    expected: 1293
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: peak_naive_bias
+    quote: "Seasonal naive: peak MW bias minus 19"
+    where: [findings]
+    kind: mw
+    query: SELECT "peak MW bias" FROM mart_daily_peak WHERE model = 'seasonal naive'
+    expected: -19
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: peak_naive_at_hour
+    quote: "Seasonal naive: error at the actual peak hour 1,329"
+    where: [findings]
+    kind: mw
+    query: SELECT "error at actual peak hour MAE" FROM mart_daily_peak WHERE model = 'seasonal naive'
+    expected: 1329
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: peak_naive_exact
+    quote: "Seasonal naive: peak hour exact 46.0%"
+    where: [findings]
+    kind: pct
+    query: SELECT "peak hour exact %" FROM mart_daily_peak WHERE model = 'seasonal naive'
+    expected: 46.0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: peak_naive_within1h
+    quote: "Seasonal naive: peak hour within an hour 70.8%"
+    where: [findings]
+    kind: pct
+    query: SELECT "peak hour within 1h %" FROM mart_daily_peak WHERE model = 'seasonal naive'
+    expected: 70.8
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: peak_model_mae
+    quote: "Model: peak MW error 646"
+    where: [README, findings]
+    kind: mw
+    query: SELECT "peak MW MAE" FROM mart_daily_peak WHERE model = 'linear model'
+    expected: 645.5
+    note: the memo and README print 646, rounded from the table's 645.5; the notebook's own candidate count uses 645
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: peak_model_bias
+    quote: "Model: peak MW bias minus 144"
+    where: [findings]
+    kind: mw
+    query: SELECT "peak MW bias" FROM mart_daily_peak WHERE model = 'linear model'
+    expected: -144
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: peak_model_at_hour
+    quote: "Model: error at the actual peak hour 701"
+    where: [findings]
+    kind: mw
+    query: SELECT "error at actual peak hour MAE" FROM mart_daily_peak WHERE model = 'linear model'
+    expected: 701
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: peak_model_exact
+    quote: "Model: peak hour exact 54.3%"
+    where: [findings]
+    kind: pct
+    query: SELECT "peak hour exact %" FROM mart_daily_peak WHERE model = 'linear model'
+    expected: 54.3
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: peak_model_within1h
+    quote: "Model: peak hour within an hour 80.2%"
+    where: [findings]
+    kind: pct
+    query: SELECT "peak hour within 1h %" FROM mart_daily_peak WHERE model = 'linear model'
+    expected: 80.2
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: peak_days
+    quote: "over 602 days"
+    where: [findings]
+    kind: count
+    query: SELECT days FROM mart_daily_peak WHERE model = 'linear model'
+    expected: 602
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: mean_daily_peak
+    quote: "The mean daily peak over the window is 19,046 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT "mean actual peak MW" FROM mart_daily_peak WHERE model = 'linear model'
+    expected: 19046
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: peak_error_pct
+    quote: "so the model's peak error is 3.4% of it"
+    where: [findings]
+    kind: pct
+    query: SELECT 100.0 * "peak MW MAE" / "mean actual peak MW" FROM mart_daily_peak WHERE model = 'linear model'
+    expected: 3.4
+    sources: [ieso_demand_closed, ieso_demand_current]
+
+  # ---- the hottest day, 2026-07-14 from the origin of 2026-07-13
+  - id: hottest_day_date
+    quote: "The hottest day of the window, Tuesday 2026-07-14"
+    where: [README, findings]
+    kind: text
+    query: SELECT CAST(target_date AS VARCHAR) FROM fct_forecast WHERE model = 'linear model' AND lead_hours <= 24 ORDER BY actual_mw DESC LIMIT 1
+    expected: "2026-07-14"
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: hottest_day_peak
+    quote: "The actual peak was 25,646 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT MAX(actual_mw) FROM fct_forecast WHERE model = 'linear model' AND origin_date = DATE '2026-07-13' AND target_date = DATE '2026-07-14'
+    expected: 25646
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: hottest_day_peak_hour
+    quote: "at hour 17"
+    where: [findings]
+    kind: count
+    query: SELECT HOUR(target_ts) + 1 FROM fct_forecast WHERE model = 'linear model' AND origin_date = DATE '2026-07-13' AND target_date = DATE '2026-07-14' ORDER BY actual_mw DESC LIMIT 1
+    expected: 17
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: hottest_day_forecast_at_peak
+    quote: "The model called 24,035 MW for that hour"
+    where: [findings]
+    kind: mw
+    query: SELECT forecast_mw FROM fct_forecast WHERE model = 'linear model' AND origin_date = DATE '2026-07-13' AND target_date = DATE '2026-07-14' ORDER BY actual_mw DESC LIMIT 1
+    expected: 24035
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: hottest_day_short_at_peak
+    quote: "1,611 MW short"
+    where: [findings]
+    kind: mw
+    query: SELECT actual_mw - forecast_mw FROM fct_forecast WHERE model = 'linear model' AND origin_date = DATE '2026-07-13' AND target_date = DATE '2026-07-14' ORDER BY actual_mw DESC LIMIT 1
+    expected: 1611
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: hottest_day_worst_hour
+    quote: "its worst hours were 13 and 22, at 2,368 and 2,389 MW short"
+    where: [README, findings]
+    kind: mw
+    query: SELECT MAX(actual_mw - forecast_mw) FROM fct_forecast WHERE model = 'linear model' AND origin_date = DATE '2026-07-13' AND target_date = DATE '2026-07-14'
+    expected: 2389
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: hottest_day_second_worst
+    quote: "2,368 MW short at hour 13"
+    where: [findings]
+    kind: mw
+    query: SELECT actual_mw - forecast_mw FROM fct_forecast WHERE model = 'linear model' AND origin_date = DATE '2026-07-13' AND target_date = DATE '2026-07-14' AND HOUR(target_ts) + 1 = 13
+    expected: 2368
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: hottest_day_first_six
+    quote: "It had the first six hours of the day within 300 MW"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_forecast WHERE model = 'linear model' AND origin_date = DATE '2026-07-13' AND target_date = DATE '2026-07-14' AND HOUR(target_ts) < 6 AND ABS(error_mw) <= 300
+    expected: 6
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: hottest_day_mae_model
+    quote: "Its error over the day was 1,299 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT AVG(ABS(error_mw)) FROM fct_forecast WHERE model = 'linear model' AND origin_date = DATE '2026-07-13' AND target_date = DATE '2026-07-14'
+    expected: 1299
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: hottest_day_mae_naive
+    quote: "against the baseline's 2,625"
+    where: [findings]
+    kind: mw
+    query: SELECT AVG(ABS(error_mw)) FROM fct_forecast WHERE model = 'seasonal naive' AND origin_date = DATE '2026-07-13' AND target_date = DATE '2026-07-14'
+    expected: 2625
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: hottest_day_in_band
+    quote: "7 of 24 hours fell inside its 80% band"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FILTER (WHERE actual_mw BETWEEN lo80 AND hi80) FROM fct_forecast WHERE model = 'linear model' AND origin_date = DATE '2026-07-13' AND target_date = DATE '2026-07-14'
+    expected: 7
+    sources: [ieso_demand_closed, ieso_demand_current]
+
+  # ---- who acts on it: the base-period margin
+  - id: ici_complete_periods
+    quote: "over the 24 complete base periods, 2002-03 to 2025-26"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM mart_ici_margin WHERE complete
+    expected: 24
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_median_margin
+    quote: "The median gap between the fifth and sixth highest daily peaks is 128 MW"
+    where: [README, findings]
+    kind: mw
+    query: SELECT MEDIAN(margin_5_to_6_mw) FROM mart_ici_margin WHERE complete
+    expected: 128
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_margin_2005
+    quote: "In 2005-06 it was 8 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT margin_5_to_6_mw FROM mart_ici_margin WHERE ici_base_period = '2005-06'
+    expected: 8
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_margin_2015
+    quote: "and in 2015-16 it was 3 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT margin_5_to_6_mw FROM mart_ici_margin WHERE ici_base_period = '2015-16'
+    expected: 3
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_margin_2013
+    quote: "The widest was 724 MW, in 2013-14"
+    where: [findings]
+    kind: mw
+    query: SELECT margin_5_to_6_mw FROM mart_ici_margin WHERE ici_base_period = '2013-14'
+    expected: 724
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_widest_period
+    quote: "the widest, in 2013-14"
+    where: [findings]
+    kind: text
+    query: SELECT ici_base_period FROM mart_ici_margin WHERE complete ORDER BY margin_5_to_6_mw DESC LIMIT 1
+    expected: "2013-14"
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_periods_smaller_than_error
+    quote: "It is larger than the gap in 23 of the 24 periods"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM mart_ici_margin m, mart_daily_peak p WHERE m.complete AND p.model = 'linear model' AND m.margin_5_to_6_mw < p."peak MW MAE"
+    expected: 23
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_2025_top
+    quote: "In 2025-26 the top five peaks ran from 24,862 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT top_peak_mw FROM mart_ici_margin WHERE ici_base_period = '2025-26'
+    expected: 24862
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_2025_fifth
+    quote: "down to 24,211"
+    where: [findings]
+    kind: mw
+    query: SELECT fifth_peak_mw FROM mart_ici_margin WHERE ici_base_period = '2025-26'
+    expected: 24211
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_2025_sixth
+    quote: "the sixth was 24,063"
+    where: [findings]
+    kind: mw
+    query: SELECT sixth_peak_mw FROM mart_ici_margin WHERE ici_base_period = '2025-26'
+    expected: 24063
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_2025_margin
+    quote: "the gap was 148 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT margin_5_to_6_mw FROM mart_ici_margin WHERE ici_base_period = '2025-26'
+    expected: 148
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_2025_candidates
+    quote: "10 days had a peak within 646 MW of the fifth"
+    where: [README, findings]
+    kind: count
+    query: SELECT candidate_days_at_model_error FROM mart_ici_margin WHERE ici_base_period = '2025-26'
+    expected: 10
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_2014_candidates
+    quote: "In 2014-15 the same rule would have meant 32 days"
+    where: [findings]
+    kind: count
+    query: SELECT candidate_days_at_model_error FROM mart_ici_margin WHERE ici_base_period = '2014-15'
+    expected: 32
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_summer_periods_since_2019
+    quote: "All five top days fell in June, July or August in every base period since 2019-20 except 2023-24"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM mart_ici_margin WHERE complete AND base_year >= 2019 AND top5_days_in_summer = 5
+    expected: 6
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_summer_2023
+    quote: "2023-24, when two did"
+    where: [findings]
+    kind: count
+    query: SELECT top5_days_in_summer FROM mart_ici_margin WHERE ici_base_period = '2023-24'
+    expected: 2
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_2026_days
+    quote: "The first 129 days of 2026-27"
+    where: [findings]
+    kind: count
+    query: SELECT days_in_period FROM mart_ici_margin WHERE ici_base_period = '2026-27'
+    expected: 129
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_2026_margin
+    quote: "already show a gap of 307 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT margin_5_to_6_mw FROM mart_ici_margin WHERE ici_base_period = '2026-27'
+    expected: 307
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: ici_2026_candidates
+    quote: "and 8 candidate days"
+    where: [findings]
+    kind: count
+    query: SELECT candidate_days_at_model_error FROM mart_ici_margin WHERE ici_base_period = '2026-27'
+    expected: 8
+    sources: [ieso_demand_closed, ieso_demand_current]
+
+  # ---- what the model learned
+  - id: coef_last_hour_before_origin_lead12
+    quote: "Last hour before the origin, lead 12: 1.129"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^last_hour_before_origin\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24}
+    expected: 1.129
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_last_hour_before_origin_lead18
+    quote: "Last hour before the origin, lead 18: 0.763"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^last_hour_before_origin\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 2}
+    expected: 0.763
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_last_hour_before_origin_lead162
+    quote: "Last hour before the origin, lead 162: 0.361"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^last_hour_before_origin\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 3}
+    expected: 0.361
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_same_hour_origin_day_lead12
+    quote: "Same hour on the origin day, lead 12: 0.341"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^same_hour_origin_day\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24}
+    expected: 0.341
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_same_hour_origin_day_lead18
+    quote: "Same hour on the origin day, lead 18: 0.789"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^same_hour_origin_day\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 2}
+    expected: 0.789
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_same_hour_origin_day_lead162
+    quote: "Same hour on the origin day, lead 162: 0.016"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^same_hour_origin_day\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 3}
+    expected: 0.016
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_mean_origin_day_lead12
+    quote: "Mean of the origin day, lead 12: minus 0.535"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^mean_origin_day\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24}
+    expected: -0.535
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_mean_origin_day_lead18
+    quote: "Mean of the origin day, lead 18: minus 0.867"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^mean_origin_day\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 2}
+    expected: -0.867
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_mean_origin_day_lead162
+    quote: "Mean of the origin day, lead 162: minus 0.289"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^mean_origin_day\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 3}
+    expected: -0.289
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_mean_origin_week_lead12
+    quote: "Mean of the origin week, lead 12: 0.007"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^mean_origin_week\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24}
+    expected: 0.007
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_mean_origin_week_lead18
+    quote: "Mean of the origin week, lead 18: 0.132"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^mean_origin_week\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 2}
+    expected: 0.132
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_mean_origin_week_lead162
+    quote: "Mean of the origin week, lead 162: 0.088"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^mean_origin_week\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 3}
+    expected: 0.088
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_same_hour_1w_ago_lead12
+    quote: "Same hour one week before the target, lead 12: minus 0.047"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^same_hour_1w_ago\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24}
+    expected: -0.047
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_same_hour_1w_ago_lead18
+    quote: "Same hour one week before the target, lead 18: minus 0.034"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^same_hour_1w_ago\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 2}
+    expected: -0.034
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_same_hour_1w_ago_lead162
+    quote: "Same hour one week before the target, lead 162: 0.016"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^same_hour_1w_ago\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 3}
+    expected: 0.016
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_same_hour_2w_ago_lead12
+    quote: "Same hour two weeks before the target, lead 12: minus 0.026"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^same_hour_2w_ago\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24}
+    expected: -0.026
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_same_hour_2w_ago_lead18
+    quote: "Same hour two weeks before the target, lead 18: 0.029"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^same_hour_2w_ago\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 2}
+    expected: 0.029
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_same_hour_2w_ago_lead162
+    quote: "Same hour two weeks before the target, lead 162: 0.072"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^same_hour_2w_ago\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 3}
+    expected: 0.072
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_target_is_saturday_lead12
+    quote: "Target is a Saturday, MW, lead 12: minus 907"
+    where: [findings]
+    kind: mw
+    print_match: {pattern: '^target_is_saturday\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24}
+    expected: -907
+    round: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_target_is_saturday_lead18
+    quote: "Target is a Saturday, MW, lead 18: minus 725"
+    where: [findings]
+    kind: mw
+    print_match: {pattern: '^target_is_saturday\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 2}
+    expected: -725
+    round: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_target_is_saturday_lead162
+    quote: "Target is a Saturday, MW, lead 162: minus 998"
+    where: [findings]
+    kind: mw
+    print_match: {pattern: '^target_is_saturday\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 3}
+    expected: -998
+    round: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_target_is_sunday_lead12
+    quote: "Target is a Sunday, MW, lead 12: minus 1,071"
+    where: [findings]
+    kind: mw
+    print_match: {pattern: '^target_is_sunday\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24}
+    expected: -1071
+    round: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_target_is_sunday_lead18
+    quote: "Target is a Sunday, MW, lead 18: minus 387"
+    where: [findings]
+    kind: mw
+    print_match: {pattern: '^target_is_sunday\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 2}
+    expected: -387
+    round: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_target_is_sunday_lead162
+    quote: "Target is a Sunday, MW, lead 162: minus 910"
+    where: [findings]
+    kind: mw
+    print_match: {pattern: '^target_is_sunday\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 3}
+    expected: -910
+    round: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_target_is_holiday_lead12
+    quote: "Target is a holiday, MW, lead 12: minus 944"
+    where: [findings]
+    kind: mw
+    print_match: {pattern: '^target_is_holiday\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24}
+    expected: -944
+    round: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_target_is_holiday_lead18
+    quote: "Target is a holiday, MW, lead 18: minus 476"
+    where: [findings]
+    kind: mw
+    print_match: {pattern: '^target_is_holiday\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 2}
+    expected: -476
+    round: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_target_is_holiday_lead162
+    quote: "Target is a holiday, MW, lead 162: minus 1,323"
+    where: [findings]
+    kind: mw
+    print_match: {pattern: '^target_is_holiday\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 3}
+    expected: -1323
+    round: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_intercept_lead12
+    quote: "Intercept, MW, lead 12: 4,432"
+    where: [findings]
+    kind: mw
+    print_match: {pattern: '^intercept\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24}
+    expected: 4432
+    round: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_intercept_lead18
+    quote: "Intercept, MW, lead 18: 4,668"
+    where: [findings]
+    kind: mw
+    print_match: {pattern: '^intercept\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 2}
+    expected: 4668
+    round: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: coef_intercept_lead162
+    quote: "Intercept, MW, lead 162: 14,477"
+    where: [findings]
+    kind: mw
+    print_match: {pattern: '^intercept\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 24, group: 3}
+    expected: 14477
+    round: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+
+  # ---- the assertion table and the export
+  - id: dq_rules
+    quote: "18 data quality rules"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM dq_assertions
+    expected: 18
+    sources: []
+  - id: dq_block
+    quote: "Eight blocking rules passed"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM dq_assertions WHERE severity = 'BLOCK'
+    expected: 8
+    sources: []
+  - id: dq_warn
+    quote: "seven warnings carried"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM dq_assertions WHERE severity = 'WARN'
+    expected: 7
+    sources: []
+  - id: dq_note
+    quote: "three notes recorded"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM dq_assertions WHERE severity = 'NOTE'
+    expected: 3
+    sources: []
+  - id: dq_B1
+    quote: "B1 duplicate (date, hour) key: 0"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B1'
+    expected: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dq_B2
+    quote: "B2 header differs: 0"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B2'
+    expected: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dq_B3
+    quote: "B3 inside year differs: 0"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B3'
+    expected: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dq_B4
+    quote: "B4 failed integer cast: 0"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B4'
+    expected: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dq_B5
+    quote: "B5 hour missing from the spine: 1"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B5'
+    expected: 1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dq_B6
+    quote: "B6 date with other than 24 rows: 1"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B6'
+    expected: 1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dq_B7
+    quote: "B7 market demand below Ontario demand: 43"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B7'
+    expected: 43
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dq_B9
+    quote: "B9 date with no calendar row: 0"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B9'
+    expected: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dq_B10
+    quote: "B10 filled hour in the fact table: 1"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B10'
+    expected: 1
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dq_B14
+    quote: "B14 test-window day missing: 0"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B14'
+    expected: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dq_B15
+    quote: "B15 export row count differs: 0"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B15'
+    expected: 0
+    sources: []
+  - id: dq_B16
+    quote: "B16 scored origin with no model forecast: 0"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B16'
+    expected: 0
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: dq_B18
+    quote: "B18 zonal value that failed the cast: 0"
+    where: [findings]
+    kind: count
+    query: SELECT found FROM dq_assertions WHERE id = 'B18'
+    expected: 0
+    sources: [ieso_zonal_closed, ieso_zonal_current]
+  - id: export_hours
+    quote: "The seven tables exported reconciled row for row: 213,336 hours"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_demand_hourly WHERE date <= DATE '2026-08-31'
+    expected: 213336
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: export_forecast_rows
+    quote: "303,408 forecast rows"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_forecast
+    expected: 303408
+    sources: [ieso_demand_closed, ieso_demand_current]
+  - id: export_zonal_rows
+    quote: "233,750 zonal rows"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_demand_zonal
+    expected: 233750
+    sources: [ieso_zonal_closed, ieso_zonal_current]
+  - id: export_dates
+    quote: "9,009 dates"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM dim_date WHERE date <= DATE '2026-08-31'
+    expected: 9009
+    sources: []
+  - id: notebook_cells
+    quote: "40 cells"
+    where: [README]
+    not_reproducible: a property of the notebook file rather than of the data; the Notebook section of this report says how many code cells ran

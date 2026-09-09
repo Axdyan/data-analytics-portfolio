@@ -1,0 +1,3633 @@
+{
+  "project": "04-wind-repowering",
+  "label": "04: Wind Repowering Uplift",
+  "notebook_name": "04_load_explore.ipynb",
+  "measured_on": "2026-09-03",
+  "run_date": "2026-09-07",
+  "run_at_utc": "2026-09-07 14:47:49",
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.14.5",
+    "duckdb": "1.5.5",
+    "git_sha": null,
+    "github_run_id": null
+  },
+  "sources": [
+    {
+      "id": "uswtdb_current",
+      "refresh": "reissued several times a year by USGS; the API serves the current release",
+      "policy": "uswtdb_current",
+      "observed": {
+        "": "ee1e259fd94489cd1fe3df36fffaa533afacf1d05e804eff68fcbed33540bd8e"
+      },
+      "status": "unchanged",
+      "detail": "identical to the committed fingerprint (1 entries)"
+    },
+    {
+      "id": "uswtdb_2018_archive",
+      "refresh": "an archived release with a fixed catalogue entry",
+      "policy": "archived_release",
+      "observed": {
+        "uswtdb_v1_0_20180419.zip": "66cd616f70b6df5606e3f425aec2086b74171d9c5047f06641aa9540fdb7984d"
+      },
+      "status": "unchanged",
+      "detail": "identical to the committed fingerprint (1 entries)"
+    },
+    {
+      "id": "eia923_closed",
+      "refresh": "annual archives in their final revision, 2013 to 2024",
+      "policy": "eia923_closed_years",
+      "observed": {
+        "f923_2013.zip": "60b14d0587ff600861c2761f4133c86b8404bc86abf09816737484f49ba3ad66",
+        "f923_2014.zip": "9e91ff0acd4163230d0c248171d6b7bb7c79047122d4802446f158c852af20d7",
+        "f923_2015.zip": "da903cbf95e36c2e047356e56c8ce2f2dd2c8bcda701b52c0854200048ead0f3",
+        "f923_2016.zip": "86a306a07db6f3f7f19c898694c735bef7ce94fc254a088a305570547006fdbe",
+        "f923_2017.zip": "36a30bf77c40b9e8651967afe14c619904769fe4b67e3ec4785e218dfde0ac1f",
+        "f923_2018.zip": "44e6447730d755fb5d41d6c0c91e34ae0b9fab9f8b4c17559627bdad1e030007",
+        "f923_2019.zip": "c2fd692e7994dda8e7b04645c3cac4881c471003d417d8419da20ba015be7cce",
+        "f923_2020.zip": "b8c6516cc0ae306abffc03a4af393de496d52b84b41347521f7acb184a4f7bf9",
+        "f923_2021.zip": "9db69876593a669a0a02aa67ea3abaebf7dc0ea961424912c75156432851ccd8",
+        "f923_2022.zip": "2f030b7da3802b9310ecd93ef98014890d3519e6d1db55e5a49173121e5e82e4",
+        "f923_2023.zip": "f96326c003bcdc0534144718c96fa8c31f803190e92b936b97d210db27acc557",
+        "f923_2024.zip": "272055f2d748f6486fc3076abd5a40ec736dbff45458bdb4c895761278c50f2b"
+      },
+      "status": "unchanged",
+      "detail": "identical to the committed fingerprint (12 entries)"
+    },
+    {
+      "id": "eia923_provisional",
+      "refresh": "the 2025 archive, provisional until its final revision",
+      "policy": "eia923_provisional_year",
+      "observed": {
+        "f923_2025.zip": "bc6a1d87e93435d50baf563a587c0dfea3b01f5faa3b711210952ded1ad35bb9"
+      },
+      "status": "unchanged",
+      "detail": "identical to the committed fingerprint (1 entries)"
+    }
+  ],
+  "notebook": {
+    "cells": 87,
+    "code_cells": 87,
+    "executed": 87,
+    "elapsed_s": 424.4,
+    "error": null,
+    "cell_times": [
+      {
+        "position": 1,
+        "seconds": 0.1,
+        "opening": "Nothing here needs a database yet. Before I commit to pulling turbine data I want"
+      },
+      {
+        "position": 2,
+        "seconds": 2.7,
+        "opening": "The turbine data is served by a PostgREST API, and PostgREST publishes an OpenAPI"
+      },
+      {
+        "position": 3,
+        "seconds": 0.5,
+        "opening": "Older releases are catalogued as separate records rather than as versions of one"
+      },
+      {
+        "position": 4,
+        "seconds": 0.0,
+        "opening": "One block per matching record: the id, its dates, its files and its links. The"
+      },
+      {
+        "position": 5,
+        "seconds": 1.2,
+        "opening": "The bulk downloads have moved host at least once over the years, so I check which"
+      },
+      {
+        "position": 6,
+        "seconds": 0.5,
+        "opening": "Every release ships a changelog, and it is 31 KB against 5 MB for a data file, so it"
+      },
+      {
+        "position": 7,
+        "seconds": 0.0,
+        "opening": "The lines that mention the fields I depend on, with one line of context either side."
+      },
+      {
+        "position": 8,
+        "seconds": 1.1,
+        "opening": "The oldest release, April 2018. Rotor diameters recorded in here predate every"
+      },
+      {
+        "position": 9,
+        "seconds": 0.0,
+        "opening": "What is actually inside the archive and what the columns are called. A file from 2018"
+      },
+      {
+        "position": 10,
+        "seconds": 0.6,
+        "opening": "The changelog records the retrofit fields being renamed part way through the series,"
+      },
+      {
+        "position": 11,
+        "seconds": 0.0,
+        "opening": "Pull the CSV out of the archive so it can be read directly. The zip also carries a"
+      },
+      {
+        "position": 12,
+        "seconds": 0.1,
+        "opening": "Opens (or creates) the local database file that holds this project's tables."
+      },
+      {
+        "position": 13,
+        "seconds": 0.4,
+        "opening": "Load the 2018 file as text, every column. This one codes missing numbers as -9999 and"
+      },
+      {
+        "position": 14,
+        "seconds": 1.0,
+        "opening": "Row count first, then how often the two fields the rotor comparison rests on are not"
+      },
+      {
+        "position": 15,
+        "seconds": 2.9,
+        "opening": "Pull the current turbine table and write down what actually came back: when I pulled"
+      },
+      {
+        "position": 16,
+        "seconds": 0.5,
+        "opening": "Load it as text, same as the 2018 file. A REST endpoint can change a type between"
+      },
+      {
+        "position": 17,
+        "seconds": 0.0,
+        "opening": "Row and column counts against the manifest. A REST endpoint that silently caps its"
+      },
+      {
+        "position": 18,
+        "seconds": 0.0,
+        "opening": "How many turbines are marked as retrofitted, and in which years. This is the treatment"
+      },
+      {
+        "position": 19,
+        "seconds": 0.0,
+        "opening": "The question the rotor comparison rests on. If a repowered turbine keeps its case_id"
+      },
+      {
+        "position": 20,
+        "seconds": 0.0,
+        "opening": "The same overlap broken out by retrofit year. If the loss is uniform the comparison is"
+      },
+      {
+        "position": 21,
+        "seconds": 0.0,
+        "opening": "The turbine identifier does not survive a repowering, so I need a key that identifies"
+      },
+      {
+        "position": 22,
+        "seconds": 0.0,
+        "opening": "First candidate bridge. For every repowered turbine, does its project id appear"
+      },
+      {
+        "position": 23,
+        "seconds": 0.0,
+        "opening": "Second candidate bridge, in case the project id is thinly populated. Project name plus"
+      },
+      {
+        "position": 24,
+        "seconds": 0.0,
+        "opening": "One project, both files side by side. A rotor ratio computed across a hundred projects"
+      },
+      {
+        "position": 25,
+        "seconds": 249.4,
+        "opening": "Only the current year of the generation data was ever confirmed as a download. The"
+      },
+      {
+        "position": 26,
+        "seconds": 0.9,
+        "opening": "Two years from opposite ends of the range. The risk here is not that a file is missing,"
+      },
+      {
+        "position": 27,
+        "seconds": 0.1,
+        "opening": "What is actually inside each archive. The naming of these workbooks has changed over the"
+      },
+      {
+        "position": 28,
+        "seconds": 0.0,
+        "opening": "The download reported 200 and the file then would not open, so the first question is"
+      },
+      {
+        "position": 29,
+        "seconds": 1.9,
+        "opening": "Where these files actually live. HEAD came back 503 on every past year while GET came"
+      },
+      {
+        "position": 30,
+        "seconds": 0.0,
+        "opening": "A fetch that refuses to save anything that is not really an archive. This publisher"
+      },
+      {
+        "position": 31,
+        "seconds": 0.6,
+        "opening": "Prove the guard rejects something before thirteen downloads depend on it. The path that"
+      },
+      {
+        "position": 32,
+        "seconds": 0.3,
+        "opening": "Clear out the files that turned out to be web pages. I test each one before deleting it"
+      },
+      {
+        "position": 33,
+        "seconds": 10.9,
+        "opening": "Every year the panel needs. Each file is checked before it is written, so a year that"
+      },
+      {
+        "position": 34,
+        "seconds": 0.1,
+        "opening": "What is actually inside each year. These workbooks have been renamed more than once"
+      },
+      {
+        "position": 35,
+        "seconds": 0.0,
+        "opening": "Resolve which member of each archive holds the generation data. Ten of the thirteen"
+      },
+      {
+        "position": 36,
+        "seconds": 0.8,
+        "opening": "Sheet names at three points across the range: the oldest file, one from the middle, and"
+      },
+      {
+        "position": 37,
+        "seconds": 0.5,
+        "opening": "Where the real header sits. These workbooks open with several rows of title and notes"
+      },
+      {
+        "position": 38,
+        "seconds": 0.5,
+        "opening": "The column names at row 5, compared across the range. The later files wrap header text"
+      },
+      {
+        "position": 39,
+        "seconds": 0.0,
+        "opening": "The handful of columns this project actually reads: the plant key, the fuel code that"
+      },
+      {
+        "position": 40,
+        "seconds": 0.0,
+        "opening": "The loader, with the rename map the comparison above produced. Only two of the columns"
+      },
+      {
+        "position": 41,
+        "seconds": 5.8,
+        "opening": "Smoke test on the two ends of the range before committing to thirteen loads. 2013 is the"
+      },
+      {
+        "position": 42,
+        "seconds": 55.7,
+        "opening": "Every year, keeping only the wind rows. Filtering before collecting keeps this small,"
+      },
+      {
+        "position": 43,
+        "seconds": 0.1,
+        "opening": "The sheet carries twelve monthly columns and a stated annual total, which is a free"
+      },
+      {
+        "position": 44,
+        "seconds": 0.0,
+        "opening": "Is 2025 short on months or short on respondents? Counting how many rows carry a number"
+      },
+      {
+        "position": 45,
+        "seconds": 0.0,
+        "opening": "The other half of the same question. If the plants reporting in 2025 are a subset of the"
+      },
+      {
+        "position": 46,
+        "seconds": 0.0,
+        "opening": "Before either key column is used as a key, check that it really holds numbers. This"
+      },
+      {
+        "position": 47,
+        "seconds": 0.1,
+        "opening": "Coerce the keys to numbers and set the unusable rows aside rather than dropping them"
+      },
+      {
+        "position": 48,
+        "seconds": 0.0,
+        "opening": "Plants reporting per year, which is the check that decides whether the last year of the"
+      },
+      {
+        "position": 49,
+        "seconds": 0.0,
+        "opening": "Generation is reported per plant, turbines are recorded per turbine, and the only thing"
+      },
+      {
+        "position": 50,
+        "seconds": 0.0,
+        "opening": "Roll turbines up to the plant, because that is the grain generation is reported at. A"
+      },
+      {
+        "position": 51,
+        "seconds": 0.0,
+        "opening": "The classification that decides who is in the study. A plant where every turbine was"
+      },
+      {
+        "position": 52,
+        "seconds": 0.0,
+        "opening": "When the treated plants were repowered. The spread across years is the whole reason this"
+      },
+      {
+        "position": 53,
+        "seconds": 0.0,
+        "opening": "A trap in the commissioning year. For some repowered turbines this column has been"
+      },
+      {
+        "position": 54,
+        "seconds": 0.0,
+        "opening": "Label every plant and decide which ones can serve as controls. A control has to be"
+      },
+      {
+        "position": 55,
+        "seconds": 0.0,
+        "opening": "Who is actually in the study once the age window is applied. The gap between the control"
+      },
+      {
+        "position": 56,
+        "seconds": 0.0,
+        "opening": "The panel: one row per plant and year, for treated plants and for the controls that fall"
+      },
+      {
+        "position": 57,
+        "seconds": 0.0,
+        "opening": "How many plants the join lost. A turbine record and a generation record are published by"
+      },
+      {
+        "position": 58,
+        "seconds": 0.0,
+        "opening": "Whether each plant reports every year, and whether it reports a positive number every"
+      },
+      {
+        "position": 59,
+        "seconds": 0.0,
+        "opening": "The analysis sample: plants that report a positive number in every one of the twelve"
+      },
+      {
+        "position": 60,
+        "seconds": 0.0,
+        "opening": "The treatment groups that actually carry the estimate, with the years available either"
+      },
+      {
+        "position": 61,
+        "seconds": 3.0,
+        "opening": "What is available for the estimation work. The main estimator here gets written out by"
+      },
+      {
+        "position": 62,
+        "seconds": 0.0,
+        "opening": "Whether the two groups looked alike before any repowering happened. This is the check that"
+      },
+      {
+        "position": 63,
+        "seconds": 0.0,
+        "opening": "The two groups year by year before treatment starts. Balance on averages is not enough on"
+      },
+      {
+        "position": 64,
+        "seconds": 0.0,
+        "opening": "To measure what a plant's capacity was before it was repowered I need the 2018 turbine"
+      },
+      {
+        "position": 65,
+        "seconds": 0.0,
+        "opening": "Capacity as it stood in 2018, per plant. Only projects that map to a single plant are"
+      },
+      {
+        "position": 66,
+        "seconds": 0.0,
+        "opening": "Before any capacity factor is built on these numbers, check the denominator. The 2018 file"
+      },
+      {
+        "position": 67,
+        "seconds": 0.0,
+        "opening": "The same question per plant rather than on averages, because an average hides the shape."
+      },
+      {
+        "position": 68,
+        "seconds": 0.0,
+        "opening": "The comparison the earlier table could not make, now that the denominator has been"
+      },
+      {
+        "position": 69,
+        "seconds": 0.0,
+        "opening": "The question the 2018 archive was fetched for. A repowering that fits longer blades is a"
+      },
+      {
+        "position": 70,
+        "seconds": 0.0,
+        "opening": "Split the treated plants by whether the rotor actually grew. The threshold is two percent"
+      },
+      {
+        "position": 71,
+        "seconds": 0.0,
+        "opening": "The set of plants the estimate rests on, pulled once into memory so every estimator below"
+      },
+      {
+        "position": 72,
+        "seconds": 3.3,
+        "opening": "The regression everyone would run first: log generation on a treated-and-after flag with"
+      },
+      {
+        "position": 73,
+        "seconds": 0.0,
+        "opening": "Take the regression apart. On a balanced panel the coefficient above is exactly a weighted"
+      },
+      {
+        "position": 74,
+        "seconds": 0.0,
+        "opening": "The estimator written out by hand, so every number in it can be pointed at. For each"
+      },
+      {
+        "position": 75,
+        "seconds": 0.0,
+        "opening": "One number per cohort and year is too many numbers to act on, so they get combined two"
+      },
+      {
+        "position": 76,
+        "seconds": 6.7,
+        "opening": "Uncertainty, by redrawing plants. Generation at one plant is correlated across its own"
+      },
+      {
+        "position": 77,
+        "seconds": 0.0,
+        "opening": "What this design could have found. Before looking at any treated plant, the question an"
+      },
+      {
+        "position": 78,
+        "seconds": 19.3,
+        "opening": "Does the uplift differ between plants that fitted a bigger rotor and plants that did not?"
+      },
+      {
+        "position": 79,
+        "seconds": 0.0,
+        "opening": "Four treated plants carry no rotor record because nothing bridges them to the 2018 file,"
+      },
+      {
+        "position": 80,
+        "seconds": 47.5,
+        "opening": "The same estimate under the alternatives that could have been chosen instead, each one a"
+      },
+      {
+        "position": 81,
+        "seconds": 0.0,
+        "opening": "Every reported number written back to the database as two small tables, so the memo and"
+      },
+      {
+        "position": 82,
+        "seconds": 0.3,
+        "opening": "The same estimator from a library, as a check on my arithmetic rather than a replacement"
+      },
+      {
+        "position": 83,
+        "seconds": 0.3,
+        "opening": "A second library, a port of the original R implementation of this estimator, with the same"
+      },
+      {
+        "position": 84,
+        "seconds": 0.3,
+        "opening": "The event study as a picture, in percent so it reads as generation rather than logs. The"
+      },
+      {
+        "position": 85,
+        "seconds": 0.4,
+        "opening": "The decomposition as a picture. Every point is one two-group, two-period comparison inside"
+      },
+      {
+        "position": 86,
+        "seconds": 0.2,
+        "opening": "The star schema for the dashboard, written out as four CSVs. The dashboard reads the same"
+      },
+      {
+        "position": 87,
+        "seconds": 0.1,
+        "opening": "The checks this notebook made along the way, gathered into one table so a reader can see"
+      }
+    ],
+    "retried_after": null
+  },
+  "numbers": [
+    {
+      "id": "turbine_fields",
+      "quote": "The turbine database used here carries 28 fields",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 28,
+      "measured": 28,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "turbines",
+      "quote": "75,727 turbines carrying a retrofit flag and a retrofit year",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 75727,
+      "measured": 75727,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "turbines_2018",
+      "quote": "the April 2018 archived release",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 57636,
+      "measured": 57636,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "plant_years",
+      "quote": "14,077 plant-years",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 14077,
+      "measured": 14077,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "gen_plants",
+      "quote": "across 1,486 wind plants",
+      "where": [
+        "README"
+      ],
+      "kind": "count",
+      "expected": 1486,
+      "measured": 1486,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "gen_years",
+      "quote": "EIA-923 plant-level generation for 2013 to 2025",
+      "where": [
+        "README"
+      ],
+      "kind": "text",
+      "expected": "2013 to 2025",
+      "measured": "2013 to 2025",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "retrofitted_turbines",
+      "quote": "8,480 repowered turbines",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 8480,
+      "measured": 8480,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "rewritten_turbines",
+      "quote": "On 1,529 repowered turbines the build year has been silently rewritten",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1529,
+      "measured": 1529,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "rewritten_plants",
+      "quote": "spread across 17 plants",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 17,
+      "measured": 17,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "rewritten_treated_plants",
+      "quote": "Thirteen of the 17 affected plants are in the treatment group",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 13,
+      "measured": 13,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "vintage_window",
+      "quote": "which gives 2001 to 2012",
+      "where": [
+        "findings"
+      ],
+      "kind": "text",
+      "expected": "2001 to 2012",
+      "measured": "2001 to 2012",
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "window_would_stretch",
+      "quote": "the window would have stretched to 2024",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 2024,
+      "measured": 2024,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "controls_in_window",
+      "quote": "567 of the 1,208 never-repowered plants fall inside it",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 567,
+      "measured": 567,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "never_repowered",
+      "quote": "1,208 never-repowered plants",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1208,
+      "measured": 1208,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "bridge_by_id_pct",
+      "quote": "only 10.5% of them can be found in the 2018 release by id",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 10.5,
+      "measured": 10.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "bridge_by_id_zero_years",
+      "quote": "for four of the nine cohort years the figure is zero",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "bridge_cohort_years",
+      "quote": "the nine cohort years",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 9,
+      "measured": 9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "bridge_by_project_pct",
+      "quote": "The project id survives and bridges 92.2%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 92.2,
+      "measured": 92.2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "no_plant_id_turbines",
+      "quote": "turbine with no plant id: 3,615",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3615,
+      "measured": 3615,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "no_plant_id_pct",
+      "quote": "The 4.8% of turbines with no plant id",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 4.8,
+      "measured": 4.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "no_plant_id_capacity_pct",
+      "quote": "excluded; 2.4% of capacity",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 2.4,
+      "measured": 2.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "filed_2024",
+      "quote": "1,348 filed in 2024",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1348,
+      "measured": 1348,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "filed_2025",
+      "quote": "plants filing in the provisional 2025 release: 624",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 624,
+      "measured": 624,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "missing_2025",
+      "quote": "the 754 plants missing from the provisional one",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 754,
+      "measured": 754,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "treated_plants",
+      "quote": "The treatment group is 80 plants",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 80,
+      "measured": 80,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cohorts",
+      "quote": "repowered in seven cohorts from 2017 to 2023",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": 7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "control_plants",
+      "quote": "The control group is 498 never-repowered plants",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 498,
+      "measured": 498,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "panel_years",
+      "quote": "each reporting a positive generation figure in every year from 2013 to 2024",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "all_retrofitted_plants",
+      "quote": "90 plants have every turbine retrofitted",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 90,
+      "measured": 90,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "mixed_plants",
+      "quote": "29 have both, set aside (B6)",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 29,
+      "measured": 29,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cohort_2015",
+      "quote": "one was repowered in 2015 on its own",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cohort_2024",
+      "quote": "and nine in 2024 with no year after treatment",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 9,
+      "measured": 9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dropped_cohorts",
+      "quote": "treated plant outside the 2017 to 2023 cohorts: 10 (B13)",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 10,
+      "measured": 10,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "index_treated_2013",
+      "quote": "Indexed to 2013, treated 2013: 100.0",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 100.0,
+      "measured": 100.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_control_2013",
+      "quote": "Indexed to 2013, control 2013: 100.0",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 100.0,
+      "measured": 100.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_treated_2014",
+      "quote": "Indexed to 2013, treated 2014: 105.9",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 105.9,
+      "measured": 105.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_control_2014",
+      "quote": "Indexed to 2013, control 2014: 104.0",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 104.0,
+      "measured": 104.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_treated_2015",
+      "quote": "Indexed to 2013, treated 2015: 95.4",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 95.4,
+      "measured": 95.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_control_2015",
+      "quote": "Indexed to 2013, control 2015: 96.4",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 96.4,
+      "measured": 96.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_treated_2016",
+      "quote": "Indexed to 2013, treated 2016: 101.3",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 101.3,
+      "measured": 101.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_control_2016",
+      "quote": "Indexed to 2013, control 2016: 100.3",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 100.3,
+      "measured": 100.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_treated_2017",
+      "quote": "Indexed to 2013, treated 2017: 96.1",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 96.1,
+      "measured": 96.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_control_2017",
+      "quote": "Indexed to 2013, control 2017: 98.3",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 98.3,
+      "measured": 98.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_treated_2018",
+      "quote": "Indexed to 2013, treated 2018: 96.2",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 96.2,
+      "measured": 96.2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_control_2018",
+      "quote": "Indexed to 2013, control 2018: 96.4",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 96.4,
+      "measured": 96.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_treated_2019",
+      "quote": "Indexed to 2013, treated 2019: 93.5",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 93.5,
+      "measured": 93.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "index_control_2019",
+      "quote": "Indexed to 2013, control 2019: 93.2",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 93.2,
+      "measured": 93.2,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "treated_capacity_today",
+      "quote": "Treated plants are bigger, 135 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 135,
+      "measured": 135.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "control_capacity_today",
+      "quote": "against 81 MW today",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 81,
+      "measured": 81.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cf_treated_weighted",
+      "quote": "a capacity factor of 0.347 for treated plants on capacity-weighted terms",
+      "where": [
+        "findings"
+      ],
+      "kind": "ratio",
+      "expected": 0.347,
+      "measured": 0.347,
+      "status": "reproduced",
+      "reason": "printed in cell 68",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "cf_control_weighted",
+      "quote": "against 0.326 for controls",
+      "where": [
+        "findings"
+      ],
+      "kind": "ratio",
+      "expected": 0.326,
+      "measured": 0.326,
+      "status": "reproduced",
+      "reason": "printed in cell 68",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "cf_treated_median",
+      "quote": "0.369 at the median treated plant",
+      "where": [
+        "findings"
+      ],
+      "kind": "ratio",
+      "expected": 0.369,
+      "measured": 0.369,
+      "status": "reproduced",
+      "reason": "printed in cell 68",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "cf_control_median",
+      "quote": "against 0.314 at the median control plant",
+      "where": [
+        "findings"
+      ],
+      "kind": "ratio",
+      "expected": 0.314,
+      "measured": 0.314,
+      "status": "reproduced",
+      "reason": "printed in cell 68",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "treated_cap_2018",
+      "quote": "treated plants went from 118.9 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 118.9,
+      "measured": 118.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "treated_cap_now",
+      "quote": "to 130.9 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 130.9,
+      "measured": 130.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "treated_cap_growth",
+      "quote": "up 10.1%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 10.1,
+      "measured": 10.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "control_cap_2018",
+      "quote": "while controls went from 71.8 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 71.8,
+      "measured": 71.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "control_cap_now",
+      "quote": "to 72.8 MW",
+      "where": [
+        "findings"
+      ],
+      "kind": "mw",
+      "expected": 72.8,
+      "measured": 72.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "control_cap_growth",
+      "quote": "up 1.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 1.4,
+      "measured": 1.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "capacity_points",
+      "quote": "Roughly 8.7 points of any generation uplift is more machine",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 8.7,
+      "measured": 8.7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "the README rounds it to nine points",
+      "round": 1
+    },
+    {
+      "id": "naive_att",
+      "quote": "The regression returns 0.266",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.266,
+      "measured": 0.266,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "naive_pct",
+      "quote": "or 30.4% more generation",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 30.4,
+      "measured": 30.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "naive_se",
+      "quote": "with a standard error of 0.027",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.027,
+      "measured": 0.027,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "naive_p",
+      "quote": "and a p-value of zero",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.0,
+      "measured": 0.0,
+      "status": "reproduced",
+      "reason": "printed in cell 72",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "naive_ci_low",
+      "quote": "Naive regression: +23.7%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 23.7,
+      "measured": 23.7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "naive_ci_high",
+      "quote": "to +37.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 37.5,
+      "measured": 37.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "bacon_pairs_clean",
+      "quote": "the seven clean comparisons of a cohort against the never-repowered plants",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": 7.0,
+      "status": "reproduced",
+      "reason": "printed in cell 73",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "bacon_pairs_earlier",
+      "quote": "earlier cohorts compared with later ones: 21 pairs",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 21,
+      "measured": 21.0,
+      "status": "reproduced",
+      "reason": "printed in cell 73",
+      "note": "the 49 pairwise comparisons the memo counts are 7 + 21 + 21",
+      "round": 0
+    },
+    {
+      "id": "bacon_pairs_later",
+      "quote": "comparisons that use already-repowered plants as controls: 21 pairs",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 21,
+      "measured": 21.0,
+      "status": "reproduced",
+      "reason": "printed in cell 73",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "bacon_weight_clean",
+      "quote": "96.3% of the weight sits on the seven clean comparisons",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 96.3,
+      "measured": 96.26,
+      "status": "reproduced",
+      "reason": "printed in cell 73",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "bacon_weight_earlier",
+      "quote": "2.3% on earlier cohorts compared with later ones",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 2.3,
+      "measured": 2.26,
+      "status": "reproduced",
+      "reason": "printed in cell 73",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "bacon_weight_later",
+      "quote": "and 1.5% on the comparisons that use already-repowered plants as controls",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 1.5,
+      "measured": 1.48,
+      "status": "reproduced",
+      "reason": "printed in cell 73",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "bacon_estimate_later",
+      "quote": "Those last ones average minus 3.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": -3.3,
+      "measured": -3.39,
+      "status": "reproduced",
+      "reason": "printed in cell 73",
+      "note": "printed as a log difference, minus 0.0339, which the memo reads as minus 3.3%",
+      "round": 1
+    },
+    {
+      "id": "bacon_sums_to_coefficient",
+      "quote": "the weighted average of the pairwise comparisons equals the regression coefficient",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.2657,
+      "measured": 0.2657,
+      "status": "reproduced",
+      "reason": "printed in cell 73",
+      "note": "",
+      "round": 4
+    },
+    {
+      "id": "headline_att",
+      "quote": "From the first full year after repowering, the headline: 0.395 log points",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.395,
+      "measured": 0.395,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "headline_pct",
+      "quote": "+48.4%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 48.4,
+      "measured": 48.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "headline_ci_low",
+      "quote": "+36.6%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 36.6,
+      "measured": 36.3,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 36.3.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "headline_ci_high",
+      "quote": "to +61.2%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 61.1,
+      "measured": 61.4,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 61.4.",
+      "note": "the memo prints 61.2; the table gives 61.1 whether the bound is taken exactly (0.476823) or from the printed 0.477",
+      "round": 1
+    },
+    {
+      "id": "headline_se",
+      "quote": "standard error 0.042",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.042,
+      "measured": 0.043,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 0.043.",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "incl_year0_att",
+      "quote": "Including the repowering year: 0.289",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.289,
+      "measured": 0.289,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "incl_year0_pct",
+      "quote": "+33.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 33.5,
+      "measured": 33.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "incl_year0_ci_low",
+      "quote": "+24.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 24.0,
+      "measured": 23.4,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 23.4.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "incl_year0_ci_high",
+      "quote": "to +43.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 43.8,
+      "measured": 44.5,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 44.5.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "year0_att",
+      "quote": "The repowering year alone: minus 0.069",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": -0.069,
+      "measured": -0.069,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "year0_pct",
+      "quote": "minus 6.7%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": -6.7,
+      "measured": -6.7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "the README rounds it to 7% down",
+      "round": 1
+    },
+    {
+      "id": "year0_ci_low",
+      "quote": "minus 14.7%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": -13.7,
+      "measured": -14.2,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: -14.2.",
+      "note": "the memo prints minus 14.7; the table's bound is minus 0.147 in logs, which is minus 13.7% as generation",
+      "round": 1
+    },
+    {
+      "id": "year0_ci_high",
+      "quote": "to +0.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 0.9,
+      "measured": 1.5,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 1.5.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "bootstrap_draws",
+      "quote": "redrawing plants with replacement 999 times",
+      "where": [
+        "findings"
+      ],
+      "kind": "constant",
+      "expected": 999,
+      "measured": null,
+      "status": "not_reproducible",
+      "reason": "a setting of the notebook's bootstrap, not a measurement; the standard errors it produces are checked above and below",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "interval_multiplier",
+      "quote": "the estimate plus or minus 1.96 standard errors",
+      "where": [
+        "findings"
+      ],
+      "kind": "constant",
+      "expected": 1.96,
+      "measured": null,
+      "status": "not_reproducible",
+      "reason": "a design constant; every interval bound checked here embodies it",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "interval_arithmetic",
+      "quote": "interval is the estimate plus or minus 1.96 standard errors, checked on the headline",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0,
+      "measured": 0.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "placebo_m4",
+      "quote": "The three placebo years before repowering come out at +3.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 3.9,
+      "measured": 3.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "placebo_m3",
+      "quote": "+2.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 2.3,
+      "measured": 2.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "placebo_m2",
+      "quote": "and minus 4.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": -4.5,
+      "measured": -4.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "placebo_inside_intervals",
+      "quote": "each inside its own interval",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 0.",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "wald_stat",
+      "quote": "a Wald statistic of 5.06",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 5.06,
+      "measured": 3.94,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 3.94.",
+      "note": "",
+      "round": 2
+    },
+    {
+      "id": "wald_df",
+      "quote": "on 3 degrees of freedom",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": 3.0,
+      "status": "reproduced",
+      "reason": "printed in cell 76",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "wald_p",
+      "quote": "p = 0.167",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.167,
+      "measured": 0.268,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 0.268.",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "cohort_2020_placebo_low",
+      "quote": "the 2020 cohort ran 12 to 17 points above its base year in 2013 to 2017: the low end",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 12,
+      "measured": 12.2,
+      "status": "reproduced",
+      "reason": "printed in cell 74",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cohort_2020_placebo_high",
+      "quote": "the 2020 cohort ran 12 to 17 points above: the high end",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 17,
+      "measured": 17.299999999999997,
+      "status": "reproduced",
+      "reason": "printed in cell 74",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cohort_2022_placebo_low",
+      "quote": "and the 2022 cohort 20 to 43 points below: the low end",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": -20,
+      "measured": -20.4,
+      "status": "reproduced",
+      "reason": "printed in cell 74",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cohort_2022_placebo_high",
+      "quote": "and the 2022 cohort 20 to 43 points below: the high end",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": -43,
+      "measured": -43.4,
+      "status": "reproduced",
+      "reason": "printed in cell 74",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cohort_2022_plants",
+      "quote": "which is six plants in a windy base year",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6,
+      "measured": 6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "event_1_pct",
+      "quote": "+1: +33.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 33.9,
+      "measured": 33.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_1_ci_low",
+      "quote": "+1: +21.2%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 21.2,
+      "measured": 20.9,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 20.9.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_1_ci_high",
+      "quote": "+1: to +48.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 48.0,
+      "measured": 48.1,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 48.1.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_1_cohorts",
+      "quote": "+1: 7 cohorts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 7,
+      "measured": 7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "event_1_plants",
+      "quote": "+1: 80 plants",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 80,
+      "measured": 80,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "event_2_pct",
+      "quote": "+2: +46.6%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 46.6,
+      "measured": 46.6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_2_ci_low",
+      "quote": "+2: +35.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 35.0,
+      "measured": 34.4,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 34.4.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_2_ci_high",
+      "quote": "+2: to +59.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 59.4,
+      "measured": 59.8,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 59.8.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_2_cohorts",
+      "quote": "+2: 6 cohorts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6,
+      "measured": 6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "event_2_plants",
+      "quote": "+2: 73 plants",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 73,
+      "measured": 73,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "event_3_pct",
+      "quote": "+3: +54.7%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 54.7,
+      "measured": 54.7,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_3_ci_low",
+      "quote": "+3: +40.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 40.9,
+      "measured": 40.2,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 40.2.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_3_ci_high",
+      "quote": "+3: to +69.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 69.9,
+      "measured": 70.6,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 70.6.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_3_cohorts",
+      "quote": "+3: 5 cohorts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 5,
+      "measured": 5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "event_3_plants",
+      "quote": "+3: 67 plants",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 67,
+      "measured": 67,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "event_4_pct",
+      "quote": "+4: +59.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 59.4,
+      "measured": 59.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_4_ci_low",
+      "quote": "+4: +44.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 44.3,
+      "measured": 43.5,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 43.5.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_4_ci_high",
+      "quote": "+4: to +75.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 75.9,
+      "measured": 77.0,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 77.0.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_4_cohorts",
+      "quote": "+4: 4 cohorts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "event_4_plants",
+      "quote": "+4: 61 plants",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 61,
+      "measured": 61,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "event_5_pct",
+      "quote": "+5: +61.6%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 61.6,
+      "measured": 61.6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_5_ci_low",
+      "quote": "+5: +42.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 42.8,
+      "measured": 41.6,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 41.6.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_5_ci_high",
+      "quote": "+5: to +82.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 82.9,
+      "measured": 84.4,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 84.4.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "event_5_cohorts",
+      "quote": "+5: 3 cohorts",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": 3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "event_5_plants",
+      "quote": "+5: 38 plants",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 38,
+      "measured": 38,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cohort_2019_pct",
+      "quote": "the 2019 and 2020 cohorts show the largest effects of any (62.7%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 62.7,
+      "measured": 62.717,
+      "status": "reproduced",
+      "reason": "printed in cell 76",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cohort_2020_pct",
+      "quote": "and 53.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 53.4,
+      "measured": 53.418,
+      "status": "reproduced",
+      "reason": "printed in cell 76",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "cohort_2017_pct",
+      "quote": "against 36% for 2017",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 36,
+      "measured": 36.413,
+      "status": "reproduced",
+      "reason": "printed in cell 76",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "cohort_2018_pct",
+      "quote": "and 2018",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 36.6,
+      "measured": 36.575,
+      "status": "reproduced",
+      "reason": "printed in cell 76",
+      "note": "the memo says 36% for both 2017 and 2018; the table gives 36.4 and 36.6",
+      "round": 1
+    },
+    {
+      "id": "mde_design_se",
+      "quote": "the design's standard error is 0.0475",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.0475,
+      "measured": 0.0475,
+      "status": "reproduced",
+      "reason": "printed in cell 77",
+      "note": "",
+      "round": 4
+    },
+    {
+      "id": "mde_logs",
+      "quote": "a minimum detectable effect of 0.133 in logs",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.133,
+      "measured": 0.133,
+      "status": "reproduced",
+      "reason": "printed in cell 77",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "mde_pct",
+      "quote": "or 14.2% more generation",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 14.2,
+      "measured": 14.2,
+      "status": "reproduced",
+      "reason": "printed in cell 77",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "mde_multiplier",
+      "quote": "2.80 times that standard error",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 2.8,
+      "measured": null,
+      "status": "not_reproducible",
+      "reason": "a definition, 2.80 is the sum of the 1.96 and 0.84 normal quantiles; the effect it yields is checked in mde_logs",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "mde_post_se",
+      "quote": "The same calculation after the fact, from the bootstrap spread: standard error 0.0420",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 0.042,
+      "measured": 0.0433,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 0.043.",
+      "note": "",
+      "round": 3
+    },
+    {
+      "id": "mde_post_pct",
+      "quote": "gives 12.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 12.5,
+      "measured": 12.9,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 12.9.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "effect_to_mde_ratio",
+      "quote": "The observed effect is about three times the smallest one this design could have found",
+      "where": [
+        "findings"
+      ],
+      "kind": "ratio",
+      "expected": 3,
+      "measured": 3.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "rotor_threshold",
+      "quote": "A plant whose mean rotor grew by more than 2% is classed as grown",
+      "where": [
+        "findings"
+      ],
+      "kind": "constant",
+      "expected": 2,
+      "measured": null,
+      "status": "not_reproducible",
+      "reason": "a classification threshold set in the notebook; the class counts it yields are checked below",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "control_rotor_grew",
+      "quote": "Among control plants only 6 of 565 show growth",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 6,
+      "measured": 6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "control_rotor_measured",
+      "quote": "of 565 control plants with a 2018 rotor",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 565,
+      "measured": 565,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "rotor_rotor_grew_plants",
+      "quote": "rotor grew: 66 plants",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 66,
+      "measured": 66,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "rotor_rotor_grew_pct",
+      "quote": "rotor grew: +44.3%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 44.3,
+      "measured": 44.3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "rotor_rotor_grew_ci_low",
+      "quote": "rotor grew: +34.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 34.0,
+      "measured": 34.0,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 34.0.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "rotor_rotor_grew_ci_high",
+      "quote": "rotor grew: to +55.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 55.4,
+      "measured": 55.6,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 55.6.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "rotor_rotor_unchanged_or_smaller_plants",
+      "quote": "rotor unchanged or smaller: 10 plants",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 10,
+      "measured": 10,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "rotor_rotor_unchanged_or_smaller_pct",
+      "quote": "rotor unchanged or smaller: +34.5%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 34.5,
+      "measured": 34.5,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "rotor_rotor_unchanged_or_smaller_ci_low",
+      "quote": "rotor unchanged or smaller: +27.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 27.9,
+      "measured": 27.1,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 27.1.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "rotor_rotor_unchanged_or_smaller_ci_high",
+      "quote": "rotor unchanged or smaller: to +41.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 41.3,
+      "measured": 42.2,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 42.2.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "rotor_unknown_plants",
+      "quote": "unknown: 4 plants",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "rotor_unknown_pct",
+      "quote": "unknown: +198.6%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 198.6,
+      "measured": 198.6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "rotor_unknown_ci_low",
+      "quote": "unknown: +114.6%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 114.6,
+      "measured": 35.7,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 35.7.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "rotor_unknown_ci_high",
+      "quote": "unknown: to +315.2%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 315.2,
+      "measured": 556.7,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 556.7.",
+      "note": "the memo took this bound from the exact interval rather than the printed three decimals",
+      "round": 1
+    },
+    {
+      "id": "rotor_grew_median",
+      "quote": "Rotor grew (median +18%)",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 18,
+      "measured": 18.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "rotor_gap",
+      "quote": "The bigger-rotor plants gained about ten points more than the others",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 10,
+      "measured": 10.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "no_2018_record",
+      "quote": "The four plants with no 2018 record (B15)",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "no_2018_no_project_id",
+      "quote": "Three of them carry no project id at all in the current release",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": 3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "no_2018_rewritten",
+      "quote": "two have their build year rewritten to the repowering year",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3,
+      "measured": 3,
+      "status": "reproduced",
+      "reason": "",
+      "note": "the memo says two; the export table flags three of the four, plants 55265, 56160 and 56270",
+      "round": 0
+    },
+    {
+      "id": "no_2018_plant_pre",
+      "quote": "and one went from 75 GWh a year",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 75,
+      "measured": 74.6,
+      "status": "reproduced",
+      "reason": "printed in cell 79",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "no_2018_plant_post",
+      "quote": "to 262",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 262,
+      "measured": 261.7,
+      "status": "reproduced",
+      "reason": "printed in cell 79",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_headline_treated",
+      "quote": "headline: balanced panel: 80 treated",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 80,
+      "measured": 80,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_headline_controls",
+      "quote": "headline: balanced panel: 498 controls",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 498,
+      "measured": 498,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_headline_pct",
+      "quote": "headline: balanced panel: +48.4%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 48.4,
+      "measured": 48.4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_headline_ci_low",
+      "quote": "headline: balanced panel: +36.6%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 36.6,
+      "measured": 36.3,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 36.3.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_headline_ci_high",
+      "quote": "headline: balanced panel: to +61.1%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 61.1,
+      "measured": 61.4,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 61.4.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_drop_four_treated",
+      "quote": "drop the treated plants with no 2018 turbine record: 76 treated",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 76,
+      "measured": 76,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_drop_four_controls",
+      "quote": "drop the treated plants with no 2018 turbine record: 498 controls",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 498,
+      "measured": 498,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_drop_four_pct",
+      "quote": "drop the treated plants with no 2018 turbine record: +43.0%",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 43.0,
+      "measured": 43.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_drop_four_ci_low",
+      "quote": "drop the treated plants with no 2018 turbine record: +33.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 33.5,
+      "measured": 33.2,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 33.2.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_drop_four_ci_high",
+      "quote": "drop the treated plants with no 2018 turbine record: to +53.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 53.3,
+      "measured": 53.4,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 53.4.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_mixed_treated",
+      "quote": "mixed plants counted as treated: 105 treated",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 105,
+      "measured": 105,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_mixed_controls",
+      "quote": "mixed plants counted as treated: 498 controls",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 498,
+      "measured": 498,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_mixed_pct",
+      "quote": "mixed plants counted as treated: +52.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 52.8,
+      "measured": 52.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_mixed_ci_low",
+      "quote": "mixed plants counted as treated: +41.3%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 41.3,
+      "measured": 40.6,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 40.6.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_mixed_ci_high",
+      "quote": "mixed plants counted as treated: to +65.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 65.4,
+      "measured": 66.0,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 66.0.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_states_treated",
+      "quote": "controls in states with a treated plant: 80 treated",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 80,
+      "measured": 80,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_states_controls",
+      "quote": "controls in states with a treated plant: 292 controls",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 292,
+      "measured": 292,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_states_pct",
+      "quote": "controls in states with a treated plant: +56.8%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 56.8,
+      "measured": 56.8,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_states_ci_low",
+      "quote": "controls in states with a treated plant: +43.5%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 43.5,
+      "measured": 43.6,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 43.6.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_states_ci_high",
+      "quote": "controls in states with a treated plant: to +71.4%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 71.4,
+      "measured": 71.3,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 71.3.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_unbalanced_treated",
+      "quote": "unbalanced panel: 80 treated",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 80,
+      "measured": 80,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_unbalanced_controls",
+      "quote": "unbalanced panel: 550 controls",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 550,
+      "measured": 550,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_unbalanced_pct",
+      "quote": "unbalanced panel: +49.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 49.9,
+      "measured": 49.9,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_unbalanced_ci_low",
+      "quote": "unbalanced panel: +37.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 37.9,
+      "measured": 37.6,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 37.6.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_unbalanced_ci_high",
+      "quote": "unbalanced panel: to +63.1%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 63.1,
+      "measured": 63.4,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 63.4.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_base3_treated",
+      "quote": "base is the mean of the three years before: 80 treated",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 80,
+      "measured": 80,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_base3_controls",
+      "quote": "base is the mean of the three years before: 498 controls",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 498,
+      "measured": 498,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "sens_base3_pct",
+      "quote": "base is the mean of the three years before: +49.6%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 49.6,
+      "measured": 49.6,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_base3_ci_low",
+      "quote": "base is the mean of the three years before: +40.0%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 40.0,
+      "measured": 39.7,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 39.7.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "sens_base3_ci_high",
+      "quote": "base is the mean of the three years before: to +59.9%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 59.9,
+      "measured": 60.0,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 60.0.",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "levels_att",
+      "quote": "Levels instead of logs: +108 GWh",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 108,
+      "measured": 108.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "levels_pct",
+      "quote": "or +31.1% of the 348 GWh treated plants averaged the year before",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 31.1,
+      "measured": 31.1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 1
+    },
+    {
+      "id": "levels_base",
+      "quote": "the 348 GWh treated plants averaged the year before",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 348,
+      "measured": 348.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "levels_ci_low",
+      "quote": "+85 GWh",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 85,
+      "measured": 84.0,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 84.",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "levels_ci_high",
+      "quote": "to +132 GWh",
+      "where": [
+        "findings"
+      ],
+      "kind": "stat",
+      "expected": 132,
+      "measured": 133.0,
+      "status": "not_reproducible",
+      "reason": "computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured. This run: 133.",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "treated_states",
+      "quote": "the 15 states holding a treated plant",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 15,
+      "measured": 15,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "multi_year_retrofit",
+      "quote": "no such plant exists in this release (B7)",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "performance_after_capacity",
+      "quote": "1.484 divided by 1.087, what remains is about 37%",
+      "where": [
+        "findings"
+      ],
+      "kind": "pct",
+      "expected": 37,
+      "measured": 37.0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "the memo's arithmetic on its own rounded figures, 1.484 and 1.087",
+      "round": 0
+    },
+    {
+      "id": "library_cross_check",
+      "quote": "two library implementations reproduce the event-time series and the cohort effects to six decimal places",
+      "where": [
+        "README",
+        "findings"
+      ],
+      "kind": "constant",
+      "expected": 6,
+      "measured": null,
+      "status": "not_reproducible",
+      "reason": "the agreement is asserted inside the notebook at six decimals; the runner sees that the cells passed and the printed four-decimal match, hand 0.3115 against library 0.3115",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B1",
+      "quote": "B1: 0 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B2",
+      "quote": "B2: 3,615 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3615,
+      "measured": 3615,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B3a",
+      "quote": "B3a: 3,282 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3282,
+      "measured": 3282,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B3b",
+      "quote": "B3b: 3,527 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 3527,
+      "measured": 3527,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B3c",
+      "quote": "B3c: 1,125 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1125,
+      "measured": 1125,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B4",
+      "quote": "B4: 0 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B5",
+      "quote": "B5: 1,529 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1529,
+      "measured": 1529,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B6",
+      "quote": "B6: 29 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 29,
+      "measured": 29,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B7",
+      "quote": "B7: 0 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B8",
+      "quote": "B8: 0 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B9",
+      "quote": "B9: 170 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 170,
+      "measured": 170,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B10",
+      "quote": "B10: 53 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 53,
+      "measured": 53,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B11",
+      "quote": "B11: 18 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 18,
+      "measured": 18,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B12",
+      "quote": "B12: 11 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 11,
+      "measured": 11,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B13",
+      "quote": "B13: 10 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 10,
+      "measured": 10,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B14",
+      "quote": "B14: 624 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 624,
+      "measured": 624,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B15",
+      "quote": "B15: 4 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 4,
+      "measured": 4,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B16",
+      "quote": "B16: 19 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 19,
+      "measured": 19,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_B17",
+      "quote": "B17: 0 found",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 0,
+      "measured": 0,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_rules",
+      "quote": "the table the notebook renders as dq_assertions",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 19,
+      "measured": 19,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    },
+    {
+      "id": "dq_b11_treated",
+      "quote": "excluded; 1 treated and 17 controls (B11)",
+      "where": [
+        "findings"
+      ],
+      "kind": "count",
+      "expected": 1,
+      "measured": 1,
+      "status": "reproduced",
+      "reason": "",
+      "note": "",
+      "round": 0
+    }
+  ],
+  "printed_from": "the executed copy of this run",
+  "has_print_matches": true,
+  "counts": {
+    "reproduced": 173,
+    "drift": 0,
+    "drift_outside_band": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_reproducible": 47
+  },
+  "verdict": "173 of 220 listed figures reproduced on 2026-09-07; 47 not reproducible in CI by design.",
+  "blocked_rule": null,
+  "any_source_changed": false,
+  "expected_change": false,
+  "job_failed": false,
+  "failure_reason": "",
+  "working_tree": null
+}

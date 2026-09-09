@@ -1,0 +1,134 @@
+# The drift contract, machine-readable. The reasons are written in ci/memo/data_contract.md.
+#
+# A policy names a source's refresh behaviour and, for each kind of number, how far a
+# figure may move when the source bytes have changed before the memo needs a dated
+# update. When the bytes have not changed there is no band: every figure must come
+# back exactly at the precision the memo prints it.
+#
+# Band vocabulary
+#   direction: up | down | any   the sign the change may take (up = the figure may only grow)
+#   points: N                    absolute band for percentages, in percentage points
+#   rel: F                       relative band, a fraction of the committed value
+#   abs: N                       absolute band in the figure's own unit
+# A kind with an empty band, or a kind missing from the policy, has no allowance:
+# any change on a changed source is reported as drift outside the band.
+#
+# Kinds used in the manifests
+#   count     rows, contracts, plants, hours, days
+#   money     dollar amounts
+#   pct       a percentage as printed (shares, coverage, skill, growth)
+#   mw        megawatts (errors, widths, demand)
+#   stat      any other statistic (test statistics, coefficients, indices, log points)
+#   ratio     a ratio of two figures
+#   text      a string compared exactly (a date, a name, a range)
+#   constant  a design input rather than a measurement, checked where a table embodies it
+
+policies:
+
+  static_dataset:
+    description: >
+      A dataset that its publisher has not changed for years and is not expected to
+      change. A different byte count means a different dataset version was downloaded,
+      which is a reason to pin the version, not to accept a new number.
+    change_expected: false
+    bands: {}
+
+  canadabuys_history:
+    description: >
+      The publisher states a monthly refresh and a weekly one was observed during the
+      Tier 2 review (616 rows in one week). Rows, contracts and keyed value grow; shares
+      move by points; the notebook's own blocking rules catch a change of shape.
+    change_expected: true
+    bands:
+      count: {direction: up}
+      money: {direction: up}
+      pct: {points: 5}
+      mw: {}
+      stat: {rel: 0.10}
+      ratio: {rel: 0.10}
+      text: {}
+      constant: {}
+
+  uswtdb_current:
+    description: >
+      The turbine database is reissued several times a year, and repowered turbines
+      come back under new ids. Turbine and retrofit counts grow; the plant panel can gain
+      treated plants and the estimates move with it.
+    change_expected: true
+    bands:
+      count: {direction: up}
+      money: {}
+      pct: {points: 5}
+      mw: {rel: 0.05}
+      stat: {rel: 0.10}
+      ratio: {rel: 0.10}
+      text: {}
+      constant: {}
+
+  archived_release:
+    description: An archived snapshot with a fixed catalogue entry. It must not change.
+    change_expected: false
+    bands: {}
+
+  eia923_closed_years:
+    description: >
+      Annual archives whose final revision has been published. They are not expected
+      to change; if one does, every figure downstream is drift to be read by hand.
+    change_expected: false
+    bands: {}
+
+  eia923_provisional_year:
+    description: >
+      The latest EIA-923 archive is provisional and is reissued until its final
+      revision. Filer counts for that year may move without bound; the study estimates
+      do not read that year, so they should not move with it.
+    change_expected: true
+    bands:
+      count: {direction: any}
+      pct: {points: 5}
+      stat: {rel: 0.10}
+      ratio: {rel: 0.10}
+      text: {}
+      constant: {}
+
+  ieso_closed_years:
+    description: >
+      Yearly demand files whose year has closed are stamped once and reissued rarely.
+      The training years and the first year of the test window sit in these files, so a
+      reissue can move every scored figure; if one is reissued, error statistics may move
+      a little and coverage by a point, and anything more is a change to read by hand.
+    change_expected: false
+    bands:
+      count: {direction: any}
+      pct: {points: 1}
+      mw: {rel: 0.02}
+      stat: {rel: 0.05}
+      ratio: {rel: 0.05}
+      text: {}
+      constant: {}
+
+  ieso_current_year:
+    description: >
+      The current year's file is rewritten every morning, so its hash changes on every
+      run. The test window closes on 2026-08-31, inside this file, so every scored figure
+      reads it: a rewrite that only appends days past the window leaves them unchanged,
+      which the report says as "unchanged although a source moved", and a revision of an
+      hour inside the window moves them. The bands are the closed-year bands, with
+      whole-series counts and the running base period allowed to grow.
+    change_expected: true
+    bands:
+      count: {direction: up}
+      pct: {points: 1}
+      mw: {rel: 0.02}
+      stat: {rel: 0.05}
+      ratio: {rel: 0.05}
+      text: {}
+      constant: {}
+
+excluded:
+  - project: 05-additive-trade
+    reason: >
+      In build in a parallel session and not yet committed. Its backfill is eight StatCan
+      CIMT packages, about 3.1 GB of zips over 1988 to 2026, which does not fit a
+      scheduled runner. To be revisited when it ships; a cached Parquet artifact keyed on
+      its run log is the likely route.

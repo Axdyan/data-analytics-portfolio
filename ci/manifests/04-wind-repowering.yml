@@ -1,0 +1,1681 @@
+# Every figure quoted in 04-wind-repowering/README.md and memo/findings.md, with the
+# query that reads it back from the tables the notebook builds, or the printed output
+# it comes from. Measured on the 2026-09-03 pull. Interval bounds the memo derived from
+# the three-decimal log table are checked with a tolerance of one tenth of a point.
+project: 04-wind-repowering
+label: "04: Wind Repowering Uplift"
+notebook: 04_load_explore.ipynb
+database: uswtdb.duckdb
+measured_on: 2026-09-03
+cell_timeout_s: 7200
+
+sources:
+  - id: uswtdb_current
+    refresh: reissued several times a year by USGS; the API serves the current release
+    policy: uswtdb_current
+    fingerprint: {kind: manifest_json, path: memo/pull_manifest.json, value: sha256}
+  - id: uswtdb_2018_archive
+    refresh: an archived release with a fixed catalogue entry
+    policy: archived_release
+    fingerprint: {kind: file_hashes, folder: ../data/uswtdb, files: [uswtdb_v1_0_20180419.zip]}
+  - id: eia923_closed
+    refresh: annual archives in their final revision, 2013 to 2024
+    policy: eia923_closed_years
+    fingerprint: {kind: file_hashes, folder: ../data/eia923, files: [f923_2013.zip, f923_2014.zip, f923_2015.zip, f923_2016.zip, f923_2017.zip, f923_2018.zip, f923_2019.zip, f923_2020.zip, f923_2021.zip, f923_2022.zip, f923_2023.zip, f923_2024.zip]}
+  - id: eia923_provisional
+    refresh: the 2025 archive, provisional until its final revision
+    policy: eia923_provisional_year
+    fingerprint: {kind: file_hashes, folder: ../data/eia923, files: [f923_2025.zip]}
+
+numbers:
+  # ---- the sources
+  - id: turbine_fields
+    quote: "The turbine database used here carries 28 fields"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(*) FROM information_schema.columns WHERE table_name = 'raw_turbines_current'
+    expected: 28
+    sources: [uswtdb_current]
+  - id: turbines
+    quote: "75,727 turbines carrying a retrofit flag and a retrofit year"
+    where: [README]
+    kind: count
+    query: SELECT COUNT(*) FROM raw_turbines_current
+    expected: 75727
+    sources: [uswtdb_current]
+  - id: turbines_2018
+    quote: "the April 2018 archived release"
+    where: [README]
+    kind: count
+    query: SELECT COUNT(*) FROM raw_turbines_2018
+    expected: 57636
+    sources: [uswtdb_2018_archive]
+  - id: plant_years
+    quote: "14,077 plant-years"
+    where: [README]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_generation_plant_year
+    expected: 14077
+    sources: [eia923_closed, eia923_provisional]
+  - id: gen_plants
+    quote: "across 1,486 wind plants"
+    where: [README]
+    kind: count
+    query: SELECT COUNT(DISTINCT plant_id) FROM fct_generation_plant_year
+    expected: 1486
+    sources: [eia923_closed, eia923_provisional]
+  - id: gen_years
+    quote: "EIA-923 plant-level generation for 2013 to 2025"
+    where: [README]
+    kind: text
+    query: SELECT CAST(MIN(year) AS VARCHAR) || ' to ' || CAST(MAX(year) AS VARCHAR) FROM fct_generation_plant_year
+    expected: "2013 to 2025"
+    sources: [eia923_closed, eia923_provisional]
+  - id: retrofitted_turbines
+    quote: "8,480 repowered turbines"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_turbine WHERE retrofitted
+    expected: 8480
+    sources: [uswtdb_current]
+  - id: rewritten_turbines
+    quote: "On 1,529 repowered turbines the build year has been silently rewritten"
+    where: [README, findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B5'
+    expected: 1529
+    sources: [uswtdb_current]
+  - id: rewritten_plants
+    quote: "spread across 17 plants"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(DISTINCT plant_id) FROM fct_turbine WHERE build_year_rewritten
+    expected: 17
+    sources: [uswtdb_current]
+  - id: rewritten_treated_plants
+    quote: "Thirteen of the 17 affected plants are in the treatment group"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM plant_scope WHERE status = 'treated' AND build_year_rewritten
+    expected: 13
+    sources: [uswtdb_current]
+  - id: vintage_window
+    quote: "which gives 2001 to 2012"
+    where: [findings]
+    kind: text
+    query: SELECT CAST(MIN(vintage_lo) AS VARCHAR) || ' to ' || CAST(MAX(vintage_hi) AS VARCHAR) FROM plant_scope
+    expected: "2001 to 2012"
+    sources: [uswtdb_current]
+  - id: window_would_stretch
+    quote: "the window would have stretched to 2024"
+    where: [findings]
+    kind: count
+    query: SELECT MAX(first_p_year) FROM plant_scope WHERE status = 'treated'
+    expected: 2024
+    sources: [uswtdb_current]
+  - id: controls_in_window
+    quote: "567 of the 1,208 never-repowered plants fall inside it"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM plant_scope WHERE status = 'control' AND control_eligible
+    expected: 567
+    sources: [uswtdb_current]
+  - id: never_repowered
+    quote: "1,208 never-repowered plants"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM plant_scope WHERE status = 'control'
+    expected: 1208
+    sources: [uswtdb_current]
+  - id: bridge_by_id_pct
+    quote: "only 10.5% of them can be found in the 2018 release by id"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * COUNT(r.case_id) / COUNT(*), 1) FROM fct_turbine t LEFT JOIN raw_turbines_2018 r ON TRY_CAST(r.case_id AS BIGINT) = t.case_id WHERE t.retrofitted
+    expected: 10.5
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: bridge_by_id_zero_years
+    quote: "for four of the nine cohort years the figure is zero"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FILTER (WHERE found = 0) FROM (SELECT t.retrofit_year, COUNT(r.case_id) AS found FROM fct_turbine t LEFT JOIN raw_turbines_2018 r ON TRY_CAST(r.case_id AS BIGINT) = t.case_id WHERE t.retrofitted GROUP BY 1)
+    expected: 4
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: bridge_cohort_years
+    quote: "the nine cohort years"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(DISTINCT retrofit_year) FROM fct_turbine WHERE retrofitted
+    expected: 9
+    sources: [uswtdb_current]
+  - id: bridge_by_project_pct
+    quote: "The project id survives and bridges 92.2%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * COUNT(c.plant_id) / COUNT(*), 1) FROM plant_scope s LEFT JOIN plant_cap_2018 c USING (plant_id) WHERE s.status = 'treated'
+    expected: 92.2
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: no_plant_id_turbines
+    quote: "turbine with no plant id: 3,615"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B2'
+    expected: 3615
+    sources: [uswtdb_current]
+  - id: no_plant_id_pct
+    quote: "The 4.8% of turbines with no plant id"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE plant_id IS NULL) / COUNT(*), 1) FROM fct_turbine
+    expected: 4.8
+    sources: [uswtdb_current]
+  - id: no_plant_id_capacity_pct
+    quote: "excluded; 2.4% of capacity"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * SUM(t_cap_kw) FILTER (WHERE plant_id IS NULL) / SUM(t_cap_kw), 1) FROM fct_turbine
+    expected: 2.4
+    sources: [uswtdb_current]
+  - id: filed_2024
+    quote: "1,348 filed in 2024"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_generation_plant_year WHERE year = 2024
+    expected: 1348
+    sources: [eia923_closed, eia923_provisional]
+  - id: filed_2025
+    quote: "plants filing in the provisional 2025 release: 624"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM fct_generation_plant_year WHERE year = 2025
+    expected: 624
+    sources: [eia923_closed, eia923_provisional]
+  - id: missing_2025
+    quote: "the 754 plants missing from the provisional one"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM (SELECT plant_id FROM fct_generation_plant_year WHERE year = 2024 EXCEPT SELECT plant_id FROM fct_generation_plant_year WHERE year = 2025)
+    expected: 754
+    sources: [eia923_closed, eia923_provisional]
+  # ---- how the comparison is set up
+  - id: treated_plants
+    quote: "The treatment group is 80 plants"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(DISTINCT plant_id) FROM panel_balanced WHERE status = 'treated' AND cohort_year BETWEEN 2017 AND 2023
+    expected: 80
+    sources: [uswtdb_current, eia923_closed]
+  - id: cohorts
+    quote: "repowered in seven cohorts from 2017 to 2023"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(DISTINCT cohort_year) FROM panel_balanced WHERE status = 'treated' AND cohort_year BETWEEN 2017 AND 2023
+    expected: 7
+    sources: [uswtdb_current, eia923_closed]
+  - id: control_plants
+    quote: "The control group is 498 never-repowered plants"
+    where: [README, findings]
+    kind: count
+    query: SELECT COUNT(DISTINCT plant_id) FROM panel_balanced WHERE status = 'control'
+    expected: 498
+    sources: [uswtdb_current, eia923_closed]
+  - id: panel_years
+    quote: "each reporting a positive generation figure in every year from 2013 to 2024"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM (SELECT plant_id FROM panel_balanced GROUP BY 1 HAVING COUNT(*) <> 12 OR MIN(net_gen_mwh) <= 0)
+    expected: 0
+    sources: [uswtdb_current, eia923_closed]
+  - id: all_retrofitted_plants
+    quote: "90 plants have every turbine retrofitted"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM plant_scope WHERE status = 'treated'
+    expected: 90
+    sources: [uswtdb_current]
+  - id: mixed_plants
+    quote: "29 have both, set aside (B6)"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B6'
+    expected: 29
+    sources: [uswtdb_current]
+  - id: cohort_2015
+    quote: "one was repowered in 2015 on its own"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM plant_scope WHERE status = 'treated' AND cohort_year = 2015
+    expected: 1
+    sources: [uswtdb_current]
+  - id: cohort_2024
+    quote: "and nine in 2024 with no year after treatment"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM plant_scope WHERE status = 'treated' AND cohort_year = 2024
+    expected: 9
+    sources: [uswtdb_current]
+  - id: dropped_cohorts
+    quote: "treated plant outside the 2017 to 2023 cohorts: 10 (B13)"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B13'
+    expected: 10
+    sources: [uswtdb_current]
+  - id: index_treated_2013
+    quote: "Indexed to 2013, treated 2013: 100.0"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'treated' AND b2.year = 2013 AND b2.cohort_year BETWEEN 2017 AND 2023), 1) FROM panel_balanced b WHERE status = 'treated' AND year = 2013 AND cohort_year BETWEEN 2017 AND 2023
+    expected: 100.0
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_control_2013
+    quote: "Indexed to 2013, control 2013: 100.0"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'control' AND b2.year = 2013), 1) FROM panel_balanced b WHERE status = 'control' AND year = 2013
+    expected: 100.0
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_treated_2014
+    quote: "Indexed to 2013, treated 2014: 105.9"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'treated' AND b2.year = 2013 AND b2.cohort_year BETWEEN 2017 AND 2023), 1) FROM panel_balanced b WHERE status = 'treated' AND year = 2014 AND cohort_year BETWEEN 2017 AND 2023
+    expected: 105.9
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_control_2014
+    quote: "Indexed to 2013, control 2014: 104.0"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'control' AND b2.year = 2013), 1) FROM panel_balanced b WHERE status = 'control' AND year = 2014
+    expected: 104.0
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_treated_2015
+    quote: "Indexed to 2013, treated 2015: 95.4"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'treated' AND b2.year = 2013 AND b2.cohort_year BETWEEN 2017 AND 2023), 1) FROM panel_balanced b WHERE status = 'treated' AND year = 2015 AND cohort_year BETWEEN 2017 AND 2023
+    expected: 95.4
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_control_2015
+    quote: "Indexed to 2013, control 2015: 96.4"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'control' AND b2.year = 2013), 1) FROM panel_balanced b WHERE status = 'control' AND year = 2015
+    expected: 96.4
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_treated_2016
+    quote: "Indexed to 2013, treated 2016: 101.3"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'treated' AND b2.year = 2013 AND b2.cohort_year BETWEEN 2017 AND 2023), 1) FROM panel_balanced b WHERE status = 'treated' AND year = 2016 AND cohort_year BETWEEN 2017 AND 2023
+    expected: 101.3
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_control_2016
+    quote: "Indexed to 2013, control 2016: 100.3"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'control' AND b2.year = 2013), 1) FROM panel_balanced b WHERE status = 'control' AND year = 2016
+    expected: 100.3
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_treated_2017
+    quote: "Indexed to 2013, treated 2017: 96.1"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'treated' AND b2.year = 2013 AND b2.cohort_year BETWEEN 2017 AND 2023), 1) FROM panel_balanced b WHERE status = 'treated' AND year = 2017 AND cohort_year BETWEEN 2017 AND 2023
+    expected: 96.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_control_2017
+    quote: "Indexed to 2013, control 2017: 98.3"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'control' AND b2.year = 2013), 1) FROM panel_balanced b WHERE status = 'control' AND year = 2017
+    expected: 98.3
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_treated_2018
+    quote: "Indexed to 2013, treated 2018: 96.2"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'treated' AND b2.year = 2013 AND b2.cohort_year BETWEEN 2017 AND 2023), 1) FROM panel_balanced b WHERE status = 'treated' AND year = 2018 AND cohort_year BETWEEN 2017 AND 2023
+    expected: 96.2
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_control_2018
+    quote: "Indexed to 2013, control 2018: 96.4"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'control' AND b2.year = 2013), 1) FROM panel_balanced b WHERE status = 'control' AND year = 2018
+    expected: 96.4
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_treated_2019
+    quote: "Indexed to 2013, treated 2019: 93.5"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'treated' AND b2.year = 2013 AND b2.cohort_year BETWEEN 2017 AND 2023), 1) FROM panel_balanced b WHERE status = 'treated' AND year = 2019 AND cohort_year BETWEEN 2017 AND 2023
+    expected: 93.5
+    sources: [uswtdb_current, eia923_closed]
+  - id: index_control_2019
+    quote: "Indexed to 2013, control 2019: 93.2"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(100.0 * AVG(net_gen_mwh) / (SELECT AVG(net_gen_mwh) FROM panel_balanced b2 WHERE b2.status = 'control' AND b2.year = 2013), 1) FROM panel_balanced b WHERE status = 'control' AND year = 2019
+    expected: 93.2
+    sources: [uswtdb_current, eia923_closed]
+  - id: treated_capacity_today
+    quote: "Treated plants are bigger, 135 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT ROUND(AVG(total_cap_mw)) FROM dim_plant_export WHERE in_study AND status = 'treated'
+    expected: 135
+    sources: [uswtdb_current]
+  - id: control_capacity_today
+    quote: "against 81 MW today"
+    where: [findings]
+    kind: mw
+    query: SELECT ROUND(AVG(total_cap_mw)) FROM dim_plant_export WHERE in_study AND status = 'control'
+    expected: 81
+    sources: [uswtdb_current]
+  - id: cf_treated_weighted
+    quote: "a capacity factor of 0.347 for treated plants on capacity-weighted terms"
+    where: [findings]
+    kind: ratio
+    print_match: {pattern: 'treated\s+\d+\s+[0-9.]+\s+[0-9.]+\s+([0-9.]+)', cell: 68}
+    expected: 0.347
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: cf_control_weighted
+    quote: "against 0.326 for controls"
+    where: [findings]
+    kind: ratio
+    print_match: {pattern: 'control\s+\d+\s+[0-9.]+\s+[0-9.]+\s+([0-9.]+)', cell: 68}
+    expected: 0.326
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: cf_treated_median
+    quote: "0.369 at the median treated plant"
+    where: [findings]
+    kind: ratio
+    print_match: {pattern: '^1\s+([0-9.]+)\s+[0-9.]+\s*$', cell: 68}
+    expected: 0.369
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: cf_control_median
+    quote: "against 0.314 at the median control plant"
+    where: [findings]
+    kind: ratio
+    print_match: {pattern: '^0\s+([0-9.]+)\s+[0-9.]+\s*$', cell: 68}
+    expected: 0.314
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: treated_cap_2018
+    quote: "treated plants went from 118.9 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT ROUND(AVG(c.cap_mw_2018), 1) FROM plant_cap_2018 c JOIN plant_scope s USING (plant_id) WHERE s.status = 'treated'
+    expected: 118.9
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: treated_cap_now
+    quote: "to 130.9 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT ROUND(AVG(s.total_cap_mw), 1) FROM plant_cap_2018 c JOIN plant_scope s USING (plant_id) WHERE s.status = 'treated'
+    expected: 130.9
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: treated_cap_growth
+    quote: "up 10.1%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * (AVG(s.total_cap_mw) / AVG(c.cap_mw_2018) - 1), 1) FROM plant_cap_2018 c JOIN plant_scope s USING (plant_id) WHERE s.status = 'treated'
+    expected: 10.1
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: control_cap_2018
+    quote: "while controls went from 71.8 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT ROUND(AVG(c.cap_mw_2018), 1) FROM plant_cap_2018 c JOIN plant_scope s USING (plant_id) WHERE s.status = 'control' AND s.control_eligible
+    expected: 71.8
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: control_cap_now
+    quote: "to 72.8 MW"
+    where: [findings]
+    kind: mw
+    query: SELECT ROUND(AVG(s.total_cap_mw), 1) FROM plant_cap_2018 c JOIN plant_scope s USING (plant_id) WHERE s.status = 'control' AND s.control_eligible
+    expected: 72.8
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: control_cap_growth
+    quote: "up 1.4%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100.0 * (AVG(s.total_cap_mw) / AVG(c.cap_mw_2018) - 1), 1) FROM plant_cap_2018 c JOIN plant_scope s USING (plant_id) WHERE s.status = 'control' AND s.control_eligible
+    expected: 1.4
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: capacity_points
+    quote: "Roughly 8.7 points of any generation uplift is more machine"
+    where: [README, findings]
+    kind: pct
+    query: SELECT ROUND((SELECT 100.0 * (AVG(s.total_cap_mw) / AVG(c.cap_mw_2018) - 1) FROM plant_cap_2018 c JOIN plant_scope s USING (plant_id) WHERE s.status = 'treated') - (SELECT 100.0 * (AVG(s.total_cap_mw) / AVG(c.cap_mw_2018) - 1) FROM plant_cap_2018 c JOIN plant_scope s USING (plant_id) WHERE s.status = 'control' AND s.control_eligible), 1)
+    expected: 8.7
+    note: the README rounds it to nine points
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  # ---- the naive regression and its decomposition
+  - id: naive_att
+    quote: "The regression returns 0.266"
+    where: [README, findings]
+    kind: stat
+    query: SELECT ROUND(att, 3) FROM mart_estimates WHERE design LIKE 'naive%'
+    expected: 0.266
+    sources: [uswtdb_current, eia923_closed]
+  - id: naive_pct
+    quote: "or 30.4% more generation"
+    where: [README, findings]
+    kind: pct
+    query: SELECT ROUND(pct, 1) FROM mart_estimates WHERE design LIKE 'naive%'
+    expected: 30.4
+    sources: [uswtdb_current, eia923_closed]
+  - id: naive_se
+    quote: "with a standard error of 0.027"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(se, 3) FROM mart_estimates WHERE design LIKE 'naive%'
+    expected: 0.027
+    sources: [uswtdb_current, eia923_closed]
+  - id: naive_p
+    quote: "and a p-value of zero"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '\|\s*post\s*\|\s*[0-9.]+\s*\|\s*[0-9.]+\s*\|\s*[0-9.]+\s*\|\s*([0-9.]+)', cell: 72}
+    expected: 0.0
+    sources: [uswtdb_current, eia923_closed]
+  - id: naive_ci_low
+    quote: "Naive regression: +23.7%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_estimates WHERE design LIKE 'naive%'
+    expected: 23.7
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: naive_ci_high
+    quote: "to +37.5%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_estimates WHERE design LIKE 'naive%'
+    expected: 37.5
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: bacon_pairs_clean
+    quote: "the seven clean comparisons of a cohort against the never-repowered plants"
+    where: [findings]
+    kind: count
+    print_match: {pattern: 'treated vs never treated\s+(\d+)\s+([0-9.]+)\s+([-0-9.]+)', cell: 73}
+    expected: 7
+    sources: [uswtdb_current, eia923_closed]
+  - id: bacon_pairs_earlier
+    quote: "earlier cohorts compared with later ones: 21 pairs"
+    where: [findings]
+    kind: count
+    print_match: {pattern: 'earlier vs later, later still untreated as control\s+(\d+)\s+([0-9.]+)\s+([-0-9.]+)', cell: 73}
+    expected: 21
+    note: the 49 pairwise comparisons the memo counts are 7 + 21 + 21
+    sources: [uswtdb_current, eia923_closed]
+  - id: bacon_pairs_later
+    quote: "comparisons that use already-repowered plants as controls: 21 pairs"
+    where: [findings]
+    kind: count
+    print_match: {pattern: 'later vs earlier, already treated as control\s+(\d+)\s+([0-9.]+)\s+([-0-9.]+)', cell: 73}
+    expected: 21
+    sources: [uswtdb_current, eia923_closed]
+  - id: bacon_weight_clean
+    quote: "96.3% of the weight sits on the seven clean comparisons"
+    where: [findings]
+    kind: pct
+    print_match: {pattern: 'treated vs never treated\s+(\d+)\s+([0-9.]+)\s+([-0-9.]+)', cell: 73, group: 2}
+    expected: 96.3
+    scale: 100
+    sources: [uswtdb_current, eia923_closed]
+  - id: bacon_weight_earlier
+    quote: "2.3% on earlier cohorts compared with later ones"
+    where: [README, findings]
+    kind: pct
+    print_match: {pattern: 'earlier vs later, later still untreated as control\s+(\d+)\s+([0-9.]+)\s+([-0-9.]+)', cell: 73, group: 2}
+    expected: 2.3
+    scale: 100
+    sources: [uswtdb_current, eia923_closed]
+  - id: bacon_weight_later
+    quote: "and 1.5% on the comparisons that use already-repowered plants as controls"
+    where: [README, findings]
+    kind: pct
+    print_match: {pattern: 'later vs earlier, already treated as control\s+(\d+)\s+([0-9.]+)\s+([-0-9.]+)', cell: 73, group: 2}
+    expected: 1.5
+    scale: 100
+    sources: [uswtdb_current, eia923_closed]
+  - id: bacon_estimate_later
+    quote: "Those last ones average minus 3.3%"
+    where: [findings]
+    kind: pct
+    print_match: {pattern: 'later vs earlier, already treated as control\s+(\d+)\s+([0-9.]+)\s+([-0-9.]+)', cell: 73, group: 3}
+    expected: -3.3
+    scale: 100
+    tolerance: 0.1
+    note: printed as a log difference, minus 0.0339, which the memo reads as minus 3.3%
+    sources: [uswtdb_current, eia923_closed]
+  - id: bacon_sums_to_coefficient
+    quote: "the weighted average of the pairwise comparisons equals the regression coefficient"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: 'weighted average of the two by twos ([0-9.]+), regression coefficient ([0-9.]+)', cell: 73}
+    expected: 0.2657
+    sources: [uswtdb_current, eia923_closed]
+  # ---- the estimate
+  - id: headline_att
+    quote: "From the first full year after repowering, the headline: 0.395 log points"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(att, 3) FROM mart_estimates WHERE design LIKE 'headline%'
+    expected: 0.395
+    sources: [uswtdb_current, eia923_closed]
+  - id: headline_pct
+    quote: "+48.4%"
+    where: [README, findings]
+    kind: pct
+    query: SELECT ROUND(pct, 1) FROM mart_estimates WHERE design LIKE 'headline%'
+    expected: 48.4
+    sources: [uswtdb_current, eia923_closed]
+  - id: headline_ci_low
+    quote: "+36.6%"
+    where: [README, findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_estimates WHERE design LIKE 'headline%'
+    expected: 36.6
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: headline_ci_high
+    quote: "to +61.2%"
+    where: [README, findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_estimates WHERE design LIKE 'headline%'
+    expected: 61.1
+    tolerance: 0.1
+    note: the memo prints 61.2; the table gives 61.1 whether the bound is taken exactly (0.476823) or from the printed 0.477
+    sources: [uswtdb_current, eia923_closed]
+  - id: headline_se
+    quote: "standard error 0.042"
+    where: [findings]
+    kind: stat
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(se, 3) FROM mart_estimates WHERE design LIKE 'headline%'
+    expected: 0.042
+    sources: [uswtdb_current, eia923_closed]
+  - id: incl_year0_att
+    quote: "Including the repowering year: 0.289"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(att, 3) FROM mart_estimates WHERE design LIKE 'hand-rolled, including%'
+    expected: 0.289
+    sources: [uswtdb_current, eia923_closed]
+  - id: incl_year0_pct
+    quote: "+33.5%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(pct, 1) FROM mart_estimates WHERE design LIKE 'hand-rolled, including%'
+    expected: 33.5
+    sources: [uswtdb_current, eia923_closed]
+  - id: incl_year0_ci_low
+    quote: "+24.0%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_estimates WHERE design LIKE 'hand-rolled, including%'
+    expected: 24.0
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: incl_year0_ci_high
+    quote: "to +43.8%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_estimates WHERE design LIKE 'hand-rolled, including%'
+    expected: 43.8
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: year0_att
+    quote: "The repowering year alone: minus 0.069"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(att, 3) FROM mart_event_study WHERE rel_time = 0
+    expected: -0.069
+    sources: [uswtdb_current, eia923_closed]
+  - id: year0_pct
+    quote: "minus 6.7%"
+    where: [README, findings]
+    kind: pct
+    query: SELECT ROUND(100 * (EXP(att) - 1), 1) FROM mart_event_study WHERE rel_time = 0
+    expected: -6.7
+    note: the README rounds it to 7% down
+    sources: [uswtdb_current, eia923_closed]
+  - id: year0_ci_low
+    quote: "minus 14.7%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_event_study WHERE rel_time = 0
+    expected: -13.7
+    tolerance: 0.1
+    note: the memo prints minus 14.7; the table's bound is minus 0.147 in logs, which is minus 13.7% as generation
+    sources: [uswtdb_current, eia923_closed]
+  - id: year0_ci_high
+    quote: "to +0.9%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_event_study WHERE rel_time = 0
+    expected: 0.9
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: bootstrap_draws
+    quote: "redrawing plants with replacement 999 times"
+    where: [findings]
+    kind: constant
+    not_reproducible: a setting of the notebook's bootstrap, not a measurement; the standard errors it produces are checked above and below
+    expected: 999
+    sources: [uswtdb_current, eia923_closed]
+  - id: interval_multiplier
+    quote: "the estimate plus or minus 1.96 standard errors"
+    where: [findings]
+    kind: constant
+    not_reproducible: a design constant; every interval bound checked here embodies it
+    expected: 1.96
+    sources: [uswtdb_current, eia923_closed]
+  - id: interval_arithmetic
+    quote: "interval is the estimate plus or minus 1.96 standard errors, checked on the headline"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(ci_high - (att + 1.96 * se), 6) FROM mart_estimates WHERE design LIKE 'headline%'
+    expected: 0
+    sources: [uswtdb_current, eia923_closed]
+  - id: placebo_m4
+    quote: "The three placebo years before repowering come out at +3.9%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100 * (EXP(att) - 1), 1) FROM mart_event_study WHERE rel_time = -4
+    expected: 3.9
+    sources: [uswtdb_current, eia923_closed]
+  - id: placebo_m3
+    quote: "+2.3%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100 * (EXP(att) - 1), 1) FROM mart_event_study WHERE rel_time = -3
+    expected: 2.3
+    sources: [uswtdb_current, eia923_closed]
+  - id: placebo_m2
+    quote: "and minus 4.5%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100 * (EXP(att) - 1), 1) FROM mart_event_study WHERE rel_time = -2
+    expected: -4.5
+    sources: [uswtdb_current, eia923_closed]
+  - id: placebo_inside_intervals
+    quote: "each inside its own interval"
+    where: [findings]
+    kind: count
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT COUNT(*) FROM mart_event_study WHERE rel_time IN (-4, -3, -2) AND (ci_low > 0 OR ci_high < 0)
+    expected: 0
+    sources: [uswtdb_current, eia923_closed]
+  - id: wald_stat
+    quote: "a Wald statistic of 5.06"
+    where: [findings]
+    kind: stat
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    print_match: {pattern: 'Wald ([0-9.]+) on (\d+) df, p = ([0-9.]+)', cell: 76}
+    expected: 5.06
+    sources: [uswtdb_current, eia923_closed]
+  - id: wald_df
+    quote: "on 3 degrees of freedom"
+    where: [findings]
+    kind: count
+    print_match: {pattern: 'Wald ([0-9.]+) on (\d+) df, p = ([0-9.]+)', cell: 76, group: 2}
+    expected: 3
+    sources: [uswtdb_current, eia923_closed]
+  - id: wald_p
+    quote: "p = 0.167"
+    where: [findings]
+    kind: stat
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    print_match: {pattern: 'Wald ([0-9.]+) on (\d+) df, p = ([0-9.]+)', cell: 76, group: 3}
+    expected: 0.167
+    sources: [uswtdb_current, eia923_closed]
+  - id: cohort_2020_placebo_low
+    quote: "the 2020 cohort ran 12 to 17 points above its base year in 2013 to 2017: the low end"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^2020\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 74, group: 5}
+    expected: 12
+    round: 0
+    scale: 100
+    sources: [uswtdb_current, eia923_closed]
+  - id: cohort_2020_placebo_high
+    quote: "the 2020 cohort ran 12 to 17 points above: the high end"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^2020\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 74, group: 1}
+    expected: 17
+    round: 0
+    scale: 100
+    sources: [uswtdb_current, eia923_closed]
+  - id: cohort_2022_placebo_low
+    quote: "and the 2022 cohort 20 to 43 points below: the low end"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^2022\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 74, group: 1}
+    expected: -20
+    round: 0
+    scale: 100
+    sources: [uswtdb_current, eia923_closed]
+  - id: cohort_2022_placebo_high
+    quote: "and the 2022 cohort 20 to 43 points below: the high end"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '^2022\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)', cell: 74, group: 7}
+    expected: -43
+    round: 0
+    scale: 100
+    sources: [uswtdb_current, eia923_closed]
+  - id: cohort_2022_plants
+    quote: "which is six plants in a windy base year"
+    where: [findings]
+    kind: count
+    query: SELECT plants FROM (SELECT cohort_year, COUNT(DISTINCT plant_id) AS plants FROM panel_balanced WHERE status = 'treated' GROUP BY 1) WHERE cohort_year = 2022
+    expected: 6
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_1_pct
+    quote: "+1: +33.9%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100 * (EXP(att) - 1), 1) FROM mart_event_study WHERE rel_time = 1
+    expected: 33.9
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_1_ci_low
+    quote: "+1: +21.2%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_event_study WHERE rel_time = 1
+    expected: 21.2
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_1_ci_high
+    quote: "+1: to +48.0%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_event_study WHERE rel_time = 1
+    expected: 48.0
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_1_cohorts
+    quote: "+1: 7 cohorts"
+    where: [findings]
+    kind: count
+    query: SELECT cohorts FROM mart_event_study WHERE rel_time = 1
+    expected: 7
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_1_plants
+    quote: "+1: 80 plants"
+    where: [findings]
+    kind: count
+    query: SELECT plants FROM mart_event_study WHERE rel_time = 1
+    expected: 80
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_2_pct
+    quote: "+2: +46.6%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100 * (EXP(att) - 1), 1) FROM mart_event_study WHERE rel_time = 2
+    expected: 46.6
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_2_ci_low
+    quote: "+2: +35.0%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_event_study WHERE rel_time = 2
+    expected: 35.0
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_2_ci_high
+    quote: "+2: to +59.4%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_event_study WHERE rel_time = 2
+    expected: 59.4
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_2_cohorts
+    quote: "+2: 6 cohorts"
+    where: [findings]
+    kind: count
+    query: SELECT cohorts FROM mart_event_study WHERE rel_time = 2
+    expected: 6
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_2_plants
+    quote: "+2: 73 plants"
+    where: [findings]
+    kind: count
+    query: SELECT plants FROM mart_event_study WHERE rel_time = 2
+    expected: 73
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_3_pct
+    quote: "+3: +54.7%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100 * (EXP(att) - 1), 1) FROM mart_event_study WHERE rel_time = 3
+    expected: 54.7
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_3_ci_low
+    quote: "+3: +40.9%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_event_study WHERE rel_time = 3
+    expected: 40.9
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_3_ci_high
+    quote: "+3: to +69.9%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_event_study WHERE rel_time = 3
+    expected: 69.9
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_3_cohorts
+    quote: "+3: 5 cohorts"
+    where: [findings]
+    kind: count
+    query: SELECT cohorts FROM mart_event_study WHERE rel_time = 3
+    expected: 5
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_3_plants
+    quote: "+3: 67 plants"
+    where: [findings]
+    kind: count
+    query: SELECT plants FROM mart_event_study WHERE rel_time = 3
+    expected: 67
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_4_pct
+    quote: "+4: +59.4%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100 * (EXP(att) - 1), 1) FROM mart_event_study WHERE rel_time = 4
+    expected: 59.4
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_4_ci_low
+    quote: "+4: +44.3%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_event_study WHERE rel_time = 4
+    expected: 44.3
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_4_ci_high
+    quote: "+4: to +75.9%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_event_study WHERE rel_time = 4
+    expected: 75.9
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_4_cohorts
+    quote: "+4: 4 cohorts"
+    where: [findings]
+    kind: count
+    query: SELECT cohorts FROM mart_event_study WHERE rel_time = 4
+    expected: 4
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_4_plants
+    quote: "+4: 61 plants"
+    where: [findings]
+    kind: count
+    query: SELECT plants FROM mart_event_study WHERE rel_time = 4
+    expected: 61
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_5_pct
+    quote: "+5: +61.6%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100 * (EXP(att) - 1), 1) FROM mart_event_study WHERE rel_time = 5
+    expected: 61.6
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_5_ci_low
+    quote: "+5: +42.8%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_event_study WHERE rel_time = 5
+    expected: 42.8
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_5_ci_high
+    quote: "+5: to +82.9%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_event_study WHERE rel_time = 5
+    expected: 82.9
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_5_cohorts
+    quote: "+5: 3 cohorts"
+    where: [findings]
+    kind: count
+    query: SELECT cohorts FROM mart_event_study WHERE rel_time = 5
+    expected: 3
+    sources: [uswtdb_current, eia923_closed]
+  - id: event_5_plants
+    quote: "+5: 38 plants"
+    where: [findings]
+    kind: count
+    query: SELECT plants FROM mart_event_study WHERE rel_time = 5
+    expected: 38
+    sources: [uswtdb_current, eia923_closed]
+  - id: cohort_2019_pct
+    quote: "the 2019 and 2020 cohorts show the largest effects of any (62.7%"
+    where: [findings]
+    kind: pct
+    print_match: {pattern: '^g2019\s+[-0-9.]+\s+[-0-9.]+\s+[-0-9.]+\s+[-0-9.]+\s+([-0-9.]+)', cell: 76}
+    expected: 62.7
+    sources: [uswtdb_current, eia923_closed]
+  - id: cohort_2020_pct
+    quote: "and 53.4%"
+    where: [findings]
+    kind: pct
+    print_match: {pattern: '^g2020\s+[-0-9.]+\s+[-0-9.]+\s+[-0-9.]+\s+[-0-9.]+\s+([-0-9.]+)', cell: 76}
+    expected: 53.4
+    sources: [uswtdb_current, eia923_closed]
+  - id: cohort_2017_pct
+    quote: "against 36% for 2017"
+    where: [findings]
+    kind: pct
+    print_match: {pattern: '^g2017\s+[-0-9.]+\s+[-0-9.]+\s+[-0-9.]+\s+[-0-9.]+\s+([-0-9.]+)', cell: 76}
+    expected: 36
+    round: 0
+    sources: [uswtdb_current, eia923_closed]
+  - id: cohort_2018_pct
+    quote: "and 2018"
+    where: [findings]
+    kind: pct
+    print_match: {pattern: '^g2018\s+[-0-9.]+\s+[-0-9.]+\s+[-0-9.]+\s+[-0-9.]+\s+([-0-9.]+)', cell: 76}
+    expected: 36.6
+    note: the memo says 36% for both 2017 and 2018; the table gives 36.4 and 36.6
+    sources: [uswtdb_current, eia923_closed]
+  - id: mde_design_se
+    quote: "the design's standard error is 0.0475"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: 'design standard error ([0-9.]+), minimum detectable effect ([0-9.]+) in logs, ([0-9.]+)% more generation', cell: 77}
+    expected: 0.0475
+    sources: [uswtdb_current, eia923_closed]
+  - id: mde_logs
+    quote: "a minimum detectable effect of 0.133 in logs"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: 'design standard error ([0-9.]+), minimum detectable effect ([0-9.]+) in logs, ([0-9.]+)% more generation', cell: 77, group: 2}
+    expected: 0.133
+    sources: [uswtdb_current, eia923_closed]
+  - id: mde_pct
+    quote: "or 14.2% more generation"
+    where: [README, findings]
+    kind: pct
+    print_match: {pattern: 'design standard error ([0-9.]+), minimum detectable effect ([0-9.]+) in logs, ([0-9.]+)% more generation', cell: 77, group: 3}
+    expected: 14.2
+    sources: [uswtdb_current, eia923_closed]
+  - id: mde_multiplier
+    quote: "2.80 times that standard error"
+    where: [findings]
+    kind: stat
+    not_reproducible: a definition, 2.80 is the sum of the 1.96 and 0.84 normal quantiles; the effect it yields is checked in mde_logs
+    expected: 2.8
+    sources: [uswtdb_current, eia923_closed]
+  - id: mde_post_se
+    quote: "The same calculation after the fact, from the bootstrap spread: standard error 0.0420"
+    where: [findings]
+    kind: stat
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    print_match: {pattern: 'from the bootstrap: standard error ([0-9.]+), minimum detectable effect ([0-9.]+) in logs, ([0-9.]+)% more generation', cell: 77}
+    expected: 0.042
+    sources: [uswtdb_current, eia923_closed]
+  - id: mde_post_pct
+    quote: "gives 12.5%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    print_match: {pattern: 'from the bootstrap: standard error ([0-9.]+), minimum detectable effect ([0-9.]+) in logs, ([0-9.]+)% more generation', cell: 77, group: 3}
+    expected: 12.5
+    sources: [uswtdb_current, eia923_closed]
+  - id: effect_to_mde_ratio
+    quote: "The observed effect is about three times the smallest one this design could have found"
+    where: [findings]
+    kind: ratio
+    query: SELECT ROUND(pct / 14.2) FROM mart_estimates WHERE design LIKE 'headline%'
+    expected: 3
+    sources: [uswtdb_current, eia923_closed]
+  # ---- does the rotor matter
+  - id: rotor_threshold
+    quote: "A plant whose mean rotor grew by more than 2% is classed as grown"
+    where: [findings]
+    kind: constant
+    not_reproducible: a classification threshold set in the notebook; the class counts it yields are checked below
+    expected: 2
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: control_rotor_grew
+    quote: "Among control plants only 6 of 565 show growth"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FILTER (WHERE r.rotor_change_pct > 2) FROM plant_rotor r JOIN plant_scope s USING (plant_id) WHERE s.status = 'control' AND s.control_eligible
+    expected: 6
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: control_rotor_measured
+    quote: "of 565 control plants with a 2018 rotor"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM plant_rotor r JOIN plant_scope s USING (plant_id) WHERE s.status = 'control' AND s.control_eligible
+    expected: 565
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: rotor_rotor_grew_plants
+    quote: "rotor grew: 66 plants"
+    where: [findings]
+    kind: count
+    query: "SELECT treated FROM mart_estimates WHERE design = 'by rotor class: rotor grew'"
+    expected: 66
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: rotor_rotor_grew_pct
+    quote: "rotor grew: +44.3%"
+    where: [README, findings]
+    kind: pct
+    query: "SELECT ROUND(pct, 1) FROM mart_estimates WHERE design = 'by rotor class: rotor grew'"
+    expected: 44.3
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: rotor_rotor_grew_ci_low
+    quote: "rotor grew: +34.0%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: "SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_estimates WHERE design = 'by rotor class: rotor grew'"
+    expected: 34.0
+    tolerance: 0.1
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: rotor_rotor_grew_ci_high
+    quote: "rotor grew: to +55.4%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: "SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_estimates WHERE design = 'by rotor class: rotor grew'"
+    expected: 55.4
+    tolerance: 0.2
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: rotor_rotor_unchanged_or_smaller_plants
+    quote: "rotor unchanged or smaller: 10 plants"
+    where: [findings]
+    kind: count
+    query: "SELECT treated FROM mart_estimates WHERE design = 'by rotor class: rotor unchanged or smaller'"
+    expected: 10
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: rotor_rotor_unchanged_or_smaller_pct
+    quote: "rotor unchanged or smaller: +34.5%"
+    where: [README, findings]
+    kind: pct
+    query: "SELECT ROUND(pct, 1) FROM mart_estimates WHERE design = 'by rotor class: rotor unchanged or smaller'"
+    expected: 34.5
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: rotor_rotor_unchanged_or_smaller_ci_low
+    quote: "rotor unchanged or smaller: +27.9%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: "SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_estimates WHERE design = 'by rotor class: rotor unchanged or smaller'"
+    expected: 27.9
+    tolerance: 0.1
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: rotor_rotor_unchanged_or_smaller_ci_high
+    quote: "rotor unchanged or smaller: to +41.3%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: "SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_estimates WHERE design = 'by rotor class: rotor unchanged or smaller'"
+    expected: 41.3
+    tolerance: 0.2
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: rotor_unknown_plants
+    quote: "unknown: 4 plants"
+    where: [findings]
+    kind: count
+    query: "SELECT treated FROM mart_estimates WHERE design = 'by rotor class: unknown'"
+    expected: 4
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: rotor_unknown_pct
+    quote: "unknown: +198.6%"
+    where: [findings]
+    kind: pct
+    query: "SELECT ROUND(pct, 1) FROM mart_estimates WHERE design = 'by rotor class: unknown'"
+    expected: 198.6
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: rotor_unknown_ci_low
+    quote: "unknown: +114.6%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: "SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_estimates WHERE design = 'by rotor class: unknown'"
+    expected: 114.6
+    tolerance: 0.1
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: rotor_unknown_ci_high
+    quote: "unknown: to +315.2%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: "SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_estimates WHERE design = 'by rotor class: unknown'"
+    expected: 315.2
+    tolerance: 0.2
+    note: the memo took this bound from the exact interval rather than the printed three decimals
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: rotor_grew_median
+    quote: "Rotor grew (median +18%)"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(MEDIAN(rotor_change_pct)) FROM dim_plant_export WHERE in_study AND status = 'treated' AND rotor_class = 'rotor grew'
+    expected: 18
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: rotor_gap
+    quote: "The bigger-rotor plants gained about ten points more than the others"
+    where: [findings]
+    kind: pct
+    query: "SELECT ROUND((SELECT pct FROM mart_estimates WHERE design = 'by rotor class: rotor grew') - (SELECT pct FROM mart_estimates WHERE design = 'by rotor class: rotor unchanged or smaller'))"
+    expected: 10
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: no_2018_record
+    quote: "The four plants with no 2018 record (B15)"
+    where: [README, findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B15'
+    expected: 4
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: no_2018_no_project_id
+    quote: "Three of them carry no project id at all in the current release"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FILTER (WHERE usgs_pr_id IS NULL) FROM (SELECT t.plant_id, ANY_VALUE(t.usgs_pr_id) AS usgs_pr_id FROM fct_turbine t JOIN dim_plant_export d ON d.plant_id = t.plant_id WHERE d.in_study AND d.status = 'treated' AND d.rotor_class = 'unknown' GROUP BY 1)
+    expected: 3
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: no_2018_rewritten
+    quote: "two have their build year rewritten to the repowering year"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM dim_plant_export WHERE in_study AND status = 'treated' AND rotor_class = 'unknown' AND build_year_rewritten
+    expected: 3
+    note: the memo says two; the export table flags three of the four, plants 55265, 56160 and 56270
+    sources: [uswtdb_current, uswtdb_2018_archive]
+  - id: no_2018_plant_pre
+    quote: "and one went from 75 GWh a year"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '56160\s+IL\s+2019.*?([0-9.]+)\s+([0-9.]+)\s*$', cell: 79}
+    expected: 75
+    round: 0
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  - id: no_2018_plant_post
+    quote: "to 262"
+    where: [findings]
+    kind: stat
+    print_match: {pattern: '56160\s+IL\s+2019.*?([0-9.]+)\s+([0-9.]+)\s*$', cell: 79, group: 2}
+    expected: 262
+    round: 0
+    sources: [uswtdb_current, uswtdb_2018_archive, eia923_closed]
+  # ---- sensitivities
+  - id: sens_headline_treated
+    quote: "headline: balanced panel: 80 treated"
+    where: [findings]
+    kind: count
+    query: "SELECT treated FROM mart_estimates WHERE design LIKE 'headline: balanced panel%'"
+    expected: 80
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_headline_controls
+    quote: "headline: balanced panel: 498 controls"
+    where: [findings]
+    kind: count
+    query: "SELECT controls FROM mart_estimates WHERE design LIKE 'headline: balanced panel%'"
+    expected: 498
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_headline_pct
+    quote: "headline: balanced panel: +48.4%"
+    where: [README, findings]
+    kind: pct
+    query: "SELECT ROUND(pct, 1) FROM mart_estimates WHERE design LIKE 'headline: balanced panel%'"
+    expected: 48.4
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_headline_ci_low
+    quote: "headline: balanced panel: +36.6%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: "SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_estimates WHERE design LIKE 'headline: balanced panel%'"
+    expected: 36.6
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_headline_ci_high
+    quote: "headline: balanced panel: to +61.1%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: "SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_estimates WHERE design LIKE 'headline: balanced panel%'"
+    expected: 61.1
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_drop_four_treated
+    quote: "drop the treated plants with no 2018 turbine record: 76 treated"
+    where: [findings]
+    kind: count
+    query: SELECT treated FROM mart_estimates WHERE design = 'drop the treated plants with no 2018 turbine record'
+    expected: 76
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_drop_four_controls
+    quote: "drop the treated plants with no 2018 turbine record: 498 controls"
+    where: [findings]
+    kind: count
+    query: SELECT controls FROM mart_estimates WHERE design = 'drop the treated plants with no 2018 turbine record'
+    expected: 498
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_drop_four_pct
+    quote: "drop the treated plants with no 2018 turbine record: +43.0%"
+    where: [README, findings]
+    kind: pct
+    query: SELECT ROUND(pct, 1) FROM mart_estimates WHERE design = 'drop the treated plants with no 2018 turbine record'
+    expected: 43.0
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_drop_four_ci_low
+    quote: "drop the treated plants with no 2018 turbine record: +33.5%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_estimates WHERE design = 'drop the treated plants with no 2018 turbine record'
+    expected: 33.5
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_drop_four_ci_high
+    quote: "drop the treated plants with no 2018 turbine record: to +53.3%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_estimates WHERE design = 'drop the treated plants with no 2018 turbine record'
+    expected: 53.3
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_mixed_treated
+    quote: "mixed plants counted as treated: 105 treated"
+    where: [findings]
+    kind: count
+    query: SELECT treated FROM mart_estimates WHERE design = 'mixed plants counted as treated'
+    expected: 105
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_mixed_controls
+    quote: "mixed plants counted as treated: 498 controls"
+    where: [findings]
+    kind: count
+    query: SELECT controls FROM mart_estimates WHERE design = 'mixed plants counted as treated'
+    expected: 498
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_mixed_pct
+    quote: "mixed plants counted as treated: +52.8%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(pct, 1) FROM mart_estimates WHERE design = 'mixed plants counted as treated'
+    expected: 52.8
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_mixed_ci_low
+    quote: "mixed plants counted as treated: +41.3%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_estimates WHERE design = 'mixed plants counted as treated'
+    expected: 41.3
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_mixed_ci_high
+    quote: "mixed plants counted as treated: to +65.4%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_estimates WHERE design = 'mixed plants counted as treated'
+    expected: 65.4
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_states_treated
+    quote: "controls in states with a treated plant: 80 treated"
+    where: [findings]
+    kind: count
+    query: SELECT treated FROM mart_estimates WHERE design = 'controls in states with a treated plant'
+    expected: 80
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_states_controls
+    quote: "controls in states with a treated plant: 292 controls"
+    where: [findings]
+    kind: count
+    query: SELECT controls FROM mart_estimates WHERE design = 'controls in states with a treated plant'
+    expected: 292
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_states_pct
+    quote: "controls in states with a treated plant: +56.8%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(pct, 1) FROM mart_estimates WHERE design = 'controls in states with a treated plant'
+    expected: 56.8
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_states_ci_low
+    quote: "controls in states with a treated plant: +43.5%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_estimates WHERE design = 'controls in states with a treated plant'
+    expected: 43.5
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_states_ci_high
+    quote: "controls in states with a treated plant: to +71.4%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_estimates WHERE design = 'controls in states with a treated plant'
+    expected: 71.4
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_unbalanced_treated
+    quote: "unbalanced panel: 80 treated"
+    where: [findings]
+    kind: count
+    query: SELECT treated FROM mart_estimates WHERE design = 'unbalanced panel'
+    expected: 80
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_unbalanced_controls
+    quote: "unbalanced panel: 550 controls"
+    where: [findings]
+    kind: count
+    query: SELECT controls FROM mart_estimates WHERE design = 'unbalanced panel'
+    expected: 550
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_unbalanced_pct
+    quote: "unbalanced panel: +49.9%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(pct, 1) FROM mart_estimates WHERE design = 'unbalanced panel'
+    expected: 49.9
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_unbalanced_ci_low
+    quote: "unbalanced panel: +37.9%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_estimates WHERE design = 'unbalanced panel'
+    expected: 37.9
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_unbalanced_ci_high
+    quote: "unbalanced panel: to +63.1%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_estimates WHERE design = 'unbalanced panel'
+    expected: 63.1
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_base3_treated
+    quote: "base is the mean of the three years before: 80 treated"
+    where: [findings]
+    kind: count
+    query: SELECT treated FROM mart_estimates WHERE design = 'base is the mean of the three years before'
+    expected: 80
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_base3_controls
+    quote: "base is the mean of the three years before: 498 controls"
+    where: [findings]
+    kind: count
+    query: SELECT controls FROM mart_estimates WHERE design = 'base is the mean of the three years before'
+    expected: 498
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_base3_pct
+    quote: "base is the mean of the three years before: +49.6%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(pct, 1) FROM mart_estimates WHERE design = 'base is the mean of the three years before'
+    expected: 49.6
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_base3_ci_low
+    quote: "base is the mean of the three years before: +40.0%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_low, 3)) - 1), 1) FROM mart_estimates WHERE design = 'base is the mean of the three years before'
+    expected: 40.0
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: sens_base3_ci_high
+    quote: "base is the mean of the three years before: to +59.9%"
+    where: [findings]
+    kind: pct
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(100 * (EXP(ROUND(ci_high, 3)) - 1), 1) FROM mart_estimates WHERE design = 'base is the mean of the three years before'
+    expected: 59.9
+    tolerance: 0.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: levels_att
+    quote: "Levels instead of logs: +108 GWh"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(att) FROM mart_estimates WHERE design = 'levels, GWh per plant-year'
+    expected: 108
+    sources: [uswtdb_current, eia923_closed]
+  - id: levels_pct
+    quote: "or +31.1% of the 348 GWh treated plants averaged the year before"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(pct, 1) FROM mart_estimates WHERE design = 'levels, GWh per plant-year'
+    expected: 31.1
+    sources: [uswtdb_current, eia923_closed]
+  - id: levels_base
+    quote: "the 348 GWh treated plants averaged the year before"
+    where: [findings]
+    kind: stat
+    query: SELECT ROUND(AVG(net_gen_mwh) / 1000) FROM panel_balanced WHERE status = 'treated' AND rel_time = -1 AND cohort_year BETWEEN 2017 AND 2023
+    expected: 348
+    sources: [uswtdb_current, eia923_closed]
+  - id: levels_ci_low
+    quote: "+85 GWh"
+    where: [findings]
+    kind: stat
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(ci_low) FROM mart_estimates WHERE design = 'levels, GWh per plant-year'
+    expected: 85
+    sources: [uswtdb_current, eia923_closed]
+  - id: levels_ci_high
+    quote: "to +132 GWh"
+    where: [findings]
+    kind: stat
+    not_reproducible: computed by the seeded 999-draw cluster bootstrap; two clean top-to-bottom runs on identical bytes agree with each other and not with the memo, so the memo's value comes from a state of the notebook that a clean run no longer reaches, while the point estimate beside it holds. Listed until the notebook is re-run by hand and the memo re-measured
+    query: SELECT ROUND(ci_high) FROM mart_estimates WHERE design = 'levels, GWh per plant-year'
+    expected: 132
+    sources: [uswtdb_current, eia923_closed]
+  - id: treated_states
+    quote: "the 15 states holding a treated plant"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(DISTINCT t_state) FROM panel_balanced WHERE status = 'treated' AND cohort_year BETWEEN 2017 AND 2023
+    expected: 15
+    sources: [uswtdb_current, eia923_closed]
+  - id: multi_year_retrofit
+    quote: "no such plant exists in this release (B7)"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B7'
+    expected: 0
+    sources: [uswtdb_current]
+  - id: performance_after_capacity
+    quote: "1.484 divided by 1.087, what remains is about 37%"
+    where: [findings]
+    kind: pct
+    query: SELECT ROUND(100 * ((1 + ROUND(pct, 1) / 100) / 1.087 - 1)) FROM mart_estimates WHERE design LIKE 'headline%'
+    expected: 37
+    note: the memo's arithmetic on its own rounded figures, 1.484 and 1.087
+    sources: [uswtdb_current, eia923_closed]
+  - id: library_cross_check
+    quote: "two library implementations reproduce the event-time series and the cohort effects to six decimal places"
+    where: [README, findings]
+    kind: constant
+    not_reproducible: the agreement is asserted inside the notebook at six decimals; the runner sees that the cells passed and the printed four-decimal match, hand 0.3115 against library 0.3115
+    expected: 6
+    sources: [uswtdb_current, eia923_closed]
+  # ---- data quality checks
+  - id: dq_B1
+    quote: "B1: 0 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B1'
+    expected: 0
+    sources: [uswtdb_current]
+  - id: dq_B2
+    quote: "B2: 3,615 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B2'
+    expected: 3615
+    sources: [uswtdb_current]
+  - id: dq_B3a
+    quote: "B3a: 3,282 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B3a'
+    expected: 3282
+    sources: [uswtdb_current]
+  - id: dq_B3b
+    quote: "B3b: 3,527 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B3b'
+    expected: 3527
+    sources: [uswtdb_current]
+  - id: dq_B3c
+    quote: "B3c: 1,125 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B3c'
+    expected: 1125
+    sources: [uswtdb_current]
+  - id: dq_B4
+    quote: "B4: 0 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B4'
+    expected: 0
+    sources: [uswtdb_current]
+  - id: dq_B5
+    quote: "B5: 1,529 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B5'
+    expected: 1529
+    sources: [uswtdb_current]
+  - id: dq_B6
+    quote: "B6: 29 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B6'
+    expected: 29
+    sources: [uswtdb_current]
+  - id: dq_B7
+    quote: "B7: 0 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B7'
+    expected: 0
+    sources: [uswtdb_current]
+  - id: dq_B8
+    quote: "B8: 0 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B8'
+    expected: 0
+    sources: [uswtdb_current, eia923_closed]
+  - id: dq_B9
+    quote: "B9: 170 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B9'
+    expected: 170
+    sources: [uswtdb_current, eia923_closed]
+  - id: dq_B10
+    quote: "B10: 53 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B10'
+    expected: 53
+    sources: [uswtdb_current, eia923_closed]
+  - id: dq_B11
+    quote: "B11: 18 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B11'
+    expected: 18
+    sources: [uswtdb_current, eia923_closed]
+  - id: dq_B12
+    quote: "B12: 11 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B12'
+    expected: 11
+    sources: [uswtdb_current, eia923_closed]
+  - id: dq_B13
+    quote: "B13: 10 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B13'
+    expected: 10
+    sources: [uswtdb_current]
+  - id: dq_B14
+    quote: "B14: 624 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B14'
+    expected: 624
+    sources: [uswtdb_current, eia923_closed]
+  - id: dq_B15
+    quote: "B15: 4 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B15'
+    expected: 4
+    sources: [uswtdb_current]
+  - id: dq_B16
+    quote: "B16: 19 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B16'
+    expected: 19
+    sources: [uswtdb_current, eia923_closed]
+  - id: dq_B17
+    quote: "B17: 0 found"
+    where: [findings]
+    kind: count
+    query: SELECT failing_rows FROM dq_assertions WHERE id = 'B17'
+    expected: 0
+    sources: [uswtdb_current, eia923_closed]
+  - id: dq_rules
+    quote: "the table the notebook renders as dq_assertions"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FROM dq_assertions
+    expected: 19
+    sources: []
+  - id: dq_b11_treated
+    quote: "excluded; 1 treated and 17 controls (B11)"
+    where: [findings]
+    kind: count
+    query: SELECT COUNT(*) FILTER (WHERE status = 'treated') FROM plant_scope s WHERE (s.status = 'treated' OR (s.status = 'control' AND s.control_eligible)) AND plant_id NOT IN (SELECT DISTINCT plant_id FROM fct_generation_plant_year WHERE year <= 2024)
+    expected: 1
+    sources: [uswtdb_current, eia923_closed]

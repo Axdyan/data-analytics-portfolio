@@ -1,5 +1,7 @@
 # Data Analytics Portfolio
 
+[![numbers reproduced](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FAxdyan%2Fdata-analytics-portfolio%2Fci-reports%2Fbadge.json)](https://github.com/Axdyan/data-analytics-portfolio/tree/ci-reports)
+
 End-to-end analytics projects built on public datasets, using DuckDB for SQL analysis and Python for transformation and charts. Each project has its own README with the data, the method, the finding, and how to reproduce it.
 
 ## Key findings so far
@@ -42,6 +44,10 @@ fifth and sixth highest daily peaks of a base period, so the forecast cannot tel
 peak day from the day that just misses. Full writeup in
 [`06-ontario-demand-forecast/memo/findings.md`](06-ontario-demand-forecast/memo/findings.md).
 
+## Every number above is re-run
+
+The badge at the top is written by a workflow that runs each shipped project's notebook top to bottom on a fresh pull of its sources, every Monday and on every push, and re-measures every figure quoted in the project's README and findings memo against the tables the notebook just rebuilt. Same source bytes must give the same number to the precision the memo prints it, or the run fails. Different bytes are publisher drift, read under a per-source contract that says how far each kind of figure may move before the memo needs a dated update. Figures that cannot be reproduced in CI are listed as such rather than dropped. The runner, the manifests, the drift contract and the memos are in [`ci/`](ci/); the dated reports and the badge live on the [`ci-reports`](https://github.com/Axdyan/data-analytics-portfolio/tree/ci-reports) branch so `main` stays hand-committed.
+
 ## Projects
 
 | Project | Dataset |
@@ -62,6 +68,8 @@ data_analytics_portfolio/
 ├── 03-defence-procurement/
 ├── 04-wind-repowering/
 ├── 06-ontario-demand-forecast/
+├── ci/                      # the reproducibility runner, one manifest per project, the drift contract, memos
+├── .github/workflows/       # the reproduce workflow that writes the badge and the dated reports
 ├── requirements.txt
 └── README.md
 ```

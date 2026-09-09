@@ -1,0 +1,61 @@
+{
+  "project": "06-ontario-demand-forecast",
+  "recorded_at_utc": "2026-09-07T07:25:52+00:00",
+  "ieso_demand_closed": {
+    "PUB_Demand_2002.csv": "b93a359d126aba55ed67ce621bb15c700f24b779d63319b2e0709574cb64608d",
+    "PUB_Demand_2003.csv": "fbb35304a718b011d79a435483606d187fde73b3cf6939de5dff0f1e8cf7e39b",
+    "PUB_Demand_2004.csv": "a584cc480c822e55d287b9facf97cdf8be3e929cdb70c3a3402e5b3544e1eca5",
+    "PUB_Demand_2005.csv": "deb9825e9991b3f1bcde2a513e11ca2d749c33018abc5393d5458fe617037547",
+    "PUB_Demand_2006.csv": "fe999f9520a8fd84f9017aa0d9955eb3a6a43c482521f9ad33a458b3bd544aa4",
+    "PUB_Demand_2007.csv": "dce51afc6c28a89a448dfba72f4f24802ce843196cb6700213cd5882ac7331d5",
+    "PUB_Demand_2008.csv": "59c24ab48c072a39a4359213f4360da081890e8f1bf7f4e7ea4f42124295baa1",
+    "PUB_Demand_2009.csv": "ebba6f3e41c6d086d0f24538b73827b719fe713ae0b6cd4b2432f990162a7c4e",
+    "PUB_Demand_2010.csv": "d2beffeb1d9ee291727c0075ea891e98abeaf07904c7431e4f046932627e1e33",
+    "PUB_Demand_2011.csv": "20fd0a3a5ed894b93ba4b87e82e72051303b88392eab3431f5a6adbbc48beaa2",
+    "PUB_Demand_2012.csv": "660306df43b4b642a33fad3b1e58a50200bf45cc06d071205148f6f138ec9b1b",
+    "PUB_Demand_2013.csv": "b5601007ffffbc39304717cbfa88b0ed31cc9c2ffcf4d18f659449b41f5d87b3",
+    "PUB_Demand_2014.csv": "9dbfc51ed030a50d1fb8b5b4d5b795c1bc04bd9eb7836250740bdd6b2eab0626",
+    "PUB_Demand_2015.csv": "851a950d14a3c02e160f5872885336a75d838159d51b72c26b4656c2895c5aff",
+    "PUB_Demand_2016.csv": "7ea0bed3186b2408b949ed31706dd2b0e2e4d328df73ce2d4a0c6cb8dc9888e9",
+    "PUB_Demand_2017.csv": "94d506fb7cb0d35564a3a79de86b526292e2447b2f283906feb5085cb6ccea2a",
+    "PUB_Demand_2018.csv": "0908441efe22aee0543e61d84507bff7ed53ec68033f26bd7b94cd7e856cb328",
+    "PUB_Demand_2019.csv": "11d78499244b40dff640c926c49d382573d193f34165747bd1c8707c09135929",
+    "PUB_Demand_2020.csv": "bd85130d5db06d4d226c35543d81c9fdc2b261411de04e58b2f2711415c9495a",
+    "PUB_Demand_2021.csv": "bd76c7b0ed40b7092c29b9cfc5855fcdfd9a8fbd2c1966da2a155db10772dd99",
+    "PUB_Demand_2022.csv": "f9b418bfa2f2ba927824c0f386d7d3de7c0cac0092be2c6faf4f0b74ef58c87a",
+    "PUB_Demand_2023.csv": "bd7492cd1a14329b45fbf2b7d00cb7e70802d30c158458ec08dbe29b76702310",
+    "PUB_Demand_2024.csv": "aae5bcedb4c666caf5b98d0ef6603b1b9e355f8407e241d796f6763afce7dee1",
+    "PUB_Demand_2025.csv": "24d5dfabd8854b35acee4af186143d1835d7516c6e82f7ab8ae2797453d4d488"
+  },
+  "ieso_demand_current": {
+    "PUB_Demand_2026.csv": "d5fd37f021673fcf2bf5c676bf5c42c9162a89966b281be04738d082f659cb35"
+  },
+  "ieso_zonal_closed": {
+    "PUB_DemandZonal_2003.csv": "64c69c07eb9cd537ca1d3d76b28f936374d1e2949ca419547e98101764042bd1",
+    "PUB_DemandZonal_2004.csv": "9ed69ee2ca2e4f71586a688d6294f7de97e9b74cee84ad1c2e809baa08a69b2d",
+    "PUB_DemandZonal_2005.csv": "4c8aec55e43237f8326687cdf42364d0c39757e8e6fcef8258c49757c0ee4066",
+    "PUB_DemandZonal_2006.csv": "71afa096cb7e5c09b2cc92597348f66e0b6a781c02495cec1c750dbbb5c5470b",
+    "PUB_DemandZonal_2007.csv": "01a8584785e7e6e77ba0d30c24f98d83b4becc77e36d008faa782602a767d8d2",
+    "PUB_DemandZonal_2008.csv": "f330b1c22fc7ddc84eaa2e1efd2424abaff794a899e8de017f4bb795b5cf8007",
+    "PUB_DemandZonal_2009.csv": "8e4ea0ce3792561c0f36201f947d251a7f6e84e80c622544cc91dcb89139781b",
+    "PUB_DemandZonal_2010.csv": "1db9b5cb41c3a963433b4c6f27a31f4907c0714034ae63c5f64b596a02b17b3a",
+    "PUB_DemandZonal_2011.csv": "ef42ccafee4fe92af87ddc7a286a40b61c5df67cd41b88b9df35bec33bdd38ce",
+    "PUB_DemandZonal_2012.csv": "b99e51188dd032c787fc99f7f64730f78c8895f966c8bc6dadaab46571400afc",
+    "PUB_DemandZonal_2013.csv": "71e34b05e0dca64d1fd9cd1d744c3a7e187f1e95234074f6e99a93c544fccfaa",
+    "PUB_DemandZonal_2014.csv": "b672cfbe9230ff74b30df25e44c0781f243668036b767a4d1c8b53b2f74fe5f2",
+    "PUB_DemandZonal_2015.csv": "8cb96731ebffb30a2d762563fe8b496673b0e7182f24547723614062be5db80d",
+    "PUB_DemandZonal_2016.csv": "c5004baf6c0afb77cb1f3651944b1f16a6350db6f04a74a2db6a9b79ab80c74a",
+    "PUB_DemandZonal_2017.csv": "0fc52fda7db91030fbdc202487b67664e46db51146e720a76943ddf047d1eafd",
+    "PUB_DemandZonal_2018.csv": "b67decf938310cf8eb9520b78b52de9be3f944ac6a4af736b6faa9fdf76a806c",
+    "PUB_DemandZonal_2019.csv": "7e53f2020e51dd562933dd62461b8ba2eff1721baab27e0e5baeb734e9f44c51",
+    "PUB_DemandZonal_2020.csv": "f6a48f3060b1e76886939c71f894ccc428b18e5f04074af2a4574a8a846f47f9",
+    "PUB_DemandZonal_2021.csv": "4170b718f136634cc79eb5e09fb0755e69b8b8159b31b91348555bc247000f3c",
+    "PUB_DemandZonal_2022.csv": "60830b1b2f409f1832404e604b58ef332eaffb3a5f0050533a81f69b53d5ccd5",
+    "PUB_DemandZonal_2023.csv": "cbb8c08a0b55172def88d182b71bf5d51035dbb5f4f2d41285b240f68dad99eb",
+    "PUB_DemandZonal_2024.csv": "40729d5d01aad16bae0abbdfe408041e77d101eca0d4904df5a46234b9dbda48",
+    "PUB_DemandZonal_2025.csv": "0b25fd75896f58e50cb6d3628f0e07fadf643324e10d2c1bec0502cbd7af753c"
+  },
+  "ieso_zonal_current": {
+    "PUB_DemandZonal_2026.csv": "b430f9fe66b5a9be809bfd70665be76c85a99f039da8dc5a3a210d878fae198c"
+  }
+}

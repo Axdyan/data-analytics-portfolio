@@ -4,3 +4,5 @@ __pycache__/
 data/
 *.duckdb
 *.duckdb.wal
+ci/reports/**/*.executed.ipynb
+ci/reports/**/*.log

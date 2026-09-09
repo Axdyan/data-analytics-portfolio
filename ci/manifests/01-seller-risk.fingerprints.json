@@ -1,0 +1,15 @@
+{
+  "project": "01-seller-risk",
+  "recorded_at_utc": "2026-09-07T07:46:42+00:00",
+  "olist_kaggle": {
+    "olist_customers_dataset.csv": 9033957,
+    "olist_geolocation_dataset.csv": 61273883,
+    "olist_order_items_dataset.csv": 15438671,
+    "olist_order_payments_dataset.csv": 5777138,
+    "olist_order_reviews_dataset.csv": 14451670,
+    "olist_orders_dataset.csv": 17654914,
+    "olist_products_dataset.csv": 2379446,
+    "olist_sellers_dataset.csv": 174703,
+    "product_category_name_translation.csv": 2613
+  }
+}
