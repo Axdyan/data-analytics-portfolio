@@ -3,14 +3,14 @@
   "label": "06: Ontario Demand Forecast",
   "notebook_name": "06_load_explore.ipynb",
   "measured_on": "2026-09-06",
-  "run_date": "2026-09-09",
-  "run_at_utc": "2026-09-09 13:45:55",
+  "run_date": "2026-09-14",
+  "run_at_utc": "2026-09-14 11:45:02",
   "environment": {
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
     "python": "3.14.7",
     "duckdb": "1.5.5",
     "git_sha": "e217475669463be60b1f0938acd20f70346cccb7",
-    "github_run_id": "34359065067"
+    "github_run_id": "34839681565"
   },
   "sources": [
     {
@@ -51,7 +51,7 @@
       "refresh": "rewritten every morning",
       "policy": "ieso_current_year",
       "observed": {
-        "PUB_Demand_2026.csv": "9cfd1cc7e6f28b816ec36079dba67f079fda8c77d894bd53e208f3205defd7c9"
+        "PUB_Demand_2026.csv": "ad6e9a9c9e1e856c842e795baf3a5e9b69622c7107ca425961a407dd25bacded"
       },
       "status": "changed",
       "detail": "1 of 1 entries differ: PUB_Demand_2026.csv"
@@ -93,7 +93,7 @@
       "refresh": "rewritten every morning",
       "policy": "ieso_current_year",
       "observed": {
-        "PUB_DemandZonal_2026.csv": "8362bcc0e6de7ca41b2cc5fb3eca5b32578b1d9a01bafbc088c4ffa8033e2d1c"
+        "PUB_DemandZonal_2026.csv": "e59c8e06b03f307963ef2f480735dfcb057d9c5116a3c1edaa7f8a4a39563d57"
       },
       "status": "changed",
       "detail": "1 of 1 entries differ: PUB_DemandZonal_2026.csv"
@@ -103,32 +103,32 @@
     "cells": 40,
     "code_cells": 40,
     "executed": 40,
-    "elapsed_s": 37.7,
+    "elapsed_s": 84.4,
     "error": null,
     "cell_times": [
       {
         "position": 1,
-        "seconds": 0.1,
+        "seconds": 0.0,
         "opening": "Nothing here needs a database yet. The IESO publishes Ontario's hourly demand as one CSV"
       },
       {
         "position": 2,
-        "seconds": 0.7,
+        "seconds": 1.3,
         "opening": "The report folder is a plain directory listing, so the file names come out of the anchor"
       },
       {
         "position": 3,
-        "seconds": 0.2,
+        "seconds": 1.5,
         "opening": "The first lines of one file, printed as the bytes they are. Every one of these reports"
       },
       {
         "position": 4,
-        "seconds": 6.4,
+        "seconds": 19.6,
         "opening": "The pull, one file per year, with a record of what came back. The current year's file is"
       },
       {
         "position": 5,
-        "seconds": 10.9,
+        "seconds": 30.6,
         "opening": "The zonal report, same pull, same checks. Ten zones plus a total and a difference column,"
       },
       {
@@ -138,7 +138,7 @@
       },
       {
         "position": 7,
-        "seconds": 6.8,
+        "seconds": 16.5,
         "opening": "Which copy is canonical. Each year sits on the server twice, as the plain yearly file and"
       },
       {
@@ -148,7 +148,7 @@
       },
       {
         "position": 9,
-        "seconds": 0.7,
+        "seconds": 1.1,
         "opening": "Load every yearly file as text. The metadata lines and the header are skipped by count,"
       },
       {
@@ -223,7 +223,7 @@
       },
       {
         "position": 24,
-        "seconds": 2.7,
+        "seconds": 2.8,
         "opening": "Fit and forecast, walking forward. Every four weeks the model is refit on the five years o"
       },
       {
@@ -233,7 +233,7 @@
       },
       {
         "position": 26,
-        "seconds": 0.5,
+        "seconds": 0.6,
         "opening": "Is the gap between the model and the baseline real or a run of luck? A Diebold-Mariano"
       },
       {
@@ -278,12 +278,12 @@
       },
       {
         "position": 35,
-        "seconds": 0.3,
+        "seconds": 0.7,
         "opening": "Every reported number written back to the database as tables, so the memo and the"
       },
       {
         "position": 36,
-        "seconds": 0.7,
+        "seconds": 1.0,
         "opening": "The first chart: error by lead time for the baseline and the model, over the test window."
       },
       {
@@ -293,7 +293,7 @@
       },
       {
         "position": 38,
-        "seconds": 1.4,
+        "seconds": 2.7,
         "opening": "The zonal report, loaded the same way as the provincial one and checked against it. Ten"
       },
       {
@@ -334,7 +334,7 @@
       ],
       "kind": "count",
       "expected": 213456,
-      "measured": 213528,
+      "measured": 213624,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -406,7 +406,7 @@
       ],
       "kind": "count",
       "expected": 204695,
-      "measured": 204767,
+      "measured": 204863,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -607,7 +607,7 @@
       ],
       "kind": "count",
       "expected": 72152,
-      "measured": 72200,
+      "measured": 72254,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -635,7 +635,7 @@
       ],
       "kind": "count",
       "expected": 29814,
-      "measured": 29832,
+      "measured": 29855,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -931,7 +931,7 @@
       ],
       "kind": "mw",
       "expected": 17086,
-      "measured": 17077.0,
+      "measured": 17075.0,
       "status": "drift",
       "reason": "source changed; inside the band for kind mw",
       "note": "the yearly table's 2026 row, which grows with the year; at the memo's pull it held 5,953 hours to 6 September",
@@ -3555,7 +3555,7 @@
       ],
       "kind": "count",
       "expected": 129,
-      "measured": 132,
+      "measured": 136,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -4329,7 +4329,7 @@
     "not_run": 0,
     "not_reproducible": 1
   },
-  "verdict": "277 of 284 listed figures reproduced on 2026-09-09; 6 drifted inside the band; 1 not reproducible in CI by design.",
+  "verdict": "277 of 284 listed figures reproduced on 2026-09-14; 6 drifted inside the band; 1 not reproducible in CI by design.",
   "blocked_rule": null,
   "any_source_changed": true,
   "expected_change": true,
