@@ -3,14 +3,14 @@
   "label": "01: Seller Risk Scoring",
   "notebook_name": "01_load_explore.ipynb",
   "measured_on": "2026-08-25",
-  "run_date": "2026-09-14",
-  "run_at_utc": "2026-09-14 11:44:52",
+  "run_date": "2026-09-21",
+  "run_at_utc": "2026-09-21 11:57:59",
   "environment": {
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
     "python": "3.14.7",
     "duckdb": "1.5.5",
     "git_sha": "e217475669463be60b1f0938acd20f70346cccb7",
-    "github_run_id": "34839681565"
+    "github_run_id": "35596703906"
   },
   "sources": [
     {
@@ -36,7 +36,7 @@
     "cells": 24,
     "code_cells": 20,
     "executed": 20,
-    "elapsed_s": 5.5,
+    "elapsed_s": 5.6,
     "error": null,
     "cell_times": [
       {
@@ -56,7 +56,7 @@
       },
       {
         "position": 4,
-        "seconds": 1.8,
+        "seconds": 1.7,
         "opening": "Load each CSV into its own table, replacing it if it already exists"
       },
       {
@@ -126,7 +126,7 @@
       },
       {
         "position": 21,
-        "seconds": 1.6,
+        "seconds": 1.7,
         "opening": "Histogram: how late rate is distributed across the 1,514 sellers with"
       },
       {
@@ -942,7 +942,7 @@
     "not_run": 0,
     "not_reproducible": 0
   },
-  "verdict": "56 of 56 listed figures reproduced on 2026-09-14.",
+  "verdict": "56 of 56 listed figures reproduced on 2026-09-21.",
   "blocked_rule": null,
   "any_source_changed": false,
   "expected_change": false,
