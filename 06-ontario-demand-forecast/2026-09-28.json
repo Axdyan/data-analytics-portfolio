@@ -3,14 +3,14 @@
   "label": "06: Ontario Demand Forecast",
   "notebook_name": "06_load_explore.ipynb",
   "measured_on": "2026-09-06",
-  "run_date": "2026-09-21",
-  "run_at_utc": "2026-09-21 11:57:17",
+  "run_date": "2026-09-28",
+  "run_at_utc": "2026-09-28 12:51:46",
   "environment": {
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
     "python": "3.14.7",
     "duckdb": "1.5.5",
     "git_sha": "e217475669463be60b1f0938acd20f70346cccb7",
-    "github_run_id": "35596703906"
+    "github_run_id": "36424458864"
   },
   "sources": [
     {
@@ -51,7 +51,7 @@
       "refresh": "rewritten every morning",
       "policy": "ieso_current_year",
       "observed": {
-        "PUB_Demand_2026.csv": "e5747b82a122079735efd2d04fc6ec725727dcc1e675679c5424ca0cf8c7813d"
+        "PUB_Demand_2026.csv": "84ae5ceeba66be2696ae630a7bb8e4f358c81de281e76e2f92a4efab6cc2e901"
       },
       "status": "changed",
       "detail": "1 of 1 entries differ: PUB_Demand_2026.csv"
@@ -93,7 +93,7 @@
       "refresh": "rewritten every morning",
       "policy": "ieso_current_year",
       "observed": {
-        "PUB_DemandZonal_2026.csv": "97ff7fd0333165056b4b8643b6cd791966f97bb633d903eaffe95d7c6da3abd3"
+        "PUB_DemandZonal_2026.csv": "62fffd94ae92fc6b64721d58ef6d269edfb1b54f2629bc051edcd78397191aa7"
       },
       "status": "changed",
       "detail": "1 of 1 entries differ: PUB_DemandZonal_2026.csv"
@@ -103,17 +103,17 @@
     "cells": 40,
     "code_cells": 40,
     "executed": 40,
-    "elapsed_s": 38.0,
+    "elapsed_s": 44.8,
     "error": null,
     "cell_times": [
       {
         "position": 1,
-        "seconds": 0.1,
+        "seconds": 0.2,
         "opening": "Nothing here needs a database yet. The IESO publishes Ontario's hourly demand as one CSV"
       },
       {
         "position": 2,
-        "seconds": 0.4,
+        "seconds": 0.6,
         "opening": "The report folder is a plain directory listing, so the file names come out of the anchor"
       },
       {
@@ -123,12 +123,12 @@
       },
       {
         "position": 4,
-        "seconds": 7.0,
+        "seconds": 9.0,
         "opening": "The pull, one file per year, with a record of what came back. The current year's file is"
       },
       {
         "position": 5,
-        "seconds": 9.9,
+        "seconds": 11.1,
         "opening": "The zonal report, same pull, same checks. Ten zones plus a total and a difference column,"
       },
       {
@@ -138,7 +138,7 @@
       },
       {
         "position": 7,
-        "seconds": 5.5,
+        "seconds": 9.6,
         "opening": "Which copy is canonical. Each year sits on the server twice, as the plain yearly file and"
       },
       {
@@ -148,7 +148,7 @@
       },
       {
         "position": 9,
-        "seconds": 0.9,
+        "seconds": 0.8,
         "opening": "Load every yearly file as text. The metadata lines and the header are skipped by count,"
       },
       {
@@ -223,7 +223,7 @@
       },
       {
         "position": 24,
-        "seconds": 3.9,
+        "seconds": 3.0,
         "opening": "Fit and forecast, walking forward. Every four weeks the model is refit on the five years o"
       },
       {
@@ -334,7 +334,7 @@
       ],
       "kind": "count",
       "expected": 213456,
-      "measured": 213792,
+      "measured": 213984,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -406,7 +406,7 @@
       ],
       "kind": "count",
       "expected": 204695,
-      "measured": 205031,
+      "measured": 205199,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -607,7 +607,7 @@
       ],
       "kind": "count",
       "expected": 72152,
-      "measured": 72345,
+      "measured": 72448,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -635,7 +635,7 @@
       ],
       "kind": "count",
       "expected": 29814,
-      "measured": 29890,
+      "measured": 29925,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -931,7 +931,7 @@
       ],
       "kind": "mw",
       "expected": 17086,
-      "measured": 17052.0,
+      "measured": 16986.0,
       "status": "drift",
       "reason": "source changed; inside the band for kind mw",
       "note": "the yearly table's 2026 row, which grows with the year; at the memo's pull it held 5,953 hours to 6 September",
@@ -3555,7 +3555,7 @@
       ],
       "kind": "count",
       "expected": 129,
-      "measured": 143,
+      "measured": 151,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -4329,7 +4329,7 @@
     "not_run": 0,
     "not_reproducible": 1
   },
-  "verdict": "277 of 284 listed figures reproduced on 2026-09-21; 6 drifted inside the band; 1 not reproducible in CI by design.",
+  "verdict": "277 of 284 listed figures reproduced on 2026-09-28; 6 drifted inside the band; 1 not reproducible in CI by design.",
   "blocked_rule": null,
   "any_source_changed": true,
   "expected_change": true,
