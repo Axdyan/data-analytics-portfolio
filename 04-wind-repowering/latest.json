@@ -3,14 +3,14 @@
   "label": "04: Wind Repowering Uplift",
   "notebook_name": "04_load_explore.ipynb",
   "measured_on": "2026-09-09",
-  "run_date": "2026-09-28",
-  "run_at_utc": "2026-09-28 12:51:46",
+  "run_date": "2026-10-05",
+  "run_at_utc": "2026-10-05 13:33:26",
   "environment": {
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
     "python": "3.14.7",
     "duckdb": "1.5.5",
     "git_sha": "e217475669463be60b1f0938acd20f70346cccb7",
-    "github_run_id": "36424458864"
+    "github_run_id": "37317548454"
   },
   "sources": [
     {
@@ -18,10 +18,10 @@
       "refresh": "reissued several times a year by USGS; the API serves the current release",
       "policy": "uswtdb_current",
       "observed": {
-        "": "ee1e259fd94489cd1fe3df36fffaa533afacf1d05e804eff68fcbed33540bd8e"
+        "": "4eed36ff4d38d7ae11fca5e1dcee7aee3db4bf54320fdeb441965c6d6523a804"
       },
-      "status": "unchanged",
-      "detail": "identical to the committed fingerprint (1 entries)"
+      "status": "changed",
+      "detail": "1 of 1 entries differ: (file)"
     },
     {
       "id": "uswtdb_2018_archive",
@@ -69,12 +69,12 @@
     "cells": 87,
     "code_cells": 87,
     "executed": 87,
-    "elapsed_s": 658.9,
+    "elapsed_s": 713.1,
     "error": null,
     "cell_times": [
       {
         "position": 1,
-        "seconds": 0.1,
+        "seconds": 0.2,
         "opening": "Nothing here needs a database yet. Before I commit to pulling turbine data I want"
       },
       {
@@ -84,7 +84,7 @@
       },
       {
         "position": 3,
-        "seconds": 0.4,
+        "seconds": 0.5,
         "opening": "Older releases are catalogued as separate records rather than as versions of one"
       },
       {
@@ -94,7 +94,7 @@
       },
       {
         "position": 5,
-        "seconds": 0.5,
+        "seconds": 0.4,
         "opening": "The bulk downloads have moved host at least once over the years, so I check which"
       },
       {
@@ -109,7 +109,7 @@
       },
       {
         "position": 8,
-        "seconds": 1.2,
+        "seconds": 0.8,
         "opening": "The oldest release, April 2018. Rotor diameters recorded in here predate every"
       },
       {
@@ -119,7 +119,7 @@
       },
       {
         "position": 10,
-        "seconds": 0.2,
+        "seconds": 0.3,
         "opening": "The changelog records the retrofit fields being renamed part way through the series,"
       },
       {
@@ -129,12 +129,12 @@
       },
       {
         "position": 12,
-        "seconds": 0.1,
+        "seconds": 0.3,
         "opening": "Opens (or creates) the local database file that holds this project's tables."
       },
       {
         "position": 13,
-        "seconds": 0.3,
+        "seconds": 0.4,
         "opening": "Load the 2018 file as text, every column. This one codes missing numbers as -9999 and"
       },
       {
@@ -144,12 +144,12 @@
       },
       {
         "position": 15,
-        "seconds": 1.8,
+        "seconds": 3.5,
         "opening": "Pull the current turbine table and write down what actually came back: when I pulled"
       },
       {
         "position": 16,
-        "seconds": 0.4,
+        "seconds": 0.6,
         "opening": "Load it as text, same as the 2018 file. A REST endpoint can change a type between"
       },
       {
@@ -194,12 +194,12 @@
       },
       {
         "position": 25,
-        "seconds": 229.3,
+        "seconds": 244.7,
         "opening": "Only the current year of the generation data was ever confirmed as a download. The"
       },
       {
         "position": 26,
-        "seconds": 52.9,
+        "seconds": 51.9,
         "opening": "Two years from opposite ends of the range. The risk here is not that a file is missing,"
       },
       {
@@ -214,7 +214,7 @@
       },
       {
         "position": 29,
-        "seconds": 53.0,
+        "seconds": 58.1,
         "opening": "Where these files actually live. HEAD came back 503 on every past year while GET came"
       },
       {
@@ -224,7 +224,7 @@
       },
       {
         "position": 31,
-        "seconds": 38.7,
+        "seconds": 36.7,
         "opening": "Prove the guard rejects something before thirteen downloads depend on it. The path that"
       },
       {
@@ -234,7 +234,7 @@
       },
       {
         "position": 33,
-        "seconds": 123.4,
+        "seconds": 127.3,
         "opening": "Every year the panel needs. Each file is checked before it is written, so a year that"
       },
       {
@@ -249,17 +249,17 @@
       },
       {
         "position": 36,
-        "seconds": 0.7,
+        "seconds": 1.0,
         "opening": "Sheet names at three points across the range: the oldest file, one from the middle, and"
       },
       {
         "position": 37,
-        "seconds": 0.6,
+        "seconds": 0.8,
         "opening": "Where the real header sits. These workbooks open with several rows of title and notes"
       },
       {
         "position": 38,
-        "seconds": 0.6,
+        "seconds": 0.8,
         "opening": "The column names at row 5, compared across the range. The later files wrap header text"
       },
       {
@@ -274,12 +274,12 @@
       },
       {
         "position": 41,
-        "seconds": 10.3,
+        "seconds": 12.2,
         "opening": "Smoke test on the two ends of the range before committing to thirteen loads. 2013 is the"
       },
       {
         "position": 42,
-        "seconds": 66.5,
+        "seconds": 79.1,
         "opening": "Every year, keeping only the wind rows. Filtering before collecting keeps this small,"
       },
       {
@@ -374,7 +374,7 @@
       },
       {
         "position": 61,
-        "seconds": 1.1,
+        "seconds": 1.7,
         "opening": "What is available for the estimation work. The main estimator here gets written out by"
       },
       {
@@ -429,12 +429,12 @@
       },
       {
         "position": 72,
-        "seconds": 1.3,
+        "seconds": 2.1,
         "opening": "The regression everyone would run first: log generation on a treated-and-after flag with"
       },
       {
         "position": 73,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "Take the regression apart. On a balanced panel the coefficient above is exactly a weighted"
       },
       {
@@ -449,7 +449,7 @@
       },
       {
         "position": 76,
-        "seconds": 6.1,
+        "seconds": 7.4,
         "opening": "Uncertainty, by redrawing plants. Generation at one plant is correlated across its own"
       },
       {
@@ -459,7 +459,7 @@
       },
       {
         "position": 78,
-        "seconds": 17.4,
+        "seconds": 20.8,
         "opening": "Does the uplift differ between plants that fitted a bigger rotor and plants that did not?"
       },
       {
@@ -469,7 +469,7 @@
       },
       {
         "position": 80,
-        "seconds": 42.9,
+        "seconds": 51.1,
         "opening": "The same estimate under the alternatives that could have been chosen instead, each one a"
       },
       {
@@ -479,12 +479,12 @@
       },
       {
         "position": 82,
-        "seconds": 0.3,
+        "seconds": 0.4,
         "opening": "The same estimator from a library, as a check on my arithmetic rather than a replacement"
       },
       {
         "position": 83,
-        "seconds": 0.3,
+        "seconds": 0.4,
         "opening": "A second library, a port of the original R implementation of this estimator, with the same"
       },
       {
@@ -494,12 +494,12 @@
       },
       {
         "position": 85,
-        "seconds": 0.4,
+        "seconds": 0.5,
         "opening": "The decomposition as a picture. Every point is one two-group, two-period comparison inside"
       },
       {
         "position": 86,
-        "seconds": 0.2,
+        "seconds": 0.3,
         "opening": "The star schema for the dashboard, written out as four CSVs. The dashboard reads the same"
       },
       {
@@ -522,7 +522,7 @@
       "expected": 28,
       "measured": 28,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -534,9 +534,9 @@
       ],
       "kind": "count",
       "expected": 75727,
-      "measured": 75727,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 77839,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -604,9 +604,9 @@
       ],
       "kind": "count",
       "expected": 8480,
-      "measured": 8480,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 8709,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -619,9 +619,9 @@
       ],
       "kind": "count",
       "expected": 1529,
-      "measured": 1529,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 1587,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -633,9 +633,9 @@
       ],
       "kind": "count",
       "expected": 17,
-      "measured": 17,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 19,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -647,9 +647,9 @@
       ],
       "kind": "count",
       "expected": 13,
-      "measured": 13,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 14,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -663,7 +663,7 @@
       "expected": "2001 to 2012",
       "measured": "2001 to 2012",
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -675,9 +675,9 @@
       ],
       "kind": "count",
       "expected": 2024,
-      "measured": 2024,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 2025,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -689,9 +689,9 @@
       ],
       "kind": "count",
       "expected": 567,
-      "measured": 567,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 563,
+      "status": "drift_outside_band",
+      "reason": "source changed; outside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -703,9 +703,9 @@
       ],
       "kind": "count",
       "expected": 1208,
-      "measured": 1208,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 1224,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -717,9 +717,9 @@
       ],
       "kind": "pct",
       "expected": 10.5,
-      "measured": 10.5,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 10.3,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -733,7 +733,7 @@
       "expected": 4,
       "measured": 4,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -745,9 +745,9 @@
       ],
       "kind": "count",
       "expected": 9,
-      "measured": 9,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 10,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -759,9 +759,9 @@
       ],
       "kind": "pct",
       "expected": 92.2,
-      "measured": 92.2,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 91.5,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -773,9 +773,9 @@
       ],
       "kind": "count",
       "expected": 3615,
-      "measured": 3615,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 5051,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -787,9 +787,9 @@
       ],
       "kind": "pct",
       "expected": 4.8,
-      "measured": 4.8,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 6.5,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -801,9 +801,9 @@
       ],
       "kind": "pct",
       "expected": 2.4,
-      "measured": 2.4,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 1.6,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -860,7 +860,7 @@
       "expected": 80,
       "measured": 80,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -875,7 +875,7 @@
       "expected": 7,
       "measured": 7,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -888,9 +888,9 @@
       ],
       "kind": "count",
       "expected": 498,
-      "measured": 498,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 494,
+      "status": "drift_outside_band",
+      "reason": "source changed; outside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -904,7 +904,7 @@
       "expected": 0,
       "measured": 0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -916,9 +916,9 @@
       ],
       "kind": "count",
       "expected": 90,
-      "measured": 90,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 94,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -930,9 +930,9 @@
       ],
       "kind": "count",
       "expected": 29,
-      "measured": 29,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 30,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -946,7 +946,7 @@
       "expected": 1,
       "measured": 1,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -960,7 +960,7 @@
       "expected": 9,
       "measured": 9,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -972,9 +972,9 @@
       ],
       "kind": "count",
       "expected": 10,
-      "measured": 10,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 14,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -988,7 +988,7 @@
       "expected": 100.0,
       "measured": 100.0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1002,7 +1002,7 @@
       "expected": 100.0,
       "measured": 100.0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1016,7 +1016,7 @@
       "expected": 105.9,
       "measured": 105.9,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1028,9 +1028,9 @@
       ],
       "kind": "stat",
       "expected": 104.0,
-      "measured": 104.0,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 103.9,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind stat",
       "note": "",
       "round": 1
     },
@@ -1044,7 +1044,7 @@
       "expected": 95.4,
       "measured": 95.4,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1058,7 +1058,7 @@
       "expected": 96.4,
       "measured": 96.4,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1072,7 +1072,7 @@
       "expected": 101.3,
       "measured": 101.3,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1084,9 +1084,9 @@
       ],
       "kind": "stat",
       "expected": 100.3,
-      "measured": 100.3,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 100.4,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind stat",
       "note": "",
       "round": 1
     },
@@ -1100,7 +1100,7 @@
       "expected": 96.1,
       "measured": 96.1,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1112,9 +1112,9 @@
       ],
       "kind": "stat",
       "expected": 98.3,
-      "measured": 98.3,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 98.2,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind stat",
       "note": "",
       "round": 1
     },
@@ -1128,7 +1128,7 @@
       "expected": 96.2,
       "measured": 96.2,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1140,9 +1140,9 @@
       ],
       "kind": "stat",
       "expected": 96.4,
-      "measured": 96.4,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 96.3,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind stat",
       "note": "",
       "round": 1
     },
@@ -1156,7 +1156,7 @@
       "expected": 93.5,
       "measured": 93.5,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1170,7 +1170,7 @@
       "expected": 93.2,
       "measured": 93.2,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1184,7 +1184,7 @@
       "expected": 135,
       "measured": 135.0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -1196,9 +1196,9 @@
       ],
       "kind": "mw",
       "expected": 81,
-      "measured": 81.0,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 80.0,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind mw",
       "note": "",
       "round": 0
     },
@@ -1212,7 +1212,7 @@
       "expected": 0.347,
       "measured": 0.347,
       "status": "reproduced",
-      "reason": "printed in cell 68",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 3
     },
@@ -1224,9 +1224,9 @@
       ],
       "kind": "ratio",
       "expected": 0.326,
-      "measured": 0.326,
-      "status": "reproduced",
-      "reason": "printed in cell 68",
+      "measured": 0.331,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind ratio",
       "note": "",
       "round": 3
     },
@@ -1240,7 +1240,7 @@
       "expected": 0.369,
       "measured": 0.369,
       "status": "reproduced",
-      "reason": "printed in cell 68",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 3
     },
@@ -1254,7 +1254,7 @@
       "expected": 0.314,
       "measured": 0.314,
       "status": "reproduced",
-      "reason": "printed in cell 68",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 3
     },
@@ -1266,9 +1266,9 @@
       ],
       "kind": "mw",
       "expected": 118.9,
-      "measured": 118.9,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 117.5,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind mw",
       "note": "",
       "round": 1
     },
@@ -1280,9 +1280,9 @@
       ],
       "kind": "mw",
       "expected": 130.9,
-      "measured": 130.9,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 129.2,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind mw",
       "note": "",
       "round": 1
     },
@@ -1294,9 +1294,9 @@
       ],
       "kind": "pct",
       "expected": 10.1,
-      "measured": 10.1,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 9.9,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -1308,9 +1308,9 @@
       ],
       "kind": "mw",
       "expected": 71.8,
-      "measured": 71.8,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 70.5,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind mw",
       "note": "",
       "round": 1
     },
@@ -1322,9 +1322,9 @@
       ],
       "kind": "mw",
       "expected": 72.8,
-      "measured": 72.8,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 71.7,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind mw",
       "note": "",
       "round": 1
     },
@@ -1336,9 +1336,9 @@
       ],
       "kind": "pct",
       "expected": 1.4,
-      "measured": 1.4,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 1.6,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -1351,9 +1351,9 @@
       ],
       "kind": "pct",
       "expected": 8.7,
-      "measured": 8.7,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 8.3,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "the README rounds it to nine points",
       "round": 1
     },
@@ -1366,9 +1366,9 @@
       ],
       "kind": "stat",
       "expected": 0.266,
-      "measured": 0.266,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 0.265,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind stat",
       "note": "",
       "round": 3
     },
@@ -1383,7 +1383,7 @@
       "expected": 30.4,
       "measured": 30.4,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1397,7 +1397,7 @@
       "expected": 0.027,
       "measured": 0.027,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 3
     },
@@ -1411,7 +1411,7 @@
       "expected": 0.0,
       "measured": 0.0,
       "status": "reproduced",
-      "reason": "printed in cell 72",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1425,7 +1425,7 @@
       "expected": 23.7,
       "measured": 23.7,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1439,7 +1439,7 @@
       "expected": 37.5,
       "measured": 37.4,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1453,7 +1453,7 @@
       "expected": 7,
       "measured": 7.0,
       "status": "reproduced",
-      "reason": "printed in cell 73",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -1467,7 +1467,7 @@
       "expected": 21,
       "measured": 21.0,
       "status": "reproduced",
-      "reason": "printed in cell 73",
+      "reason": "unchanged although a source moved",
       "note": "the 49 pairwise comparisons the memo counts are 7 + 21 + 21",
       "round": 0
     },
@@ -1481,7 +1481,7 @@
       "expected": 21,
       "measured": 21.0,
       "status": "reproduced",
-      "reason": "printed in cell 73",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -1493,9 +1493,9 @@
       ],
       "kind": "pct",
       "expected": 96.3,
-      "measured": 96.26,
-      "status": "reproduced",
-      "reason": "printed in cell 73",
+      "measured": 96.23,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -1508,9 +1508,9 @@
       ],
       "kind": "pct",
       "expected": 2.3,
-      "measured": 2.26,
+      "measured": 2.2800000000000002,
       "status": "reproduced",
-      "reason": "printed in cell 73",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1523,9 +1523,9 @@
       ],
       "kind": "pct",
       "expected": 1.5,
-      "measured": 1.48,
+      "measured": 1.49,
       "status": "reproduced",
-      "reason": "printed in cell 73",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1539,7 +1539,7 @@
       "expected": -3.3,
       "measured": -3.39,
       "status": "reproduced",
-      "reason": "printed in cell 73",
+      "reason": "unchanged although a source moved",
       "note": "printed as a log difference, minus 0.0339, which the memo reads as minus 3.3%",
       "round": 1
     },
@@ -1551,9 +1551,9 @@
       ],
       "kind": "stat",
       "expected": 0.2657,
-      "measured": 0.2657,
-      "status": "reproduced",
-      "reason": "printed in cell 73",
+      "measured": 0.26534,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind stat",
       "note": "",
       "round": 4
     },
@@ -1565,9 +1565,9 @@
       ],
       "kind": "stat",
       "expected": 0.395,
-      "measured": 0.395,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 0.394,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind stat",
       "note": "",
       "round": 3
     },
@@ -1580,9 +1580,9 @@
       ],
       "kind": "pct",
       "expected": 48.4,
-      "measured": 48.4,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 48.2,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -1597,7 +1597,7 @@
       "expected": 36.3,
       "measured": 36.3,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1610,9 +1610,9 @@
       ],
       "kind": "pct",
       "expected": 61.4,
-      "measured": 61.4,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 61.1,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -1626,7 +1626,7 @@
       "expected": 0.043,
       "measured": 0.043,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 3
     },
@@ -1640,7 +1640,7 @@
       "expected": 0.289,
       "measured": 0.289,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 3
     },
@@ -1652,9 +1652,9 @@
       ],
       "kind": "pct",
       "expected": 33.5,
-      "measured": 33.5,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 33.4,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -1666,9 +1666,9 @@
       ],
       "kind": "pct",
       "expected": 23.4,
-      "measured": 23.4,
+      "measured": 23.5,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1680,9 +1680,9 @@
       ],
       "kind": "pct",
       "expected": 44.5,
-      "measured": 44.5,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 44.2,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -1696,7 +1696,7 @@
       "expected": -0.069,
       "measured": -0.069,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 3
     },
@@ -1711,7 +1711,7 @@
       "expected": -6.7,
       "measured": -6.7,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "the README rounds it to 7% down",
       "round": 1
     },
@@ -1723,9 +1723,9 @@
       ],
       "kind": "pct",
       "expected": -14.2,
-      "measured": -14.2,
-      "status": "reproduced",
-      "reason": "",
+      "measured": -13.9,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -1737,9 +1737,9 @@
       ],
       "kind": "pct",
       "expected": 1.5,
-      "measured": 1.5,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 1.2,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -1781,7 +1781,7 @@
       "expected": 0,
       "measured": 0.0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -1795,7 +1795,7 @@
       "expected": 3.9,
       "measured": 3.9,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1807,9 +1807,9 @@
       ],
       "kind": "pct",
       "expected": 2.3,
-      "measured": 2.3,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 2.2,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -1823,7 +1823,7 @@
       "expected": -4.5,
       "measured": -4.5,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1837,7 +1837,7 @@
       "expected": 0,
       "measured": 0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -1849,9 +1849,9 @@
       ],
       "kind": "stat",
       "expected": 3.94,
-      "measured": 3.94,
-      "status": "reproduced",
-      "reason": "printed in cell 76",
+      "measured": 3.83,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind stat",
       "note": "",
       "round": 2
     },
@@ -1865,7 +1865,7 @@
       "expected": 3,
       "measured": 3.0,
       "status": "reproduced",
-      "reason": "printed in cell 76",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -1877,9 +1877,9 @@
       ],
       "kind": "stat",
       "expected": 0.268,
-      "measured": 0.268,
-      "status": "reproduced",
-      "reason": "printed in cell 76",
+      "measured": 0.28,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind stat",
       "note": "",
       "round": 3
     },
@@ -1891,9 +1891,9 @@
       ],
       "kind": "stat",
       "expected": 12,
-      "measured": 12.2,
+      "measured": 12.3,
       "status": "reproduced",
-      "reason": "printed in cell 74",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -1907,7 +1907,7 @@
       "expected": 17,
       "measured": 17.299999999999997,
       "status": "reproduced",
-      "reason": "printed in cell 74",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -1921,7 +1921,7 @@
       "expected": -20,
       "measured": -20.4,
       "status": "reproduced",
-      "reason": "printed in cell 74",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -1933,9 +1933,9 @@
       ],
       "kind": "stat",
       "expected": -43,
-      "measured": -43.4,
+      "measured": -43.5,
       "status": "reproduced",
-      "reason": "printed in cell 74",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -1949,7 +1949,7 @@
       "expected": 6,
       "measured": 6,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -1961,9 +1961,9 @@
       ],
       "kind": "pct",
       "expected": 33.9,
-      "measured": 33.9,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 33.8,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -1977,7 +1977,7 @@
       "expected": 20.9,
       "measured": 20.9,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -1991,7 +1991,7 @@
       "expected": 48.1,
       "measured": 48.1,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -2005,7 +2005,7 @@
       "expected": 7,
       "measured": 7,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2019,7 +2019,7 @@
       "expected": 80,
       "measured": 80,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2033,7 +2033,7 @@
       "expected": 46.6,
       "measured": 46.6,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -2045,9 +2045,9 @@
       ],
       "kind": "pct",
       "expected": 34.4,
-      "measured": 34.4,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 34.6,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2061,7 +2061,7 @@
       "expected": 59.8,
       "measured": 59.8,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -2075,7 +2075,7 @@
       "expected": 6,
       "measured": 6,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2089,7 +2089,7 @@
       "expected": 73,
       "measured": 73,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2103,7 +2103,7 @@
       "expected": 54.7,
       "measured": 54.7,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -2115,9 +2115,9 @@
       ],
       "kind": "pct",
       "expected": 40.2,
-      "measured": 40.2,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 40.6,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2129,9 +2129,9 @@
       ],
       "kind": "pct",
       "expected": 70.6,
-      "measured": 70.6,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 70.2,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2145,7 +2145,7 @@
       "expected": 5,
       "measured": 5,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2159,7 +2159,7 @@
       "expected": 67,
       "measured": 67,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2171,9 +2171,9 @@
       ],
       "kind": "pct",
       "expected": 59.4,
-      "measured": 59.4,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 59.3,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2185,9 +2185,9 @@
       ],
       "kind": "pct",
       "expected": 43.5,
-      "measured": 43.5,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 43.9,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2199,9 +2199,9 @@
       ],
       "kind": "pct",
       "expected": 77.0,
-      "measured": 77.0,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 76.1,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2215,7 +2215,7 @@
       "expected": 4,
       "measured": 4,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2229,7 +2229,7 @@
       "expected": 61,
       "measured": 61,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2241,9 +2241,9 @@
       ],
       "kind": "pct",
       "expected": 61.6,
-      "measured": 61.6,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 61.3,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2255,9 +2255,9 @@
       ],
       "kind": "pct",
       "expected": 41.6,
-      "measured": 41.6,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 41.8,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2269,9 +2269,9 @@
       ],
       "kind": "pct",
       "expected": 84.4,
-      "measured": 84.4,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 83.5,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2285,7 +2285,7 @@
       "expected": 3,
       "measured": 3,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2299,7 +2299,7 @@
       "expected": 38,
       "measured": 38,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2311,9 +2311,9 @@
       ],
       "kind": "pct",
       "expected": 62.7,
-      "measured": 62.717,
-      "status": "reproduced",
-      "reason": "printed in cell 76",
+      "measured": 62.636,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2325,9 +2325,9 @@
       ],
       "kind": "pct",
       "expected": 53.4,
-      "measured": 53.418,
+      "measured": 53.357,
       "status": "reproduced",
-      "reason": "printed in cell 76",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -2339,9 +2339,9 @@
       ],
       "kind": "pct",
       "expected": 36.4,
-      "measured": 36.413,
+      "measured": 36.443,
       "status": "reproduced",
-      "reason": "printed in cell 76",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -2353,9 +2353,9 @@
       ],
       "kind": "pct",
       "expected": 36.6,
-      "measured": 36.575,
-      "status": "reproduced",
-      "reason": "printed in cell 76",
+      "measured": 36.503,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2367,9 +2367,9 @@
       ],
       "kind": "stat",
       "expected": 0.0475,
-      "measured": 0.0475,
-      "status": "reproduced",
-      "reason": "printed in cell 77",
+      "measured": 0.0476,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind stat",
       "note": "",
       "round": 4
     },
@@ -2381,9 +2381,9 @@
       ],
       "kind": "stat",
       "expected": 0.133,
-      "measured": 0.133,
+      "measured": 0.1334,
       "status": "reproduced",
-      "reason": "printed in cell 77",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 3
     },
@@ -2396,9 +2396,9 @@
       ],
       "kind": "pct",
       "expected": 14.2,
-      "measured": 14.2,
-      "status": "reproduced",
-      "reason": "printed in cell 77",
+      "measured": 14.3,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2424,9 +2424,9 @@
       ],
       "kind": "stat",
       "expected": 0.0433,
-      "measured": 0.0433,
-      "status": "reproduced",
-      "reason": "printed in cell 77",
+      "measured": 0.0426,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind stat",
       "note": "",
       "round": 4
     },
@@ -2438,9 +2438,9 @@
       ],
       "kind": "pct",
       "expected": 12.9,
-      "measured": 12.9,
-      "status": "reproduced",
-      "reason": "printed in cell 77",
+      "measured": 12.7,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2454,7 +2454,7 @@
       "expected": 3,
       "measured": 3.0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2480,9 +2480,9 @@
       ],
       "kind": "count",
       "expected": 6,
-      "measured": 6,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 7,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -2494,9 +2494,9 @@
       ],
       "kind": "count",
       "expected": 565,
-      "measured": 565,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 561,
+      "status": "drift_outside_band",
+      "reason": "source changed; outside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -2510,7 +2510,7 @@
       "expected": 66,
       "measured": 66,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2523,9 +2523,9 @@
       ],
       "kind": "pct",
       "expected": 44.3,
-      "measured": 44.3,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 44.2,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2537,9 +2537,9 @@
       ],
       "kind": "pct",
       "expected": 34.0,
-      "measured": 34.0,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 33.5,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2551,9 +2551,9 @@
       ],
       "kind": "pct",
       "expected": 55.6,
-      "measured": 55.6,
+      "measured": 55.7,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -2567,7 +2567,7 @@
       "expected": 10,
       "measured": 10,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2582,7 +2582,7 @@
       "expected": 34.5,
       "measured": 34.5,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -2594,9 +2594,9 @@
       ],
       "kind": "pct",
       "expected": 27.1,
-      "measured": 27.1,
+      "measured": 27.0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -2608,9 +2608,9 @@
       ],
       "kind": "pct",
       "expected": 42.2,
-      "measured": 42.2,
+      "measured": 42.3,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -2624,7 +2624,7 @@
       "expected": 4,
       "measured": 4,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2636,9 +2636,9 @@
       ],
       "kind": "pct",
       "expected": 198.6,
-      "measured": 198.6,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 198.2,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2650,9 +2650,9 @@
       ],
       "kind": "pct",
       "expected": 35.7,
-      "measured": 35.7,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 32.6,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2664,9 +2664,9 @@
       ],
       "kind": "pct",
       "expected": 556.7,
-      "measured": 556.7,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 570.6,
+      "status": "drift_outside_band",
+      "reason": "source changed; outside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2680,7 +2680,7 @@
       "expected": 18,
       "measured": 18.0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2694,7 +2694,7 @@
       "expected": 10,
       "measured": 10.0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2709,7 +2709,7 @@
       "expected": 4,
       "measured": 4,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2723,7 +2723,7 @@
       "expected": 3,
       "measured": 3,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2737,7 +2737,7 @@
       "expected": 3,
       "measured": 3,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2751,7 +2751,7 @@
       "expected": 75,
       "measured": 74.6,
       "status": "reproduced",
-      "reason": "printed in cell 79",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2765,7 +2765,7 @@
       "expected": 262,
       "measured": 261.7,
       "status": "reproduced",
-      "reason": "printed in cell 79",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2779,7 +2779,7 @@
       "expected": 80,
       "measured": 80,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2791,9 +2791,9 @@
       ],
       "kind": "count",
       "expected": 498,
-      "measured": 498,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 494,
+      "status": "drift_outside_band",
+      "reason": "source changed; outside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -2806,9 +2806,9 @@
       ],
       "kind": "pct",
       "expected": 48.4,
-      "measured": 48.4,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 48.2,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2822,7 +2822,7 @@
       "expected": 36.3,
       "measured": 36.3,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -2834,9 +2834,9 @@
       ],
       "kind": "pct",
       "expected": 61.4,
-      "measured": 61.4,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 61.1,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2850,7 +2850,7 @@
       "expected": 76,
       "measured": 76,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2862,9 +2862,9 @@
       ],
       "kind": "count",
       "expected": 498,
-      "measured": 498,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 494,
+      "status": "drift_outside_band",
+      "reason": "source changed; outside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -2877,9 +2877,9 @@
       ],
       "kind": "pct",
       "expected": 43.0,
-      "measured": 43.0,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 42.9,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2891,9 +2891,9 @@
       ],
       "kind": "pct",
       "expected": 33.2,
-      "measured": 33.2,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 33.4,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2905,9 +2905,9 @@
       ],
       "kind": "pct",
       "expected": 53.4,
-      "measured": 53.4,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 53.0,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2921,7 +2921,7 @@
       "expected": 105,
       "measured": 105,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -2933,9 +2933,9 @@
       ],
       "kind": "count",
       "expected": 498,
-      "measured": 498,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 494,
+      "status": "drift_outside_band",
+      "reason": "source changed; outside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -2947,9 +2947,9 @@
       ],
       "kind": "pct",
       "expected": 52.8,
-      "measured": 52.8,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 52.7,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2961,9 +2961,9 @@
       ],
       "kind": "pct",
       "expected": 40.6,
-      "measured": 40.6,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 40.4,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2975,9 +2975,9 @@
       ],
       "kind": "pct",
       "expected": 66.0,
-      "measured": 66.0,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 66.2,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -2991,7 +2991,7 @@
       "expected": 80,
       "measured": 80,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3003,9 +3003,9 @@
       ],
       "kind": "count",
       "expected": 292,
-      "measured": 292,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 290,
+      "status": "drift_outside_band",
+      "reason": "source changed; outside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3017,9 +3017,9 @@
       ],
       "kind": "pct",
       "expected": 56.8,
-      "measured": 56.8,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 56.7,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -3031,9 +3031,9 @@
       ],
       "kind": "pct",
       "expected": 43.6,
-      "measured": 43.6,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 42.9,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -3045,9 +3045,9 @@
       ],
       "kind": "pct",
       "expected": 71.3,
-      "measured": 71.3,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 71.9,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -3061,7 +3061,7 @@
       "expected": 80,
       "measured": 80,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3073,9 +3073,9 @@
       ],
       "kind": "count",
       "expected": 550,
-      "measured": 550,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 546,
+      "status": "drift_outside_band",
+      "reason": "source changed; outside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3087,9 +3087,9 @@
       ],
       "kind": "pct",
       "expected": 49.9,
-      "measured": 49.9,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 49.8,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -3101,9 +3101,9 @@
       ],
       "kind": "pct",
       "expected": 37.6,
-      "measured": 37.6,
+      "measured": 37.7,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 1
     },
@@ -3115,9 +3115,9 @@
       ],
       "kind": "pct",
       "expected": 63.4,
-      "measured": 63.4,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 62.9,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -3131,7 +3131,7 @@
       "expected": 80,
       "measured": 80,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3143,9 +3143,9 @@
       ],
       "kind": "count",
       "expected": 498,
-      "measured": 498,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 494,
+      "status": "drift_outside_band",
+      "reason": "source changed; outside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3157,9 +3157,9 @@
       ],
       "kind": "pct",
       "expected": 49.6,
-      "measured": 49.6,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 49.4,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -3171,9 +3171,9 @@
       ],
       "kind": "pct",
       "expected": 39.7,
-      "measured": 39.7,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 39.9,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -3185,9 +3185,9 @@
       ],
       "kind": "pct",
       "expected": 60.0,
-      "measured": 60.0,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 59.7,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -3201,7 +3201,7 @@
       "expected": 108,
       "measured": 108.0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3213,9 +3213,9 @@
       ],
       "kind": "pct",
       "expected": 31.1,
-      "measured": 31.1,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 31.0,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "",
       "round": 1
     },
@@ -3229,7 +3229,7 @@
       "expected": 348,
       "measured": 348.0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3243,7 +3243,7 @@
       "expected": 84,
       "measured": 84.0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3255,9 +3255,9 @@
       ],
       "kind": "stat",
       "expected": 133,
-      "measured": 133.0,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 132.0,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind stat",
       "note": "",
       "round": 0
     },
@@ -3271,7 +3271,7 @@
       "expected": 15,
       "measured": 15,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3285,7 +3285,7 @@
       "expected": 0,
       "measured": 0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3297,9 +3297,9 @@
       ],
       "kind": "pct",
       "expected": 37,
-      "measured": 37.0,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 36.0,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind pct",
       "note": "the memo's arithmetic on its own rounded figures, 1.484 and 1.087",
       "round": 0
     },
@@ -3328,7 +3328,7 @@
       "expected": 0,
       "measured": 0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3340,9 +3340,9 @@
       ],
       "kind": "count",
       "expected": 3615,
-      "measured": 3615,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 5051,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3354,9 +3354,9 @@
       ],
       "kind": "count",
       "expected": 3282,
-      "measured": 3282,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 5056,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3368,9 +3368,9 @@
       ],
       "kind": "count",
       "expected": 3527,
-      "measured": 3527,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 5140,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3382,9 +3382,9 @@
       ],
       "kind": "count",
       "expected": 1125,
-      "measured": 1125,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 842,
+      "status": "drift_outside_band",
+      "reason": "source changed; outside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3398,7 +3398,7 @@
       "expected": 0,
       "measured": 0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3410,9 +3410,9 @@
       ],
       "kind": "count",
       "expected": 1529,
-      "measured": 1529,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 1587,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3424,9 +3424,9 @@
       ],
       "kind": "count",
       "expected": 29,
-      "measured": 29,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 30,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3440,7 +3440,7 @@
       "expected": 0,
       "measured": 0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3454,7 +3454,7 @@
       "expected": 0,
       "measured": 0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3467,8 +3467,8 @@
       "kind": "count",
       "expected": 170,
       "measured": 184,
-      "status": "failed",
-      "reason": "same bytes, different value",
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3482,7 +3482,7 @@
       "expected": 53,
       "measured": 53,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3494,9 +3494,9 @@
       ],
       "kind": "count",
       "expected": 18,
-      "measured": 18,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 19,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3510,7 +3510,7 @@
       "expected": 11,
       "measured": 11,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3522,9 +3522,9 @@
       ],
       "kind": "count",
       "expected": 10,
-      "measured": 10,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 14,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3537,8 +3537,8 @@
       "kind": "count",
       "expected": 624,
       "measured": 1343,
-      "status": "failed",
-      "reason": "same bytes, different value",
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     },
@@ -3552,7 +3552,7 @@
       "expected": 4,
       "measured": 4,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3566,7 +3566,7 @@
       "expected": 19,
       "measured": 19,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3580,7 +3580,7 @@
       "expected": 0,
       "measured": 0,
       "status": "reproduced",
-      "reason": "",
+      "reason": "unchanged although a source moved",
       "note": "",
       "round": 0
     },
@@ -3606,9 +3606,9 @@
       ],
       "kind": "count",
       "expected": 1,
-      "measured": 1,
-      "status": "reproduced",
-      "reason": "",
+      "measured": 2,
+      "status": "drift",
+      "reason": "source changed; inside the band for kind count",
       "note": "",
       "round": 0
     }
@@ -3616,19 +3616,19 @@
   "printed_from": "the executed copy of this run",
   "has_print_matches": true,
   "counts": {
-    "reproduced": 209,
-    "drift": 4,
-    "drift_outside_band": 0,
-    "failed": 2,
+    "reproduced": 108,
+    "drift": 96,
+    "drift_outside_band": 11,
+    "failed": 0,
     "not_run": 0,
     "not_reproducible": 5
   },
-  "verdict": "209 of 220 listed figures reproduced on 2026-09-28; 4 drifted inside the band; 2 FAILED to reproduce; 5 not reproducible in CI by design.",
+  "verdict": "108 of 220 listed figures reproduced on 2026-10-05; 96 drifted inside the band; 11 drifted outside the band; 5 not reproducible in CI by design.",
   "blocked_rule": null,
   "any_source_changed": true,
   "expected_change": true,
-  "job_failed": true,
-  "failure_reason": "2 figure(s) differ on unchanged source bytes.",
+  "job_failed": false,
+  "failure_reason": "",
   "working_tree": [
     "M 04-wind-repowering/bacon_decomposition.png",
     " M 04-wind-repowering/event_study.png",

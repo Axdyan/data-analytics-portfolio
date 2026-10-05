@@ -3,14 +3,14 @@
   "label": "03: Defence Procurement Intelligence",
   "notebook_name": "03_load_explore.ipynb",
   "measured_on": "2026-09-04",
-  "run_date": "2026-09-28",
-  "run_at_utc": "2026-09-28 12:51:40",
+  "run_date": "2026-10-05",
+  "run_at_utc": "2026-10-05 13:32:54",
   "environment": {
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
     "python": "3.14.7",
     "duckdb": "1.5.5",
     "git_sha": "e217475669463be60b1f0938acd20f70346cccb7",
-    "github_run_id": "36424458864"
+    "github_run_id": "37317548454"
   },
   "sources": [
     {
@@ -28,7 +28,7 @@
     "cells": 77,
     "code_cells": 77,
     "executed": 77,
-    "elapsed_s": 7.7,
+    "elapsed_s": 8.5,
     "error": null,
     "cell_times": [
       {
@@ -38,7 +38,7 @@
       },
       {
         "position": 2,
-        "seconds": 2.0,
+        "seconds": 0.9,
         "opening": "Download the file and write down what actually came back: when I pulled it,"
       },
       {
@@ -48,7 +48,7 @@
       },
       {
         "position": 4,
-        "seconds": 0.4,
+        "seconds": 0.5,
         "opening": "Everything loads as text. read_csv_auto would guess types here and I'd"
       },
       {
@@ -58,7 +58,7 @@
       },
       {
         "position": 6,
-        "seconds": 0.2,
+        "seconds": 0.1,
         "opening": "Check the column names before writing anything against this table. Headers"
       },
       {
@@ -73,7 +73,7 @@
       },
       {
         "position": 9,
-        "seconds": 0.2,
+        "seconds": 0.1,
         "opening": "Build the staging table: short names, types I picked rather than types that"
       },
       {
@@ -188,12 +188,12 @@
       },
       {
         "position": 32,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "Draft the country crosswalk. Two-letter codes pass straight through since"
       },
       {
         "position": 33,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "Load the reviewed crosswalk back in and prove it covers every country value"
       },
       {
@@ -203,7 +203,7 @@
       },
       {
         "position": 35,
-        "seconds": 0.0,
+        "seconds": 0.2,
         "opening": "A deterministic key for grouping the same company written different ways:"
       },
       {
@@ -213,7 +213,7 @@
       },
       {
         "position": 37,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "Resolve the N/A country by rule instead of by hand: if the same normalised"
       },
       {
@@ -233,7 +233,7 @@
       },
       {
         "position": 41,
-        "seconds": 0.3,
+        "seconds": 0.4,
         "opening": "One row per contract, the highest amendment winning. This is the step a"
       },
       {
@@ -288,7 +288,7 @@
       },
       {
         "position": 52,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "The template for the hand-researched control crosswalk."
       },
       {
@@ -298,12 +298,12 @@
       },
       {
         "position": 54,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "Supplier dimension. Everyone outside the researched crosswalk defaults to"
       },
       {
         "position": 55,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "The sensitivity table, which is what this project actually delivers. Two"
       },
       {
@@ -313,7 +313,7 @@
       },
       {
         "position": 57,
-        "seconds": 1.6,
+        "seconds": 1.3,
         "opening": "Chart 1, the deliverable in a picture. Reading A is a point, reading B is a"
       },
       {
@@ -323,7 +323,7 @@
       },
       {
         "position": 59,
-        "seconds": 0.0,
+        "seconds": 0.2,
         "opening": "The UNSPSC field holds more than one code per row, starred and newline"
       },
       {
@@ -338,12 +338,12 @@
       },
       {
         "position": 62,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "Draft the UNSPSC segment crosswalk from the families actually present in"
       },
       {
         "position": 63,
-        "seconds": 0.0,
+        "seconds": 0.2,
         "opening": "UNSPSC dimension, keyed on the raw field rather than on a cleaned code,"
       },
       {
@@ -358,7 +358,7 @@
       },
       {
         "position": 66,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "Top Canadian-address defence suppliers, ranked twice. The first table is"
       },
       {
@@ -368,7 +368,7 @@
       },
       {
         "position": 68,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "The amendment-grain fact, and the clearest place to show the grain defect."
       },
       {
@@ -383,12 +383,12 @@
       },
       {
         "position": 71,
-        "seconds": 0.0,
+        "seconds": 0.2,
         "opening": "A24: the file calls every row a contract, and the publisher's instrument"
       },
       {
         "position": 72,
-        "seconds": 0.0,
+        "seconds": 0.1,
         "opening": "A25: the publisher's own row type. Original rows sit at amendment 000,"
       },
       {
@@ -5169,7 +5169,7 @@
     "not_run": 0,
     "not_reproducible": 3
   },
-  "verdict": "143 of 337 listed figures reproduced on 2026-09-28; 168 drifted inside the band; 23 drifted outside the band; 3 not reproducible in CI by design.",
+  "verdict": "143 of 337 listed figures reproduced on 2026-10-05; 168 drifted inside the band; 23 drifted outside the band; 3 not reproducible in CI by design.",
   "blocked_rule": null,
   "any_source_changed": true,
   "expected_change": true,
