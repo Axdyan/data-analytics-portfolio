@@ -3,14 +3,14 @@
   "label": "02: Funnel and Retention",
   "notebook_name": "02_load_explore.ipynb",
   "measured_on": "2026-08-25",
-  "run_date": "2026-10-05",
-  "run_at_utc": "2026-10-05 13:33:20",
+  "run_date": "2026-10-12",
+  "run_at_utc": "2026-10-12 14:22:52",
   "environment": {
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
-    "python": "3.14.7",
+    "python": "3.14.8",
     "duckdb": "1.5.5",
     "git_sha": "e217475669463be60b1f0938acd20f70346cccb7",
-    "github_run_id": "37317548454"
+    "github_run_id": "38262325841"
   },
   "sources": [
     {
@@ -32,7 +32,7 @@
     "cells": 31,
     "code_cells": 25,
     "executed": 25,
-    "elapsed_s": 22.7,
+    "elapsed_s": 25.8,
     "error": null,
     "cell_times": [
       {
@@ -42,12 +42,12 @@
       },
       {
         "position": 2,
-        "seconds": 0.1,
+        "seconds": 0.0,
         "opening": "Opens (or creates) a local database file to hold the loaded table"
       },
       {
         "position": 3,
-        "seconds": 11.2,
+        "seconds": 12.4,
         "opening": "All 5 monthly files share the same schema, one continuous event stream split"
       },
       {
@@ -72,7 +72,7 @@
       },
       {
         "position": 8,
-        "seconds": 0.3,
+        "seconds": 0.4,
         "opening": "Check the date range this data actually covers, and null counts for the"
       },
       {
@@ -82,7 +82,7 @@
       },
       {
         "position": 11,
-        "seconds": 1.4,
+        "seconds": 1.6,
         "opening": "Count total sessions and how many reached each funnel stage at least once."
       },
       {
@@ -92,7 +92,7 @@
       },
       {
         "position": 13,
-        "seconds": 1.4,
+        "seconds": 1.6,
         "opening": "Convert the raw counts into conversion rates between stages, both against"
       },
       {
@@ -112,32 +112,32 @@
       },
       {
         "position": 18,
-        "seconds": 0.3,
+        "seconds": 0.5,
         "opening": "Turn the raw counts into retention percentages: what share of each"
       },
       {
         "position": 20,
-        "seconds": 0.8,
+        "seconds": 1.1,
         "opening": "Pull retention percentages for charting, excluding the most recent cohort"
       },
       {
         "position": 21,
-        "seconds": 0.7,
+        "seconds": 0.8,
         "opening": "import matplotlib.pyplot as plt"
       },
       {
         "position": 22,
-        "seconds": 0.2,
+        "seconds": 0.3,
         "opening": "One fixed color per cohort, chosen to stay distinguishable under color"
       },
       {
         "position": 24,
-        "seconds": 3.1,
+        "seconds": 3.5,
         "opening": "Reshape the funnel counts into one row per stage, in funnel order, both"
       },
       {
         "position": 25,
-        "seconds": 0.1,
+        "seconds": 0.2,
         "opening": "import matplotlib.pyplot as plt"
       },
       {
@@ -147,7 +147,7 @@
       },
       {
         "position": 28,
-        "seconds": 0.7,
+        "seconds": 0.9,
         "opening": "Split total cart value into what converted vs what never did, plus the"
       },
       {
@@ -475,7 +475,7 @@
       ],
       "kind": "money",
       "expected": 0,
-      "measured": 477247.90000025183,
+      "measured": 477247.9000002006,
       "status": "reproduced",
       "reason": "",
       "note": "",
@@ -492,7 +492,7 @@
     "not_run": 0,
     "not_reproducible": 0
   },
-  "verdict": "22 of 22 listed figures reproduced on 2026-10-05.",
+  "verdict": "22 of 22 listed figures reproduced on 2026-10-12.",
   "blocked_rule": null,
   "any_source_changed": false,
   "expected_change": false,
