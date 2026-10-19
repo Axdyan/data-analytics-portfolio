@@ -1,0 +1,32 @@
+12:04:28  project 02-funnel-retention in /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/02-funnel-retention
+12:04:28  source cosmetics_kaggle: all 5 files present, no download
+12:04:28  executing 02_load_explore.ipynb
+12:04:32  cell   1      0.0s  DuckDB: an in-process SQL engine, good for querying CSVs directly without a server
+12:04:32  cell   2      0.0s  Opens (or creates) a local database file to hold the loaded table
+12:04:44  cell   3     12.6s  All 5 monthly files share the same schema, one continuous event stream split
+12:04:44  cell   4      0.0s  Confirm the table loaded successfully
+12:04:44  cell   5      0.0s  Total row count across all 5 months combined
+12:04:44  cell   6      0.0s  Check column names and types before writing queries against this table
+12:04:44  cell   7      0.0s  See what values event_type takes and how many rows fall in each,
+12:04:45  cell   8      0.4s  Check the date range this data actually covers, and null counts for the
+12:04:45  cell   9      0.0s  user_id is the other essential column for retention/cohort analysis,
+12:04:46  cell  11      1.6s  Count total sessions and how many reached each funnel stage at least once.
+12:04:46  cell  12      0.0s  Save the funnel stage counts as a view: total sessions, and how many
+12:04:48  cell  13      1.6s  Convert the raw counts into conversion rates between stages, both against
+12:04:48  cell  15      0.1s  Check whether repeat purchasing actually happens in this data: for each
+12:04:48  cell  16      0.0s  Assign each purchaser to a cohort based on the calendar month of their
+12:04:48  cell  17      0.2s  con.execute("""
+12:04:49  cell  18      0.5s  Turn the raw counts into retention percentages: what share of each
+12:04:50  cell  20      1.2s  Pull retention percentages for charting, excluding the most recent cohort
+12:04:51  cell  21      0.9s  import matplotlib.pyplot as plt
+12:04:51  cell  22      0.3s  One fixed color per cohort, chosen to stay distinguishable under color
+12:04:54  cell  24      3.5s  Reshape the funnel counts into one row per stage, in funnel order, both
+12:04:55  cell  25      0.2s  import matplotlib.pyplot as plt
+12:04:55  cell  27      0.0s  Sum cart value per session, and flag whether that session ever purchased.
+12:04:56  cell  28      0.9s  Split total cart value into what converted vs what never did, plus the
+12:04:56  cell  29      0.0s  Actual revenue from completed purchases, as a separate check, this isn't
+12:04:56  cell  31      0.0s  
+12:04:56  notebook finished: 25 of 25 code cells in 26.7s
+12:04:56  source cosmetics_kaggle: unchanged, identical to the committed fingerprint (5 entries)
+12:05:06  report written: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/ci/reports/02-funnel-retention/2026-10-19.md
+12:05:06  22 of 22 listed figures reproduced on 2026-10-19.

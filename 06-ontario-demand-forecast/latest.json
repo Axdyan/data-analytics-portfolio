@@ -3,14 +3,14 @@
   "label": "06: Ontario Demand Forecast",
   "notebook_name": "06_load_explore.ipynb",
   "measured_on": "2026-09-06",
-  "run_date": "2026-10-12",
-  "run_at_utc": "2026-10-12 14:22:41",
+  "run_date": "2026-10-19",
+  "run_at_utc": "2026-10-19 12:04:18",
   "environment": {
     "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
     "python": "3.14.8",
     "duckdb": "1.5.5",
     "git_sha": "e217475669463be60b1f0938acd20f70346cccb7",
-    "github_run_id": "38262325841"
+    "github_run_id": "39249084106"
   },
   "sources": [
     {
@@ -51,7 +51,7 @@
       "refresh": "rewritten every morning",
       "policy": "ieso_current_year",
       "observed": {
-        "PUB_Demand_2026.csv": "5879fab71348331be6072663a33d0c77d366f7fab208018ce39aa1974608a2e7"
+        "PUB_Demand_2026.csv": "e42842e44feda6c76e99e29e840506fce07ca9a35ee1a0b201ce45dac49d0bd0"
       },
       "status": "changed",
       "detail": "1 of 1 entries differ: PUB_Demand_2026.csv"
@@ -93,7 +93,7 @@
       "refresh": "rewritten every morning",
       "policy": "ieso_current_year",
       "observed": {
-        "PUB_DemandZonal_2026.csv": "ad9f1c7dc84404d4b6e775e651efb6e8401281bf1ea509fb28ea1c1a075839d9"
+        "PUB_DemandZonal_2026.csv": "dd3aa845aa74d2c6302ac88b4b6c000d1e563c2242b7c2953e238738ee4f59e4"
       },
       "status": "changed",
       "detail": "1 of 1 entries differ: PUB_DemandZonal_2026.csv"
@@ -103,7 +103,7 @@
     "cells": 40,
     "code_cells": 40,
     "executed": 40,
-    "elapsed_s": 90.4,
+    "elapsed_s": 102.0,
     "error": null,
     "cell_times": [
       {
@@ -113,22 +113,22 @@
       },
       {
         "position": 2,
-        "seconds": 1.3,
+        "seconds": 0.8,
         "opening": "The report folder is a plain directory listing, so the file names come out of the anchor"
       },
       {
         "position": 3,
-        "seconds": 1.1,
+        "seconds": 0.8,
         "opening": "The first lines of one file, printed as the bytes they are. Every one of these reports"
       },
       {
         "position": 4,
-        "seconds": 25.2,
+        "seconds": 30.0,
         "opening": "The pull, one file per year, with a record of what came back. The current year's file is"
       },
       {
         "position": 5,
-        "seconds": 29.9,
+        "seconds": 34.0,
         "opening": "The zonal report, same pull, same checks. Ten zones plus a total and a difference column,"
       },
       {
@@ -138,7 +138,7 @@
       },
       {
         "position": 7,
-        "seconds": 18.4,
+        "seconds": 22.7,
         "opening": "Which copy is canonical. Each year sits on the server twice, as the plain yearly file and"
       },
       {
@@ -148,7 +148,7 @@
       },
       {
         "position": 9,
-        "seconds": 0.8,
+        "seconds": 0.9,
         "opening": "Load every yearly file as text. The metadata lines and the header are skipped by count,"
       },
       {
@@ -223,7 +223,7 @@
       },
       {
         "position": 24,
-        "seconds": 3.0,
+        "seconds": 3.1,
         "opening": "Fit and forecast, walking forward. Every four weeks the model is refit on the five years o"
       },
       {
@@ -233,7 +233,7 @@
       },
       {
         "position": 26,
-        "seconds": 0.8,
+        "seconds": 0.7,
         "opening": "Is the gap between the model and the baseline real or a run of luck? A Diebold-Mariano"
       },
       {
@@ -283,7 +283,7 @@
       },
       {
         "position": 36,
-        "seconds": 1.6,
+        "seconds": 1.0,
         "opening": "The first chart: error by lead time for the baseline and the model, over the test window."
       },
       {
@@ -307,7 +307,13 @@
         "opening": "The checks this notebook made along the way, gathered into one table so a reader can see"
       }
     ],
-    "retried_after": null
+    "retried_after": {
+      "position": 5,
+      "opening": "The zonal report, same pull, same checks. Ten zones plus a total and a difference column,",
+      "ename": "ConnectionError",
+      "evalue": "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
+      "elapsed_s": 17.2
+    }
   },
   "numbers": [
     {
@@ -334,7 +340,7 @@
       ],
       "kind": "count",
       "expected": 213456,
-      "measured": 214320,
+      "measured": 214464,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -406,7 +412,7 @@
       ],
       "kind": "count",
       "expected": 204695,
-      "measured": 205559,
+      "measured": 205703,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -607,7 +613,7 @@
       ],
       "kind": "count",
       "expected": 72152,
-      "measured": 72661,
+      "measured": 72746,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -635,7 +641,7 @@
       ],
       "kind": "count",
       "expected": 29814,
-      "measured": 30022,
+      "measured": 30061,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -931,7 +937,7 @@
       ],
       "kind": "mw",
       "expected": 17086,
-      "measured": 16901.0,
+      "measured": 16871.0,
       "status": "drift",
       "reason": "source changed; inside the band for kind mw",
       "note": "the yearly table's 2026 row, which grows with the year; at the memo's pull it held 5,953 hours to 6 September",
@@ -3555,7 +3561,7 @@
       ],
       "kind": "count",
       "expected": 129,
-      "measured": 165,
+      "measured": 171,
       "status": "drift",
       "reason": "source changed; inside the band for kind count",
       "note": "",
@@ -4329,7 +4335,7 @@
     "not_run": 0,
     "not_reproducible": 1
   },
-  "verdict": "277 of 284 listed figures reproduced on 2026-10-12; 6 drifted inside the band; 1 not reproducible in CI by design.",
+  "verdict": "277 of 284 listed figures reproduced on 2026-10-19; 6 drifted inside the band; 1 not reproducible in CI by design.",
   "blocked_rule": null,
   "any_source_changed": true,
   "expected_change": true,
