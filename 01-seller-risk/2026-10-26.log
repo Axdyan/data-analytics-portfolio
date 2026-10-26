@@ -1,0 +1,28 @@
+12:13:55  project 01-seller-risk in /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/01-seller-risk
+12:13:55  source olist_kaggle: downloading olistbr/brazilian-ecommerce into /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/data/olist
+12:13:58  source olist_kaggle: downloaded in 3s
+12:13:58  executing 01_load_explore.ipynb
+12:14:00  cell   1      0.0s  DuckDB: an in-process SQL engine, good for querying CSVs directly without a separate datab
+12:14:00  cell   2      0.0s  Opens (or creates) a local database file to hold the loaded tables
+12:14:00  cell   3      0.0s  Names of the raw Olist CSVs to load, one table per file
+12:14:01  cell   4      1.7s  Load each CSV into its own table, replacing it if it already exists
+12:14:01  cell   5      0.0s  Confirm all 9 tables loaded successfully
+12:14:01  cell   6      0.0s  Row counts per table, a quick sanity check against the known Olist dataset sizes
+12:14:01  cell   7      0.0s  Check column names and types before writing queries against this table
+12:14:01  cell   8      0.0s  Get a quick picture of the orders table: total rows, how many are missing
+12:14:01  cell   9      0.0s  Naive math predicted only ~2 mismatched rows, but that assumed status and
+12:14:01  cell  10      0.0s  Check the flip side: orders not marked delivered that still have a
+12:14:01  cell  12      0.0s  Build a clean view of delivered orders with a valid delivery date, plus how
+12:14:01  cell  13      0.0s  Sanity check: row count should be 96,478 delivered orders minus the 8 with
+12:14:02  cell  14      0.1s  Attach seller_id to each order via order_items. DISTINCT avoids counting the
+12:14:02  cell  15      0.1s  Aggregate order-level lateness up to one row per seller: order volume,
+12:14:02  cell  16      0.1s  Look at the spread of order volume per seller before deciding on a
+12:14:02  cell  17      0.1s  Restrict to sellers with at least the median order count (7), so the late
+12:14:02  cell  19      0.1s  Final Stage 3 output: sellers with enough order volume to trust the rate,
+12:14:03  cell  21      0.9s  Histogram: how late rate is distributed across the 1,514 sellers with
+12:14:03  cell  23      0.1s  Horizontal bar chart: the 15 sellers with the highest late rate (7+ orders)
+12:14:03  cell  24      0.0s  
+12:14:03  notebook finished: 20 of 20 code cells in 5.5s
+12:14:03  source olist_kaggle: unchanged, identical to the committed fingerprint (9 entries)
+12:14:06  report written: /home/runner/work/data-analytics-portfolio/data-analytics-portfolio/ci/reports/01-seller-risk/2026-10-26.md
+12:14:06  56 of 56 listed figures reproduced on 2026-10-26.
